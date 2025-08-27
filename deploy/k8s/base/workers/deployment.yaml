@@ -1,0 +1,40 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: workers
+  labels:
+    app: workers
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: workers
+  template:
+    metadata:
+      labels:
+        app: workers
+    spec:
+      containers:
+        - name: workers
+          image: ${REGISTRY}/sam-workers:${TAG}
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 8000
+          env:
+            [
+              {
+                "name": "WORKER",
+                "value": "ingestor"
+              },
+              {
+                "name": "KAFKA_BROKER",
+                "value": "kafka:9092"
+              }
+            ]
+          resources:
+            requests:
+              cpu: "100m"
+              memory: "128Mi"
+            limits:
+              cpu: "500m"
+              memory: "512Mi"

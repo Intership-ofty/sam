@@ -1,0 +1,13 @@
+"""
+API v1 Router - Main API routing configuration
+"""
+
+from fastapi import APIRouter
+from ..routers import kpi, sites, monitoring
+
+api_router = APIRouter()
+
+# Include all sub-routers
+api_router.include_router(sites.router, tags=["Sites"])
+api_router.include_router(kpi.router, tags=["KPI Management"])
+api_router.include_router(monitoring.router, tags=["Monitoring"])

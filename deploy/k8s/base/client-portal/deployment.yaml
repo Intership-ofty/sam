@@ -1,0 +1,36 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: client-portal
+  labels:
+    app: client-portal
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: client-portal
+  template:
+    metadata:
+      labels:
+        app: client-portal
+    spec:
+      containers:
+        - name: client-portal
+          image: ${REGISTRY}/sam-client-portal:${TAG}
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 80
+          env:
+            [
+              {
+                "name": "VITE_API_BASE",
+                "value": "http://backend:8000"
+              }
+            ]
+          resources:
+            requests:
+              cpu: "100m"
+              memory: "128Mi"
+            limits:
+              cpu: "500m"
+              memory: "512Mi"

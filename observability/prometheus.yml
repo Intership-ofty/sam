@@ -1,0 +1,101 @@
+global:
+  scrape_interval: 15s
+  scrape_timeout: 10s
+  evaluation_interval: 15s
+
+rule_files:
+  - "alert_rules.yml"
+
+alerting:
+  alertmanagers:
+    - static_configs:
+        - targets: []
+
+scrape_configs:
+  # Prometheus itself
+  - job_name: 'prometheus'
+    static_configs:
+      - targets: ['localhost:9090']
+    scrape_interval: 5s
+    metrics_path: /metrics
+
+  # Traefik API Gateway
+  - job_name: 'traefik'
+    static_configs:
+      - targets: ['traefik:8080']
+    scrape_interval: 5s
+
+  # Backend API
+  - job_name: 'towerco-backend-api'
+    static_configs:
+      - targets: ['backend-api:8000']
+    scrape_interval: 5s
+    metrics_path: /metrics
+
+  # TimescaleDB/PostgreSQL
+  - job_name: 'postgres'
+    static_configs:
+      - targets: ['timescaledb:5432']
+    scrape_interval: 30s
+
+  # Redis
+  - job_name: 'redis'
+    static_configs:
+      - targets: ['redis:6379']
+    scrape_interval: 15s
+
+  # Redpanda/Kafka
+  - job_name: 'redpanda'
+    static_configs:
+      - targets: ['redpanda:9644']
+    scrape_interval: 15s
+
+  # MinIO
+  - job_name: 'minio'
+    static_configs:
+      - targets: ['minio:9000']
+    scrape_interval: 30s
+    metrics_path: /minio/v2/metrics/cluster
+
+  # OTel Collector
+  - job_name: 'otel-collector'
+    static_configs:
+      - targets: ['otel-collector:8889']
+    scrape_interval: 15s
+
+  # Grafana
+  - job_name: 'grafana'
+    static_configs:
+      - targets: ['grafana:3000']
+    scrape_interval: 30s
+    metrics_path: /metrics
+
+  # Data Ingestion Worker
+  - job_name: 'data-ingestor'
+    static_configs:
+      - targets: ['data-ingestor:8001']
+    scrape_interval: 15s
+
+  # KPI Worker
+  - job_name: 'kpi-worker'
+    static_configs:
+      - targets: ['kpi-worker:8002']
+    scrape_interval: 15s
+
+  # AIOps Worker
+  - job_name: 'aiops-worker'
+    static_configs:
+      - targets: ['aiops-worker:8003']
+    scrape_interval: 15s
+
+  # Node Exporter (if available)
+  - job_name: 'node-exporter'
+    static_configs:
+      - targets: ['node-exporter:9100']
+    scrape_interval: 15s
+
+  # cAdvisor for container metrics
+  - job_name: 'cadvisor'
+    static_configs:
+      - targets: ['cadvisor:8080']
+    scrape_interval: 15s

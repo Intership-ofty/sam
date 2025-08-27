@@ -1,0 +1,52 @@
+FROM python:3.11-slim
+
+WORKDIR /app
+
+# Install system dependencies
+RUN apt-get update && apt-get install -y \
+    gcc \
+    g++ \
+    libpq-dev \
+    curl \
+    build-essential \
+    libffi-dev \
+    rustc \
+    && rm -rf /var/lib/apt/lists/*
+
+# Upgrade pip
+RUN python -m pip --timeout=100 install --upgrade pip setuptools wheel
+
+# Install airflow separately to avoid conflicts
+ARG AIRFLOW_CONSTRAINTS="https://raw.githubusercontent.com/apache/airflow/constraints-3.0.4/constraints-3.11.txt"
+RUN pip install --timeout=100 "apache-airflow==3.0.4" -c ${AIRFLOW_CONSTRAINTS}
+
+# Copy and install requirements
+COPY workers/requirements.txt .
+COPY backend/core/requirements.txt backend/core/requirements.txt
+RUN pip install --timeout=100 --no-cache-dir -r requirements.txt
+
+# --- Dependency Analysis ---
+RUN pip install --timeout=100 pipdeptree
+RUN echo "--- pipdeptree output ---" && pipdeptree
+RUN echo "--- pip check output ---" && pip check
+# --- End Dependency Analysis ---
+
+# Copy shared backend code
+COPY backend/core ./core
+COPY workers/. .
+
+# Create non-root user
+RUN useradd -m -u 1000 towerco && chown -R towerco:towerco /app
+USER towerco
+
+RUN pip check
+
+# Health check
+HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \
+  CMD curl -f http://localhost:8001/health || exit 1
+
+# Expose port for health checks
+EXPOSE 8001
+
+# Run the data ingestor
+CMD ["python", "data_ingestor.py"]

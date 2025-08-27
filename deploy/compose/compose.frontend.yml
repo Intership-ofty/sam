@@ -1,0 +1,12 @@
+services:
+  frontend:
+    build:
+      context: ../..
+      dockerfile: frontend/Dockerfile
+    image: ${REGISTRY:-local}/sam-frontend:${TAG:-dev}
+    ports:
+      - "8080:80"
+    networks:
+      - sam
+networks:
+  sam:

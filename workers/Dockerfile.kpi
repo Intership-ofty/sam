@@ -1,0 +1,46 @@
+FROM python:3.11-slim
+
+WORKDIR /app
+
+# Install system dependencies
+RUN apt-get update && apt-get install -y \
+    gcc \
+    g++ \
+    libpq-dev \
+    curl \
+    build-essential \
+    libffi-dev \
+    rustc \
+    && rm -rf /var/lib/apt/lists/*
+
+# Copy requirements
+COPY workers/requirements.txt .
+COPY backend/core/requirements.txt backend/core/requirements.txt
+RUN pip install --timeout=100 --no-cache-dir -r requirements.txt
+RUN pip install "apache-airflow==3.0.4" --constraint "https://raw.githubusercontent.com/apache/airflow/constraints-3.0.4/constraints-3.11.txt"
+
+# --- Dependency Analysis ---
+RUN pip install --timeout=100 pipdeptree
+RUN echo "--- pipdeptree output ---" && pipdeptree
+RUN echo "--- pip check output ---" && pip check
+
+
+# Copy shared backend code
+COPY backend/core ./core
+COPY workers/. .
+
+# Create non-root user
+RUN useradd -m -u 1000 towerco && chown -R towerco:towerco /app
+USER towerco
+
+RUN pip check
+
+# Health check
+HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \
+  CMD curl -f http://localhost:8002/health || exit 1
+
+# Expose port for health checks
+EXPOSE 8002
+
+# Run the KPI calculation worker
+CMD ["python", "kpi_worker.py"]

@@ -1,0 +1,16 @@
+services:
+  client-portal:
+    build:
+      context: ../..
+      dockerfile: client-portal/Dockerfile
+    image: ${REGISTRY:-local}/sam-client-portal:${TAG:-dev}
+    environment:
+      - VITE_API_BASE=${VITE_API_BASE:-http://localhost:8000}
+    ports:
+      - "5173:80"
+    depends_on:
+      - backend
+    networks:
+      - sam
+networks:
+  sam:

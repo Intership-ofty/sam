@@ -1,0 +1,30 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+namespace: sam
+resources:
+  - backend/deployment.yaml
+  - backend/service.yaml
+  - workers/deployment.yaml
+  - workers/service.yaml
+  - client-portal/deployment.yaml
+  - client-portal/service.yaml
+  - frontend/deployment.yaml
+  - frontend/service.yaml
+configMapGenerator:
+  - name: sam-config
+    literals:
+      - DATABASE_URL=postgresql+asyncpg://sam:sam@postgres:5432/sam
+      - REDIS_URL=redis://redis:6379/0
+images:
+  - name: ${REGISTRY}/sam-backend
+    newName: ${REGISTRY}/sam-backend
+    newTag: ${TAG}
+  - name: ${REGISTRY}/sam-workers
+    newName: ${REGISTRY}/sam-workers
+    newTag: ${TAG}
+  - name: ${REGISTRY}/sam-client-portal
+    newName: ${REGISTRY}/sam-client-portal
+    newTag: ${TAG}
+  - name: ${REGISTRY}/sam-frontend
+    newName: ${REGISTRY}/sam-frontend
+    newTag: ${TAG}

@@ -1,0 +1,20 @@
+services:
+  prometheus:
+    image: prom/prometheus:v2.55.0
+    volumes:
+      - ../prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
+    ports:
+      - "9090:9090"
+    networks:
+      - sam
+
+  grafana:
+    image: grafana/grafana:11.1.0
+    ports:
+      - "3000:3000"
+    environment:
+      - GF_INSTALL_PLUGINS=grafana-piechart-panel
+    networks:
+      - sam
+networks:
+  sam:

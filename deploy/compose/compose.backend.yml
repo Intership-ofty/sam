@@ -1,0 +1,35 @@
+services:
+  backend:
+    build:
+      context: ../..
+      dockerfile: backend/Dockerfile
+    image: ${REGISTRY:-local}/sam-backend:${TAG:-dev}
+    env_file:
+      - ./common.env
+    environment:
+      - UVICORN_WORKERS=2
+    ports:
+      - "8000:8000"
+    depends_on:
+      - postgres
+      - redis
+    networks:
+      - sam
+  postgres:
+    image: postgres:16-alpine
+    environment:
+      - POSTGRES_DB=${POSTGRES_DB:-sam}
+      - POSTGRES_USER=${POSTGRES_USER:-sam}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD:-sam}
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    networks:
+      - sam
+  redis:
+    image: redis:7-alpine
+    networks:
+      - sam
+networks:
+  sam:
+volumes:
+  pgdata:

@@ -1,0 +1,14 @@
+image:
+  repository: sam-backend
+  tag: dev
+  pullPolicy: IfNotPresent
+
+replicaCount: 2
+
+service:
+  type: ClusterIP
+  port: 8000
+
+env:
+  DATABASE_URL: postgresql+asyncpg://sam:sam@postgres:5432/sam
+  REDIS_URL: redis://redis:6379/0
