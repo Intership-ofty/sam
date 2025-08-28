@@ -1,12 +1,10 @@
- => ERROR [client-portal build 6/6] RUN npm run build                                                                                                                            40.5s
+ => ERROR [client-portal build 6/6] RUN npm run build                                                                                                 37.9s
 ------
  > [client-portal build 6/6] RUN npm run build:
-2.575
-2.575 > client-portal@0.1.0 build
-2.575 > tsc && vite build
-2.575
-38.45 src/components/SLA/SLATable.tsx(344,36): error TS1003: Identifier expected.
-38.45 src/components/SLA/SLATable.tsx(344,37): error TS1005: '...' expected.
-38.45 src/components/SLA/SLATable.tsx(345,25): error TS1003: Identifier expected.
-38.45 src/components/SLA/SLATable.tsx(361,35): error TS1382: Unexpected token. Did you mean `{'>'}` or `&gt;`?
+2.322
+2.322 > client-portal@0.1.0 build
+2.322 > tsc && vite build
+2.322
+35.61 src/components/SLA/SLATable.tsx(361,35): error TS1382: Unexpected token. Did you mean `{'>'}` or `&gt;`?
 ------
+failed to solve: process "/bin/sh -c npm run build" did not complete successfully: exit code: 2

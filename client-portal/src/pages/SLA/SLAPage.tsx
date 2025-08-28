@@ -190,7 +190,7 @@ const SLAPage: React.FC = () => {
         <StatsCard
           title="Average MTTR"
           value={`${Math.round(overallMetrics.averageMTTR)}m`}
-          change={`Target: <${slaTargets?.mttr_target_minutes || 30}m`}
+          change={`Target: &lt;${slaTargets?.mttr_target_minutes || 30}m`}
           changeType={overallMetrics.averageMTTR <= (slaTargets?.mttr_target_minutes || 30) ? 'positive' : 'negative'}
           icon={<ClockIcon className="w-6 h-6" />}
           color="green"
