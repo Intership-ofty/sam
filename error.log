@@ -1,0 +1,30 @@
+=> ERROR [client-portal build 6/6] RUN npm run build                                                                                                                             7.8s
+ => [workers 4/8] COPY backend/requirements.txt backend/requirements.txt                                                                                                          0.1s
+ => [workers 5/8] COPY workers/requirements.txt workers/requirements.txt                                                                                                          0.1s
+ => ERROR [workers 6/8] RUN pip install --no-cache-dir -r workers/requirements.txt                                                                                                9.0s
+------
+ > [client-portal build 6/6] RUN npm run build:
+3.725
+3.725 > client-portal@0.1.0 build
+3.725 > vite build
+3.725
+6.615 failed to load config from /app/vite.config.ts
+6.655 error during build:
+6.655 Error [ERR_MODULE_NOT_FOUND]: Cannot find package '@vitejs/plugin-react' imported from /app/vite.config.ts.timestamp-1756373823031-a9a0de826a5e6.mjs
+6.655     at packageResolve (node:internal/modules/esm/resolve:873:9)
+6.655     at moduleResolve (node:internal/modules/esm/resolve:946:18)
+6.655     at defaultResolve (node:internal/modules/esm/resolve:1188:11)
+6.655     at ModuleLoader.defaultResolve (node:internal/modules/esm/loader:642:12)
+6.655     at #cachedDefaultResolve (node:internal/modules/esm/loader:591:25)
+6.655     at ModuleLoader.resolve (node:internal/modules/esm/loader:574:38)
+6.655     at ModuleLoader.getModuleJobForImport (node:internal/modules/esm/loader:236:38)
+6.655     at ModuleJob._link (node:internal/modules/esm/module_job:130:49)
+------
+------
+ > [workers 6/8] RUN pip install --no-cache-dir -r workers/requirements.txt:
+7.876 ERROR: Could not open requirements file: [Errno 2] No such file or directory: 'workers/backend/core/requirements.txt'
+8.579
+8.579 [notice] A new release of pip is available: 24.0 -> 25.2
+8.579 [notice] To update, run: pip install --upgrade pip
+------
+failed to solve: process "/bin/sh -c npm run build" did not complete successfully: exit code: 1

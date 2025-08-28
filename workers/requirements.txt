@@ -1,5 +1,5 @@
 # Same as backend but with additional data processing libraries
--r backend/core/requirements.txt
+-r ../backend/core/requirements.txt
 
 # Data processing
 apache-airflow==3.0.4
