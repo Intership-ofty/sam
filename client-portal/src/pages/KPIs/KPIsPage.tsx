@@ -1,10 +1,10 @@
 import React from 'react'
-export default function SLA() {
+export default function KPIs() {
   return (
     <div className="grid">
       <div className="card">
-        <h2>SLA</h2>
-        <p>Targets configuration and export.</p>
+        <h2>KPIs</h2>
+        <p>Charts for NUR, uptime, MTTR, energy availability.</p>
       </div>
     </div>
   )

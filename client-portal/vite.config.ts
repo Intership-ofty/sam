@@ -6,9 +6,10 @@ export default defineConfig({
     port: 5173,
     proxy: {
       '/api': {
-        target: 'http://localhost',   // Traefik écoute en 80
+        target: 'http://localhost',
         changeOrigin: true
       }
     }
-  }
+  },
+  build: { outDir: 'dist' }
 })

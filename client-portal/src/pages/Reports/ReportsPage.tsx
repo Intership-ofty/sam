@@ -1,10 +1,10 @@
 import React from 'react'
-export default function SLA() {
+export default function Reports() {
   return (
     <div className="grid">
       <div className="card">
-        <h2>SLA</h2>
-        <p>Targets configuration and export.</p>
+        <h2>Reports</h2>
+        <p>Download SLA and monthly performance reports.</p>
       </div>
     </div>
   )

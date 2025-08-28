@@ -1,10 +1,10 @@
 import React from 'react'
-export default function SLA() {
+export default function Settings() {
   return (
     <div className="grid">
       <div className="card">
-        <h2>SLA</h2>
-        <p>Targets configuration and export.</p>
+        <h2>Settings</h2>
+        <p>Profile, notifications, and preferences.</p>
       </div>
     </div>
   )

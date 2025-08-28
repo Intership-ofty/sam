@@ -1,10 +1,10 @@
 import React from 'react'
-export default function SLA() {
+export default function Alerts() {
   return (
     <div className="grid">
       <div className="card">
-        <h2>SLA</h2>
-        <p>Targets configuration and export.</p>
+        <h2>Alerts</h2>
+        <p>Live and historical alerts with filters.</p>
       </div>
     </div>
   )

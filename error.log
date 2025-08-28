@@ -1,10 +1,622 @@
- => ERROR [client-portal build 6/6] RUN npm run build                                                                                                 37.9s
+=> ERROR [client-portal build 6/6] RUN npm run build                                                                                                 26.7s
 ------
  > [client-portal build 6/6] RUN npm run build:
-2.322
-2.322 > client-portal@0.1.0 build
-2.322 > tsc && vite build
-2.322
-35.61 src/components/SLA/SLATable.tsx(361,35): error TS1382: Unexpected token. Did you mean `{'>'}` or `&gt;`?
+1.430
+1.430 > client-portal@0.1.0 build
+1.430 > tsc && vite build
+1.430
+25.73 src/App.tsx(8,39): error TS6142: Module './contexts/AuthContext' was resolved to '/app/src/contexts/AuthContext.tsx', but '--jsx' is not set.
+25.73 src/App.tsx(9,32): error TS6142: Module './contexts/TenantContext' was resolved to '/app/src/contexts/TenantContext.tsx', but '--jsx' is not set.
+25.73 src/App.tsx(10,31): error TS2307: Cannot find module './contexts/ThemeContext' or its corresponding type declarations.
+25.73 src/App.tsx(11,21): error TS2307: Cannot find module './components/Layout/Sidebar' or its corresponding type declarations.
+25.73 src/App.tsx(12,20): error TS2307: Cannot find module './components/Layout/Header' or its corresponding type declarations.
+25.73 src/App.tsx(13,28): error TS2307: Cannot find module './components/Common/LoadingSpinner' or its corresponding type declarations.
+25.73 src/App.tsx(16,23): error TS2307: Cannot find module './pages/Auth/LoginPage' or its corresponding type declarations.
+25.73 src/App.tsx(17,27): error TS6142: Module './pages/Dashboard/DashboardPage' was resolved to '/app/src/pages/Dashboard/DashboardPage.tsx', but '--jsx' is not set.
+25.73 src/App.tsx(18,23): error TS2307: Cannot find module './pages/Sites/SitesPage' or its corresponding type declarations.
+25.73 src/App.tsx(19,28): error TS2307: Cannot find module './pages/Sites/SiteDetailPage' or its corresponding type declarations.
+25.73 src/App.tsx(20,22): error TS2307: Cannot find module './pages/KPIs/KPIsPage' or its corresponding type declarations.
+25.73 src/App.tsx(21,24): error TS2307: Cannot find module './pages/Alerts/AlertsPage' or its corresponding type declarations.
+25.73 src/App.tsx(22,25): error TS2307: Cannot find module './pages/Reports/ReportsPage' or its corresponding type declarations.
+25.73 src/App.tsx(23,21): error TS6142: Module './pages/SLA/SLAPage' was resolved to '/app/src/pages/SLA/SLAPage.tsx', but '--jsx' is not set.
+25.73 src/App.tsx(24,29): error TS2307: Cannot find module './pages/Maintenance/MaintenancePage' or its corresponding type declarations.
+25.73 src/App.tsx(25,26): error TS2307: Cannot find module './pages/Settings/SettingsPage' or its corresponding type declarations.
+25.73 src/App.tsx(46,12): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+25.73 src/App.tsx(50,12): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+25.73 src/App.tsx(53,10): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+25.73 src/App.tsx(61,5): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+25.73 src/App.tsx(62,7): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+25.73 src/App.tsx(63,7): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+25.73 src/App.tsx(64,9): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+25.73 src/App.tsx(65,9): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+25.73 src/App.tsx(76,5): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+25.73 src/App.tsx(77,7): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+25.73 src/App.tsx(78,9): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+25.73 src/App.tsx(79,11): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+25.73 src/App.tsx(80,13): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+25.73 src/App.tsx(81,15): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+25.73 src/App.tsx(82,17): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+25.73 src/App.tsx(84,19): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+25.73 src/App.tsx(84,49): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+25.73 src/App.tsx(87,19): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+25.73 src/App.tsx(90,23): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+25.73 src/App.tsx(91,25): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+25.73 src/App.tsx(92,27): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+25.73 src/App.tsx(98,19): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+25.73 src/App.tsx(101,23): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+25.73 src/App.tsx(102,25): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+25.73 src/App.tsx(103,27): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+25.73 src/App.tsx(109,19): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+25.73 src/App.tsx(112,23): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+25.73 src/App.tsx(113,25): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+25.73 src/App.tsx(114,27): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+25.73 src/App.tsx(120,19): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+25.73 src/App.tsx(123,23): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+25.73 src/App.tsx(124,25): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+25.73 src/App.tsx(125,27): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+25.73 src/App.tsx(131,19): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+25.73 src/App.tsx(134,23): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+25.73 src/App.tsx(135,25): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+25.73 src/App.tsx(136,27): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+25.73 src/App.tsx(142,19): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+25.73 src/App.tsx(145,23): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+25.73 src/App.tsx(146,25): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+25.73 src/App.tsx(147,27): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+25.73 src/App.tsx(153,19): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+25.73 src/App.tsx(156,23): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+25.73 src/App.tsx(157,25): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+25.73 src/App.tsx(158,27): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+25.73 src/App.tsx(164,19): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+25.73 src/App.tsx(167,23): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+25.73 src/App.tsx(168,25): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+25.73 src/App.tsx(169,27): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+25.73 src/App.tsx(175,19): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+25.73 src/App.tsx(178,23): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+25.73 src/App.tsx(179,25): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+25.73 src/App.tsx(180,27): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+25.73 src/App.tsx(186,19): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+25.73 src/App.tsx(189,23): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+25.73 src/App.tsx(190,25): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+25.73 src/App.tsx(191,27): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+25.73 src/App.tsx(198,19): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+25.73 src/App.tsx(201,23): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+25.73 src/App.tsx(202,25): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+25.73 src/App.tsx(203,27): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+25.73 src/App.tsx(211,17): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+25.73 src/App.tsx(221,23): error TS2353: Object literal may only specify known properties, and 'theme' does not exist in type 'Partial<Pick<Toast, "style" | "className" | "id" | "icon" | "duration" | "ariaProps" | "position" | "iconTheme" | "toasterId" | "removeDelay">>'.
+25.73 src/App.tsx(235,7): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+25.73 src/components/Notifications/NotificationCenter.tsx(15,25): error TS6142: Module '../../contexts/AuthContext' was resolved to '/app/src/contexts/AuthContext.tsx', but '--jsx' is not set.
+25.73 src/components/Notifications/NotificationCenter.tsx(16,27): error TS6142: Module '../../contexts/TenantContext' was resolved to '/app/src/contexts/TenantContext.tsx', but '--jsx' is not set.
+25.73 src/components/Notifications/NotificationCenter.tsx(25,8): error TS2307: Cannot find module '../../services/api' or its corresponding type declarations.
+25.73 src/components/Notifications/NotificationCenter.tsx(80,37): error TS2559: Type 'string[]' has no properties in common with type 'InvalidateQueryFilters<readonly unknown[]>'.
+25.73 src/components/Notifications/NotificationCenter.tsx(81,37): error TS2559: Type 'string[]' has no properties in common with type 'InvalidateQueryFilters<readonly unknown[]>'.
+25.73 src/components/Notifications/NotificationCenter.tsx(88,37): error TS2559: Type 'string[]' has no properties in common with type 'InvalidateQueryFilters<readonly unknown[]>'.
+25.73 src/components/Notifications/NotificationCenter.tsx(89,37): error TS2559: Type 'string[]' has no properties in common with type 'InvalidateQueryFilters<readonly unknown[]>'.
+25.73 src/components/Notifications/NotificationCenter.tsx(96,37): error TS2559: Type 'string[]' has no properties in common with type 'InvalidateQueryFilters<readonly unknown[]>'.
+25.73 src/components/Notifications/NotificationCenter.tsx(97,37): error TS2559: Type 'string[]' has no properties in common with type 'InvalidateQueryFilters<readonly unknown[]>'.
+25.73 src/components/Notifications/NotificationCenter.tsx(118,41): error TS2559: Type 'string[]' has no properties in common with type 'InvalidateQueryFilters<readonly unknown[]>'.
+25.73 src/components/Notifications/NotificationCenter.tsx(119,41): error TS2559: Type 'string[]' has no properties in common with type 'InvalidateQueryFilters<readonly unknown[]>'.
+25.73 src/components/Notifications/NotificationCenter.tsx(158,14): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+25.73 src/components/Notifications/NotificationCenter.tsx(164,16): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+25.73 src/components/Notifications/NotificationCenter.tsx(167,16): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+25.73 src/components/Notifications/NotificationCenter.tsx(169,16): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+25.73 src/components/Notifications/NotificationCenter.tsx(208,31): error TS2345: Argument of type 'number' is not assignable to parameter of type 'void'.
+25.73 src/components/Notifications/NotificationCenter.tsx(224,29): error TS2345: Argument of type 'number' is not assignable to parameter of type 'void'.
+25.73 src/components/Notifications/NotificationCenter.tsx(229,5): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+25.73 src/components/Notifications/NotificationCenter.tsx(230,7): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+25.73 src/components/Notifications/NotificationCenter.tsx(232,7): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+25.73 src/components/Notifications/NotificationCenter.tsx(234,9): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+25.73 src/components/Notifications/NotificationCenter.tsx(235,11): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+25.73 src/components/Notifications/NotificationCenter.tsx(236,13): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+25.73 src/components/Notifications/NotificationCenter.tsx(237,13): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+25.73 src/components/Notifications/NotificationCenter.tsx(239,15): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+25.73 src/components/Notifications/NotificationCenter.tsx(245,11): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+25.73 src/components/Notifications/NotificationCenter.tsx(246,13): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+25.73 src/components/Notifications/NotificationCenter.tsx(251,15): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+25.73 src/components/Notifications/NotificationCenter.tsx(254,13): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+25.73 src/components/Notifications/NotificationCenter.tsx(258,15): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+25.73 src/components/Notifications/NotificationCenter.tsx(264,9): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+25.73 src/components/Notifications/NotificationCenter.tsx(265,11): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+25.73 src/components/Notifications/NotificationCenter.tsx(266,13): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+25.73 src/components/Notifications/NotificationCenter.tsx(271,15): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+25.73 src/components/Notifications/NotificationCenter.tsx(272,15): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+25.73 src/components/Notifications/NotificationCenter.tsx(273,15): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+25.73 src/components/Notifications/NotificationCenter.tsx(274,15): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+25.73 src/components/Notifications/NotificationCenter.tsx(275,15): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+25.73 src/components/Notifications/NotificationCenter.tsx(276,15): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+25.73 src/components/Notifications/NotificationCenter.tsx(279,13): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+25.73 src/components/Notifications/NotificationCenter.tsx(280,15): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+25.73 src/components/Notifications/NotificationCenter.tsx(290,11): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+25.73 src/components/Notifications/NotificationCenter.tsx(291,13): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+25.73 src/components/Notifications/NotificationCenter.tsx(296,15): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+25.73 src/components/Notifications/NotificationCenter.tsx(298,47): error TS2339: Property 'isLoading' does not exist on type 'UseMutationResult<unknown, Error, void, unknown>'.
+25.73   Property 'isLoading' does not exist on type 'Override<MutationObserverIdleResult<unknown, Error, void, unknown>, { mutate: UseMutateFunction<unknown, Error, void, unknown>; }> & { ...; }'.
+25.73 src/components/Notifications/NotificationCenter.tsx(301,38): error TS2339: Property 'isLoading' does not exist on type 'UseMutationResult<unknown, Error, void, unknown>'.
+25.73   Property 'isLoading' does not exist on type 'Override<MutationObserverIdleResult<unknown, Error, void, unknown>, { mutate: UseMutateFunction<unknown, Error, void, unknown>; }> & { ...; }'.
+25.73 src/components/Notifications/NotificationCenter.tsx(308,9): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+25.73 src/components/Notifications/NotificationCenter.tsx(310,13): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+25.73 src/components/Notifications/NotificationCenter.tsx(311,15): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+25.73 src/components/Notifications/NotificationCenter.tsx(314,13): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+25.73 src/components/Notifications/NotificationCenter.tsx(315,15): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+25.73 src/components/Notifications/NotificationCenter.tsx(316,15): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+25.73 src/components/Notifications/NotificationCenter.tsx(319,13): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+25.73 src/components/Notifications/NotificationCenter.tsx(320,35): error TS7006: Parameter 'notification' implicitly has an 'any' type.
+25.73 src/components/Notifications/NotificationCenter.tsx(321,17): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+25.73 src/components/Notifications/NotificationCenter.tsx(328,19): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+25.73 src/components/Notifications/NotificationCenter.tsx(329,21): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+25.73 src/components/Notifications/NotificationCenter.tsx(332,23): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+25.73 src/components/Notifications/NotificationCenter.tsx(333,25): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+25.73 src/components/Notifications/NotificationCenter.tsx(334,27): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+25.73 src/components/Notifications/NotificationCenter.tsx(341,29): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+25.73 src/components/Notifications/NotificationCenter.tsx(345,25): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+25.73 src/components/Notifications/NotificationCenter.tsx(349,25): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+25.73 src/components/Notifications/NotificationCenter.tsx(350,27): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+25.73 src/components/Notifications/NotificationCenter.tsx(351,29): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+25.73 src/components/Notifications/NotificationCenter.tsx(353,31): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+25.73 src/components/Notifications/NotificationCenter.tsx(354,33): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+25.73 src/components/Notifications/NotificationCenter.tsx(355,33): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+25.73 src/components/Notifications/NotificationCenter.tsx(358,29): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+25.73 src/components/Notifications/NotificationCenter.tsx(359,29): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+25.73 src/components/Notifications/NotificationCenter.tsx(369,27): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+25.73 src/components/Notifications/NotificationCenter.tsx(371,31): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+25.73 src/components/Notifications/NotificationCenter.tsx(379,33): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+25.73 src/components/Notifications/NotificationCenter.tsx(383,29): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+25.73 src/components/Notifications/NotificationCenter.tsx(388,31): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+25.73 src/components/SLA/IncidentTimeline.tsx(64,16): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+25.73 src/components/SLA/IncidentTimeline.tsx(66,16): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+25.73 src/components/SLA/IncidentTimeline.tsx(68,16): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+25.73 src/components/SLA/IncidentTimeline.tsx(70,16): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+25.73 src/components/SLA/IncidentTimeline.tsx(72,16): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+25.73 src/components/SLA/IncidentTimeline.tsx(142,7): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+25.73 src/components/SLA/IncidentTimeline.tsx(143,9): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+25.73 src/components/SLA/IncidentTimeline.tsx(144,9): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+25.73 src/components/SLA/IncidentTimeline.tsx(145,9): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+25.73 src/components/SLA/IncidentTimeline.tsx(153,5): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+25.73 src/components/SLA/IncidentTimeline.tsx(156,9): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+25.73 src/components/SLA/IncidentTimeline.tsx(157,11): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+25.73 src/components/SLA/IncidentTimeline.tsx(162,13): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+25.73 src/components/SLA/IncidentTimeline.tsx(163,13): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+25.73 src/components/SLA/IncidentTimeline.tsx(164,13): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+25.73 src/components/SLA/IncidentTimeline.tsx(165,13): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+25.73 src/components/SLA/IncidentTimeline.tsx(166,13): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+25.73 src/components/SLA/IncidentTimeline.tsx(169,11): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+25.73 src/components/SLA/IncidentTimeline.tsx(174,13): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+25.73 src/components/SLA/IncidentTimeline.tsx(175,13): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+25.73 src/components/SLA/IncidentTimeline.tsx(176,13): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+25.73 src/components/SLA/IncidentTimeline.tsx(177,13): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+25.73 src/components/SLA/IncidentTimeline.tsx(178,13): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+25.73 src/components/SLA/IncidentTimeline.tsx(179,13): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+25.73 src/components/SLA/IncidentTimeline.tsx(182,11): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+25.73 src/components/SLA/IncidentTimeline.tsx(187,13): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+25.73 src/components/SLA/IncidentTimeline.tsx(188,13): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+25.73 src/components/SLA/IncidentTimeline.tsx(189,13): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+25.73 src/components/SLA/IncidentTimeline.tsx(195,7): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+25.73 src/components/SLA/IncidentTimeline.tsx(197,11): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+25.73 src/components/SLA/IncidentTimeline.tsx(206,13): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+25.73 src/components/SLA/IncidentTimeline.tsx(214,17): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+25.73 src/components/SLA/IncidentTimeline.tsx(218,17): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+25.73 src/components/SLA/IncidentTimeline.tsx(225,13): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+25.73 src/components/SLA/IncidentTimeline.tsx(229,15): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+25.73 src/components/SLA/IncidentTimeline.tsx(230,17): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+25.73 src/components/SLA/IncidentTimeline.tsx(232,19): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+25.73 src/components/SLA/IncidentTimeline.tsx(238,21): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+25.73 src/components/SLA/IncidentTimeline.tsx(244,17): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+25.73 src/components/SLA/IncidentTimeline.tsx(245,19): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+25.73 src/components/SLA/IncidentTimeline.tsx(248,19): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+25.73 src/components/SLA/IncidentTimeline.tsx(256,17): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+25.73 src/components/SLA/IncidentTimeline.tsx(257,19): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+25.73 src/components/SLA/IncidentTimeline.tsx(261,21): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+25.73 src/components/SLA/IncidentTimeline.tsx(269,15): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+25.73 src/components/SLA/IncidentTimeline.tsx(270,17): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+25.73 src/components/SLA/IncidentTimeline.tsx(271,19): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+25.73 src/components/SLA/IncidentTimeline.tsx(272,19): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+25.73 src/components/SLA/IncidentTimeline.tsx(275,17): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+25.73 src/components/SLA/IncidentTimeline.tsx(276,19): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+25.73 src/components/SLA/IncidentTimeline.tsx(277,19): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+25.73 src/components/SLA/IncidentTimeline.tsx(280,17): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+25.73 src/components/SLA/IncidentTimeline.tsx(281,19): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+25.73 src/components/SLA/IncidentTimeline.tsx(282,19): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+25.73 src/components/SLA/IncidentTimeline.tsx(286,19): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+25.73 src/components/SLA/IncidentTimeline.tsx(287,21): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+25.73 src/components/SLA/IncidentTimeline.tsx(288,21): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+25.73 src/components/SLA/IncidentTimeline.tsx(295,17): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+25.73 src/components/SLA/IncidentTimeline.tsx(296,19): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+25.73 src/components/SLA/IncidentTimeline.tsx(297,21): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+25.73 src/components/SLA/IncidentTimeline.tsx(300,21): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+25.73 src/components/SLA/IncidentTimeline.tsx(301,23): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+25.74 src/components/SLA/IncidentTimeline.tsx(313,9): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+25.74 src/components/SLA/IncidentTimeline.tsx(314,11): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+25.74 src/components/SLA/SLAChart.tsx(236,7): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+25.74 src/components/SLA/SLAChart.tsx(240,9): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+25.74 src/components/SLA/SLAChart.tsx(241,11): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+25.74 src/components/SLA/SLAChart.tsx(242,11): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+25.74 src/components/SLA/SLAChart.tsx(251,5): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+25.74 src/components/SLA/SLAChart.tsx(252,7): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+25.74 src/components/SLA/SLATable.tsx(137,16): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+25.74 src/components/SLA/SLATable.tsx(139,16): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+25.74 src/components/SLA/SLATable.tsx(141,16): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+25.74 src/components/SLA/SLATable.tsx(164,14): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+25.74 src/components/SLA/SLATable.tsx(168,9): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+25.74 src/components/SLA/SLATable.tsx(169,9): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+25.74 src/components/SLA/SLATable.tsx(187,5): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+25.74 src/components/SLA/SLATable.tsx(189,7): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+25.74 src/components/SLA/SLATable.tsx(190,9): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+25.74 src/components/SLA/SLATable.tsx(191,11): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+25.74 src/components/SLA/SLATable.tsx(192,11): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+25.74 src/components/SLA/SLATable.tsx(201,9): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+25.74 src/components/SLA/SLATable.tsx(206,11): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+25.74 src/components/SLA/SLATable.tsx(207,11): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+25.74 src/components/SLA/SLATable.tsx(208,11): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+25.74 src/components/SLA/SLATable.tsx(209,11): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+25.74 src/components/SLA/SLATable.tsx(214,7): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+25.74 src/components/SLA/SLATable.tsx(215,9): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+25.74 src/components/SLA/SLATable.tsx(216,11): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+25.74 src/components/SLA/SLATable.tsx(217,13): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+25.74 src/components/SLA/SLATable.tsx(219,17): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+25.74 src/components/SLA/SLATable.tsx(223,15): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+25.74 src/components/SLA/SLATable.tsx(227,17): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+25.74 src/components/SLA/SLATable.tsx(228,19): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+25.74 src/components/SLA/SLATable.tsx(232,15): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+25.74 src/components/SLA/SLATable.tsx(236,17): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+25.74 src/components/SLA/SLATable.tsx(237,19): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+25.74 src/components/SLA/SLATable.tsx(241,15): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+25.74 src/components/SLA/SLATable.tsx(245,17): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+25.74 src/components/SLA/SLATable.tsx(246,19): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+25.74 src/components/SLA/SLATable.tsx(250,15): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+25.74 src/components/SLA/SLATable.tsx(254,17): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+25.74 src/components/SLA/SLATable.tsx(255,19): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+25.74 src/components/SLA/SLATable.tsx(259,15): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+25.74 src/components/SLA/SLATable.tsx(263,17): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+25.74 src/components/SLA/SLATable.tsx(264,19): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+25.74 src/components/SLA/SLATable.tsx(268,15): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+25.74 src/components/SLA/SLATable.tsx(272,17): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+25.74 src/components/SLA/SLATable.tsx(273,19): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+25.74 src/components/SLA/SLATable.tsx(277,15): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+25.74 src/components/SLA/SLATable.tsx(282,11): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+25.74 src/components/SLA/SLATable.tsx(289,17): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+25.74 src/components/SLA/SLATable.tsx(294,21): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+25.74 src/components/SLA/SLATable.tsx(295,23): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+25.74 src/components/SLA/SLATable.tsx(303,19): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+25.74 src/components/SLA/SLATable.tsx(304,21): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+25.74 src/components/SLA/SLATable.tsx(308,19): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+25.74 src/components/SLA/SLATable.tsx(309,21): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+25.74 src/components/SLA/SLATable.tsx(311,23): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+25.74 src/components/SLA/SLATable.tsx(316,19): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+25.74 src/components/SLA/SLATable.tsx(317,21): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+25.74 src/components/SLA/SLATable.tsx(318,23): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+25.74 src/components/SLA/SLATable.tsx(322,25): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+25.74 src/components/SLA/SLATable.tsx(332,19): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+25.74 src/components/SLA/SLATable.tsx(333,21): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+25.74 src/components/SLA/SLATable.tsx(334,23): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+25.74 src/components/SLA/SLATable.tsx(335,23): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+25.74 src/components/SLA/SLATable.tsx(339,25): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+25.74 src/components/SLA/SLATable.tsx(349,19): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+25.74 src/components/SLA/SLATable.tsx(350,21): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+25.74 src/components/SLA/SLATable.tsx(351,23): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+25.74 src/components/SLA/SLATable.tsx(352,23): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+25.74 src/components/SLA/SLATable.tsx(356,25): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+25.74 src/components/SLA/SLATable.tsx(366,19): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+25.74 src/components/SLA/SLATable.tsx(367,21): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+25.74 src/components/SLA/SLATable.tsx(374,19): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+25.74 src/components/SLA/SLATable.tsx(375,21): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+25.74 src/components/SLA/SLATable.tsx(386,11): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+25.74 src/components/SLA/SLATable.tsx(387,13): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+25.74 src/components/SLA/SLATable.tsx(388,13): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+25.74 src/components/SLA/SLATable.tsx(397,9): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+25.74 src/components/SLA/SLATable.tsx(398,11): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+25.74 src/components/SLA/SLATable.tsx(399,13): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+25.74 src/components/SLA/SLATable.tsx(402,13): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+25.74 src/components/SLA/SLATable.tsx(403,15): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+25.74 src/components/SLA/SLATable.tsx(404,35): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+25.74 src/components/SLA/SLATable.tsx(408,15): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+25.74 src/components/SLA/SLATable.tsx(409,27): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+25.74 src/components/SLA/SLATable.tsx(413,15): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+25.74 src/components/SLA/SLATable.tsx(414,34): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+25.74 src/contexts/AuthContext.tsx(205,5): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+25.74 src/contexts/TenantContext.tsx(2,25): error TS6142: Module './AuthContext' was resolved to '/app/src/contexts/AuthContext.tsx', but '--jsx' is not set.
+25.74 src/contexts/TenantContext.tsx(144,5): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+25.74 src/pages/Dashboard/DashboardPage.tsx(15,23): error TS2307: Cannot find module '../../components/Dashboard/StatsCard' or its corresponding type declarations.
+25.74 src/pages/Dashboard/DashboardPage.tsx(16,22): error TS2307: Cannot find module '../../components/Dashboard/KPIChart' or its corresponding type declarations.
+25.74 src/pages/Dashboard/DashboardPage.tsx(17,24): error TS2307: Cannot find module '../../components/Dashboard/AlertsList' or its corresponding type declarations.
+25.74 src/pages/Dashboard/DashboardPage.tsx(18,21): error TS2307: Cannot find module '../../components/Dashboard/SiteMap' or its corresponding type declarations.
+25.74 src/pages/Dashboard/DashboardPage.tsx(19,26): error TS2307: Cannot find module '../../components/Dashboard/RecentEvents' or its corresponding type declarations.
+25.74 src/pages/Dashboard/DashboardPage.tsx(20,33): error TS2307: Cannot find module '../../components/Dashboard/MaintenanceCalendar' or its corresponding type declarations.
+25.74 src/pages/Dashboard/DashboardPage.tsx(21,28): error TS2307: Cannot find module '../../components/Common/LoadingSpinner' or its corresponding type declarations.
+25.74 src/pages/Dashboard/DashboardPage.tsx(24,27): error TS6142: Module '../../contexts/TenantContext' was resolved to '/app/src/contexts/TenantContext.tsx', but '--jsx' is not set.
+25.74 src/pages/Dashboard/DashboardPage.tsx(25,25): error TS6142: Module '../../contexts/AuthContext' was resolved to '/app/src/contexts/AuthContext.tsx', but '--jsx' is not set.
+25.74 src/pages/Dashboard/DashboardPage.tsx(28,91): error TS2307: Cannot find module '../../services/api' or its corresponding type declarations.
+25.74 src/pages/Dashboard/DashboardPage.tsx(61,12): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+25.74 src/pages/Dashboard/DashboardPage.tsx(67,44): error TS7006: Parameter 'kpi' implicitly has an 'any' type.
+25.74 src/pages/Dashboard/DashboardPage.tsx(69,33): error TS7006: Parameter 'sum' implicitly has an 'any' type.
+25.74 src/pages/Dashboard/DashboardPage.tsx(69,38): error TS7006: Parameter 'kpi' implicitly has an 'any' type.
+25.74 src/pages/Dashboard/DashboardPage.tsx(84,5): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+25.74 src/pages/Dashboard/DashboardPage.tsx(86,7): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+25.74 src/pages/Dashboard/DashboardPage.tsx(87,9): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+25.74 src/pages/Dashboard/DashboardPage.tsx(88,11): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+25.74 src/pages/Dashboard/DashboardPage.tsx(91,11): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+25.74 src/pages/Dashboard/DashboardPage.tsx(96,9): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+25.74 src/pages/Dashboard/DashboardPage.tsx(97,11): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+25.74 src/pages/Dashboard/DashboardPage.tsx(102,13): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+25.74 src/pages/Dashboard/DashboardPage.tsx(103,13): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+25.74 src/pages/Dashboard/DashboardPage.tsx(104,13): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+25.74 src/pages/Dashboard/DashboardPage.tsx(105,13): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+25.74 src/pages/Dashboard/DashboardPage.tsx(106,13): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+25.74 src/pages/Dashboard/DashboardPage.tsx(112,7): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+25.74 src/pages/Dashboard/DashboardPage.tsx(113,9): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+25.74 src/pages/Dashboard/DashboardPage.tsx(118,17): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+25.74 src/pages/Dashboard/DashboardPage.tsx(122,9): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+25.74 src/pages/Dashboard/DashboardPage.tsx(127,17): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+25.74 src/pages/Dashboard/DashboardPage.tsx(131,9): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+25.74 src/pages/Dashboard/DashboardPage.tsx(136,17): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+25.74 src/pages/Dashboard/DashboardPage.tsx(140,9): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+25.74 src/pages/Dashboard/DashboardPage.tsx(145,17): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+25.74 src/pages/Dashboard/DashboardPage.tsx(151,7): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+25.74 src/pages/Dashboard/DashboardPage.tsx(153,9): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+25.74 src/pages/Dashboard/DashboardPage.tsx(154,11): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+25.74 src/pages/Dashboard/DashboardPage.tsx(155,13): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+25.74 src/pages/Dashboard/DashboardPage.tsx(156,15): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+25.74 src/pages/Dashboard/DashboardPage.tsx(157,15): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+25.74 src/pages/Dashboard/DashboardPage.tsx(158,17): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+25.74 src/pages/Dashboard/DashboardPage.tsx(159,19): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+25.74 src/pages/Dashboard/DashboardPage.tsx(160,19): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+25.74 src/pages/Dashboard/DashboardPage.tsx(162,17): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+25.74 src/pages/Dashboard/DashboardPage.tsx(163,19): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+25.74 src/pages/Dashboard/DashboardPage.tsx(164,19): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+25.74 src/pages/Dashboard/DashboardPage.tsx(166,17): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+25.74 src/pages/Dashboard/DashboardPage.tsx(167,19): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+25.74 src/pages/Dashboard/DashboardPage.tsx(168,19): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+25.74 src/pages/Dashboard/DashboardPage.tsx(170,17): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+25.74 src/pages/Dashboard/DashboardPage.tsx(171,19): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+25.74 src/pages/Dashboard/DashboardPage.tsx(172,19): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+25.74 src/pages/Dashboard/DashboardPage.tsx(176,13): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+25.74 src/pages/Dashboard/DashboardPage.tsx(181,9): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+25.74 src/pages/Dashboard/DashboardPage.tsx(182,11): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+25.74 src/pages/Dashboard/DashboardPage.tsx(183,13): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+25.74 src/pages/Dashboard/DashboardPage.tsx(184,15): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+25.74 src/pages/Dashboard/DashboardPage.tsx(185,15): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+25.74 src/pages/Dashboard/DashboardPage.tsx(191,13): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+25.74 src/pages/Dashboard/DashboardPage.tsx(192,15): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+25.74 src/pages/Dashboard/DashboardPage.tsx(193,17): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+25.74 src/pages/Dashboard/DashboardPage.tsx(196,17): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+25.74 src/pages/Dashboard/DashboardPage.tsx(198,15): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+25.74 src/pages/Dashboard/DashboardPage.tsx(199,17): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+25.74 src/pages/Dashboard/DashboardPage.tsx(202,17): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+25.74 src/pages/Dashboard/DashboardPage.tsx(204,15): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+25.74 src/pages/Dashboard/DashboardPage.tsx(205,17): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+25.74 src/pages/Dashboard/DashboardPage.tsx(208,17): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+25.74 src/pages/Dashboard/DashboardPage.tsx(210,15): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+25.74 src/pages/Dashboard/DashboardPage.tsx(211,17): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+25.74 src/pages/Dashboard/DashboardPage.tsx(214,17): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+25.74 src/pages/Dashboard/DashboardPage.tsx(218,13): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+25.74 src/pages/Dashboard/DashboardPage.tsx(221,15): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+25.74 src/pages/Dashboard/DashboardPage.tsx(222,17): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+25.74 src/pages/Dashboard/DashboardPage.tsx(235,7): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+25.74 src/pages/Dashboard/DashboardPage.tsx(237,9): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+25.74 src/pages/Dashboard/DashboardPage.tsx(238,11): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+25.74 src/pages/Dashboard/DashboardPage.tsx(239,11): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+25.74 src/pages/Dashboard/DashboardPage.tsx(241,11): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+25.74 src/pages/Dashboard/DashboardPage.tsx(242,13): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+25.74 src/pages/Dashboard/DashboardPage.tsx(243,15): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+25.74 src/pages/Dashboard/DashboardPage.tsx(246,15): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+25.74 src/pages/Dashboard/DashboardPage.tsx(248,13): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+25.74 src/pages/Dashboard/DashboardPage.tsx(249,15): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+25.74 src/pages/Dashboard/DashboardPage.tsx(252,15): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+25.74 src/pages/Dashboard/DashboardPage.tsx(254,13): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+25.74 src/pages/Dashboard/DashboardPage.tsx(255,15): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+25.74 src/pages/Dashboard/DashboardPage.tsx(258,15): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+25.74 src/pages/Dashboard/DashboardPage.tsx(264,9): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+25.74 src/pages/Dashboard/DashboardPage.tsx(266,11): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+25.74 src/pages/Dashboard/DashboardPage.tsx(267,13): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+25.74 src/pages/Dashboard/DashboardPage.tsx(268,13): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+25.74 src/pages/Dashboard/DashboardPage.tsx(272,11): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+25.74 src/pages/Dashboard/DashboardPage.tsx(273,13): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+25.74 src/pages/Dashboard/DashboardPage.tsx(274,13): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+25.74 src/pages/Dashboard/DashboardPage.tsx(280,7): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+25.74 src/pages/Dashboard/DashboardPage.tsx(281,9): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+25.74 src/pages/Dashboard/DashboardPage.tsx(282,11): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+25.74 src/pages/Dashboard/DashboardPage.tsx(283,13): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+25.74 src/pages/Dashboard/DashboardPage.tsx(284,15): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+25.74 src/pages/Dashboard/DashboardPage.tsx(285,15): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+25.74 src/pages/Dashboard/DashboardPage.tsx(287,13): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+25.74 src/pages/Dashboard/DashboardPage.tsx(292,11): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+25.74 src/pages/Dashboard/DashboardPage.tsx(293,13): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+25.74 src/pages/Dashboard/DashboardPage.tsx(294,15): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+25.74 src/pages/Dashboard/DashboardPage.tsx(295,15): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+25.74 src/pages/Dashboard/DashboardPage.tsx(297,13): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+25.74 src/pages/Dashboard/DashboardPage.tsx(298,15): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+25.74 src/pages/Dashboard/DashboardPage.tsx(299,15): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+25.74 src/pages/Dashboard/DashboardPage.tsx(301,13): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+25.74 src/pages/Dashboard/DashboardPage.tsx(302,15): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+25.74 src/pages/Dashboard/DashboardPage.tsx(303,15): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+25.74 src/pages/NOC/NOCDashboard.tsx(17,23): error TS2307: Cannot find module '../../components/Dashboard/StatsCard' or its corresponding type declarations.
+25.74 src/pages/NOC/NOCDashboard.tsx(18,25): error TS2307: Cannot find module '../../components/NOC/IncidentMap' or its corresponding type declarations.
+25.74 src/pages/NOC/NOCDashboard.tsx(19,27): error TS2307: Cannot find module '../../components/NOC/IncidentTable' or its corresponding type declarations.
+25.74 src/pages/NOC/NOCDashboard.tsx(20,29): error TS2307: Cannot find module '../../components/NOC/TeamPerformance' or its corresponding type declarations.
+25.74 src/pages/NOC/NOCDashboard.tsx(21,31): error TS2307: Cannot find module '../../components/NOC/EscalationMetrics' or its corresponding type declarations.
+25.74 src/pages/NOC/NOCDashboard.tsx(22,28): error TS2307: Cannot find module '../../components/NOC/SiteHealthGrid' or its corresponding type declarations.
+25.74 src/pages/NOC/NOCDashboard.tsx(23,28): error TS2307: Cannot find module '../../components/NOC/RealTimeAlerts' or its corresponding type declarations.
+25.74 src/pages/NOC/NOCDashboard.tsx(24,28): error TS2307: Cannot find module '../../components/Common/LoadingSpinner' or its corresponding type declarations.
+25.74 src/pages/NOC/NOCDashboard.tsx(27,27): error TS6142: Module '../../contexts/TenantContext' was resolved to '/app/src/contexts/TenantContext.tsx', but '--jsx' is not set.
+25.74 src/pages/NOC/NOCDashboard.tsx(28,25): error TS6142: Module '../../contexts/AuthContext' was resolved to '/app/src/contexts/AuthContext.tsx', but '--jsx' is not set.
+25.74 src/pages/NOC/NOCDashboard.tsx(31,57): error TS2307: Cannot find module '../../services/api' or its corresponding type declarations.
+25.74 src/pages/NOC/NOCDashboard.tsx(63,12): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+25.74 src/pages/NOC/NOCDashboard.tsx(74,42): error TS7006: Parameter 'site' implicitly has an 'any' type.
+25.74 src/pages/NOC/NOCDashboard.tsx(75,43): error TS7006: Parameter 'site' implicitly has an 'any' type.
+25.74 src/pages/NOC/NOCDashboard.tsx(76,42): error TS7006: Parameter 'site' implicitly has an 'any' type.
+25.74 src/pages/NOC/NOCDashboard.tsx(80,5): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+25.74 src/pages/NOC/NOCDashboard.tsx(82,7): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+25.74 src/pages/NOC/NOCDashboard.tsx(83,9): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+25.74 src/pages/NOC/NOCDashboard.tsx(84,11): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+25.74 src/pages/NOC/NOCDashboard.tsx(87,11): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+25.74 src/pages/NOC/NOCDashboard.tsx(92,9): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+25.74 src/pages/NOC/NOCDashboard.tsx(93,11): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+25.74 src/pages/NOC/NOCDashboard.tsx(94,13): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+25.74 src/pages/NOC/NOCDashboard.tsx(101,13): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+25.74 src/pages/NOC/NOCDashboard.tsx(106,11): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+25.74 src/pages/NOC/NOCDashboard.tsx(111,13): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+25.74 src/pages/NOC/NOCDashboard.tsx(112,13): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+25.74 src/pages/NOC/NOCDashboard.tsx(113,13): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+25.74 src/pages/NOC/NOCDashboard.tsx(114,13): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+25.74 src/pages/NOC/NOCDashboard.tsx(115,13): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+25.74 src/pages/NOC/NOCDashboard.tsx(118,11): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+25.74 src/pages/NOC/NOCDashboard.tsx(128,7): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+25.74 src/pages/NOC/NOCDashboard.tsx(129,9): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+25.74 src/pages/NOC/NOCDashboard.tsx(134,17): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+25.74 src/pages/NOC/NOCDashboard.tsx(139,9): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+25.74 src/pages/NOC/NOCDashboard.tsx(144,17): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+25.74 src/pages/NOC/NOCDashboard.tsx(149,9): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+25.74 src/pages/NOC/NOCDashboard.tsx(154,17): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+25.74 src/pages/NOC/NOCDashboard.tsx(159,9): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+25.74 src/pages/NOC/NOCDashboard.tsx(164,17): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+25.74 src/pages/NOC/NOCDashboard.tsx(169,9): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+25.74 src/pages/NOC/NOCDashboard.tsx(174,17): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+25.74 src/pages/NOC/NOCDashboard.tsx(179,9): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+25.74 src/pages/NOC/NOCDashboard.tsx(184,17): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+25.74 src/pages/NOC/NOCDashboard.tsx(191,7): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+25.74 src/pages/NOC/NOCDashboard.tsx(192,9): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+25.74 src/pages/NOC/NOCDashboard.tsx(193,11): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+25.74 src/pages/NOC/NOCDashboard.tsx(194,13): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+25.74 src/pages/NOC/NOCDashboard.tsx(195,15): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+25.74 src/pages/NOC/NOCDashboard.tsx(199,15): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+25.74 src/pages/NOC/NOCDashboard.tsx(206,13): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+25.74 src/pages/NOC/NOCDashboard.tsx(211,11): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+25.74 src/pages/NOC/NOCDashboard.tsx(212,13): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+25.74 src/pages/NOC/NOCDashboard.tsx(213,15): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+25.74 src/pages/NOC/NOCDashboard.tsx(214,15): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+25.74 src/pages/NOC/NOCDashboard.tsx(216,13): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+25.74 src/pages/NOC/NOCDashboard.tsx(217,15): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+25.74 src/pages/NOC/NOCDashboard.tsx(218,15): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+25.74 src/pages/NOC/NOCDashboard.tsx(220,13): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+25.74 src/pages/NOC/NOCDashboard.tsx(221,15): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+25.74 src/pages/NOC/NOCDashboard.tsx(222,15): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+25.74 src/pages/NOC/NOCDashboard.tsx(229,7): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+25.74 src/pages/NOC/NOCDashboard.tsx(231,9): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+25.74 src/pages/NOC/NOCDashboard.tsx(232,11): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+25.74 src/pages/NOC/NOCDashboard.tsx(233,13): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+25.74 src/pages/NOC/NOCDashboard.tsx(234,15): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+25.74 src/pages/NOC/NOCDashboard.tsx(235,15): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+25.74 src/pages/NOC/NOCDashboard.tsx(236,17): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+25.74 src/pages/NOC/NOCDashboard.tsx(239,17): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+25.74 src/pages/NOC/NOCDashboard.tsx(244,13): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+25.74 src/pages/NOC/NOCDashboard.tsx(249,9): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+25.74 src/pages/NOC/NOCDashboard.tsx(250,11): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+25.74 src/pages/NOC/NOCDashboard.tsx(251,13): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+25.74 src/pages/NOC/NOCDashboard.tsx(252,15): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+25.74 src/pages/NOC/NOCDashboard.tsx(253,15): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+25.74 src/pages/NOC/NOCDashboard.tsx(257,13): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+25.74 src/pages/NOC/NOCDashboard.tsx(263,7): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+25.74 src/pages/NOC/NOCDashboard.tsx(265,9): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+25.74 src/pages/NOC/NOCDashboard.tsx(266,11): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+25.74 src/pages/NOC/NOCDashboard.tsx(267,13): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+25.74 src/pages/NOC/NOCDashboard.tsx(268,13): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+25.74 src/pages/NOC/NOCDashboard.tsx(275,11): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+25.74 src/pages/NOC/NOCDashboard.tsx(283,9): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+25.74 src/pages/NOC/NOCDashboard.tsx(284,11): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+25.74 src/pages/NOC/NOCDashboard.tsx(285,13): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+25.74 src/pages/NOC/NOCDashboard.tsx(286,13): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+25.74 src/pages/NOC/NOCDashboard.tsx(292,11): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+25.74 src/pages/NOC/NOCDashboard.tsx(297,7): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+25.74 src/pages/NOC/NOCDashboard.tsx(299,9): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+25.74 src/pages/NOC/NOCDashboard.tsx(300,11): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+25.74 src/pages/NOC/NOCDashboard.tsx(301,11): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+25.74 src/pages/NOC/NOCDashboard.tsx(309,9): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+25.74 src/pages/NOC/NOCDashboard.tsx(310,11): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+25.74 src/pages/NOC/NOCDashboard.tsx(311,11): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+25.74 src/pages/NOC/NOCDashboard.tsx(320,9): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+25.74 src/pages/NOC/NOCDashboard.tsx(321,11): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+25.74 src/pages/NOC/NOCDashboard.tsx(322,13): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+25.74 src/pages/NOC/NOCDashboard.tsx(323,15): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+25.74 src/pages/NOC/NOCDashboard.tsx(324,15): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+25.74 src/pages/NOC/NOCDashboard.tsx(325,17): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+25.74 src/pages/NOC/NOCDashboard.tsx(326,17): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+25.74 src/pages/NOC/NOCDashboard.tsx(331,13): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+25.74 src/pages/NOC/NOCDashboard.tsx(332,15): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+25.74 src/pages/SLA/SLAPage.tsx(14,23): error TS2307: Cannot find module '../../components/Dashboard/StatsCard' or its corresponding type declarations.
+25.74 src/pages/SLA/SLAPage.tsx(15,22): error TS6142: Module '../../components/SLA/SLAChart' was resolved to '/app/src/components/SLA/SLAChart.tsx', but '--jsx' is not set.
+25.74 src/pages/SLA/SLAPage.tsx(16,22): error TS6142: Module '../../components/SLA/SLATable' was resolved to '/app/src/components/SLA/SLATable.tsx', but '--jsx' is not set.
+25.74 src/pages/SLA/SLAPage.tsx(17,30): error TS6142: Module '../../components/SLA/IncidentTimeline' was resolved to '/app/src/components/SLA/IncidentTimeline.tsx', but '--jsx' is not set.
+25.74 src/pages/SLA/SLAPage.tsx(18,29): error TS2307: Cannot find module '../../components/SLA/SLATargetEditor' or its corresponding type declarations.
+25.74 src/pages/SLA/SLAPage.tsx(19,28): error TS2307: Cannot find module '../../components/Common/LoadingSpinner' or its corresponding type declarations.
+25.74 src/pages/SLA/SLAPage.tsx(20,26): error TS2307: Cannot find module '../../components/Common/ExportButton' or its corresponding type declarations.
+25.74 src/pages/SLA/SLAPage.tsx(23,27): error TS6142: Module '../../contexts/TenantContext' was resolved to '/app/src/contexts/TenantContext.tsx', but '--jsx' is not set.
+25.74 src/pages/SLA/SLAPage.tsx(24,25): error TS6142: Module '../../contexts/AuthContext' was resolved to '/app/src/contexts/AuthContext.tsx', but '--jsx' is not set.
+25.74 src/pages/SLA/SLAPage.tsx(27,86): error TS2307: Cannot find module '../../services/api' or its corresponding type declarations.
+25.74 src/pages/SLA/SLAPage.tsx(73,12): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+25.74 src/pages/SLA/SLAPage.tsx(87,52): error TS7006: Parameter 'sum' implicitly has an 'any' type.
+25.74 src/pages/SLA/SLAPage.tsx(87,57): error TS7006: Parameter 'metric' implicitly has an 'any' type.
+25.74 src/pages/SLA/SLAPage.tsx(88,44): error TS7006: Parameter 'sum' implicitly has an 'any' type.
+25.74 src/pages/SLA/SLAPage.tsx(88,49): error TS7006: Parameter 'metric' implicitly has an 'any' type.
+25.74 src/pages/SLA/SLAPage.tsx(89,44): error TS7006: Parameter 'sum' implicitly has an 'any' type.
+25.74 src/pages/SLA/SLAPage.tsx(89,49): error TS7006: Parameter 'metric' implicitly has an 'any' type.
+25.74 src/pages/SLA/SLAPage.tsx(90,47): error TS7006: Parameter 'sum' implicitly has an 'any' type.
+25.74 src/pages/SLA/SLAPage.tsx(90,52): error TS7006: Parameter 'metric' implicitly has an 'any' type.
+25.74 src/pages/SLA/SLAPage.tsx(91,46): error TS7006: Parameter 'metric' implicitly has an 'any' type.
+25.74 src/pages/SLA/SLAPage.tsx(135,5): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+25.74 src/pages/SLA/SLAPage.tsx(137,7): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+25.74 src/pages/SLA/SLAPage.tsx(138,9): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+25.74 src/pages/SLA/SLAPage.tsx(139,11): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+25.74 src/pages/SLA/SLAPage.tsx(142,11): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+25.74 src/pages/SLA/SLAPage.tsx(147,9): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+25.74 src/pages/SLA/SLAPage.tsx(148,11): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+25.74 src/pages/SLA/SLAPage.tsx(153,13): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+25.74 src/pages/SLA/SLAPage.tsx(154,13): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+25.74 src/pages/SLA/SLAPage.tsx(155,13): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+25.75 src/pages/SLA/SLAPage.tsx(156,13): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+25.75 src/pages/SLA/SLAPage.tsx(157,13): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+25.75 src/pages/SLA/SLAPage.tsx(158,13): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+25.75 src/pages/SLA/SLAPage.tsx(159,13): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+25.75 src/pages/SLA/SLAPage.tsx(163,13): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+25.75 src/pages/SLA/SLAPage.tsx(171,11): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+25.75 src/pages/SLA/SLAPage.tsx(180,7): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+25.75 src/pages/SLA/SLAPage.tsx(181,9): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+25.75 src/pages/SLA/SLAPage.tsx(186,17): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+25.75 src/pages/SLA/SLAPage.tsx(190,9): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+25.75 src/pages/SLA/SLAPage.tsx(195,17): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+25.75 src/pages/SLA/SLAPage.tsx(199,9): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+25.75 src/pages/SLA/SLAPage.tsx(204,17): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+25.75 src/pages/SLA/SLAPage.tsx(208,9): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+25.75 src/pages/SLA/SLAPage.tsx(213,17): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+25.75 src/pages/SLA/SLAPage.tsx(217,9): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+25.75 src/pages/SLA/SLAPage.tsx(222,17): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+25.75 src/pages/SLA/SLAPage.tsx(228,7): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+25.75 src/pages/SLA/SLAPage.tsx(229,9): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+25.75 src/pages/SLA/SLAPage.tsx(231,9): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+25.75 src/pages/SLA/SLAPage.tsx(232,11): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+25.75 src/pages/SLA/SLAPage.tsx(233,13): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+25.75 src/pages/SLA/SLAPage.tsx(236,13): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+25.75 src/pages/SLA/SLAPage.tsx(237,13): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+25.75 src/pages/SLA/SLAPage.tsx(242,11): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+25.75 src/pages/SLA/SLAPage.tsx(243,13): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+25.75 src/pages/SLA/SLAPage.tsx(246,13): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+25.75 src/pages/SLA/SLAPage.tsx(247,13): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+25.75 src/pages/SLA/SLAPage.tsx(252,11): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+25.75 src/pages/SLA/SLAPage.tsx(253,13): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+25.75 src/pages/SLA/SLAPage.tsx(256,13): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+25.75 src/pages/SLA/SLAPage.tsx(257,13): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+25.75 src/pages/SLA/SLAPage.tsx(265,7): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+25.75 src/pages/SLA/SLAPage.tsx(267,9): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+25.75 src/pages/SLA/SLAPage.tsx(268,11): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+25.75 src/pages/SLA/SLAPage.tsx(269,13): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+25.75 src/pages/SLA/SLAPage.tsx(270,13): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+25.75 src/pages/SLA/SLAPage.tsx(271,15): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+25.75 src/pages/SLA/SLAPage.tsx(272,17): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+25.75 src/pages/SLA/SLAPage.tsx(273,17): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+25.75 src/pages/SLA/SLAPage.tsx(275,15): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+25.75 src/pages/SLA/SLAPage.tsx(276,17): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+25.75 src/pages/SLA/SLAPage.tsx(277,17): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+25.75 src/pages/SLA/SLAPage.tsx(279,15): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+25.75 src/pages/SLA/SLAPage.tsx(280,17): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+25.75 src/pages/SLA/SLAPage.tsx(281,17): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+25.75 src/pages/SLA/SLAPage.tsx(285,11): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+25.75 src/pages/SLA/SLAPage.tsx(289,9): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+25.75 src/pages/SLA/SLAPage.tsx(290,11): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+25.75 src/pages/SLA/SLAPage.tsx(291,11): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+25.75 src/pages/SLA/SLAPage.tsx(298,13): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+25.75 src/pages/SLA/SLAPage.tsx(299,15): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+25.75 src/pages/SLA/SLAPage.tsx(311,7): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+25.75 src/pages/SLA/SLAPage.tsx(312,9): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+25.75 src/pages/SLA/SLAPage.tsx(313,11): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+25.75 src/pages/SLA/SLAPage.tsx(315,9): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+25.75 src/pages/SLA/SLAPage.tsx(325,9): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
 ------
 failed to solve: process "/bin/sh -c npm run build" did not complete successfully: exit code: 2
