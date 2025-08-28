@@ -15,7 +15,7 @@ RUN apt-get update && apt-get install -y \
 
 # Copy requirements
 COPY workers/requirements.txt .
-COPY backend/core/requirements.txt backend/core/requirements.txt
+# COPY backend/core/requirements.txt backend/core/requirements.txt
 RUN pip install --timeout=100 --no-cache-dir -r requirements.txt
 RUN pip install "apache-airflow==3.0.4" --constraint "https://raw.githubusercontent.com/apache/airflow/constraints-3.0.4/constraints-3.11.txt"
 
@@ -26,7 +26,7 @@ RUN echo "--- pip check output ---" && pip check
 
 
 # Copy shared backend code
-COPY backend/core ./core
+# COPY backend/core ./core
 COPY workers/. .
 
 # Create non-root user

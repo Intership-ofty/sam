@@ -21,7 +21,7 @@ RUN pip install "apache-airflow==3.0.4" -c ${AIRFLOW_CONSTRAINTS}
 
 # Copy requirements
 COPY workers/requirements.txt .
-COPY backend/core/requirements.txt backend/core/requirements.txt
+# COPY backend/core/requirements.txt backend/core/requirements.txt
 RUN pip install --timeout=100 --no-cache-dir -r requirements.txt
 
 # --- Dependency Analysis ---
@@ -32,7 +32,7 @@ RUN echo "--- pip check output ---" && pip check
 
 
 # Copy shared backend code
-COPY backend/core ./core
+# COPY backend/core ./core
 COPY workers/. .
 
 # Create non-root user
