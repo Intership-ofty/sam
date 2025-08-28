@@ -341,7 +341,7 @@ const SLATable: React.FC<SLATableProps> = ({
                             ? 'text-green-600' 
                             : 'text-red-600'
                         }`}>
-                          Target: <{formatDuration(targets.mttr_target_minutes)}
+                          Target: &lt; {formatDuration(targets.mttr_target_minutes)}
                         </div>
                       )}
                     </div>
