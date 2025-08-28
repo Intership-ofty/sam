@@ -11,7 +11,7 @@ services:
   grafana:
     image: grafana/grafana:11.1.0
     ports:
-      - "3000:3000"
+      - "3001:3000"
     environment:
       - GF_INSTALL_PLUGINS=grafana-piechart-panel
     networks:

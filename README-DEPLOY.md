@@ -27,11 +27,22 @@ docker compose -f deploy/compose/compose.backend.yml `
                up --build
 ```
 
+```bash
+docker compose `
+  -f deploy/compose/compose.backend.yml `
+  -f deploy/compose/compose.workers.yml `
+  -f deploy/compose/compose.client-portal.yml `
+  -f deploy/compose/compose.frontend.yml `
+  -f deploy/compose/compose.observability.yml `
+  down
+```
+
+
 Open:
 - Backend: http://localhost:8000
 - Client-portal: http://localhost:5173
 - Frontend: http://localhost:8080
-- Grafana: http://localhost:3000 (admin/admin on first start)
+- Grafana: http://localhost:3001 (admin/admin on first start)
 - Prometheus: http://localhost:9090
 
 ## Build & Push
