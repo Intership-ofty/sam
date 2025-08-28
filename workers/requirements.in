@@ -1,0 +1,69 @@
+# FastAPI and Pydantic
+fastapi
+pydantic
+pydantic-settings
+
+# Database
+asyncpg
+sqlalchemy[asyncio]
+
+# Redis
+redis[hiredis]
+
+# Message Queue
+aiokafka
+kafka-python
+
+# Authentication & Security
+python-jose[cryptography]
+python-keycloak
+
+# HTTP Clients
+httpx
+requests
+requests-oauthlib
+
+# OpenTelemetry
+opentelemetry-api
+opentelemetry-sdk
+opentelemetry-exporter-otlp-proto-grpc
+opentelemetry-instrumentation-fastapi
+opentelemetry-instrumentation-asyncpg
+opentelemetry-instrumentation-redis
+opentelemetry-instrumentation-sqlalchemy
+opentelemetry-instrumentation-requests
+opentelemetry-instrumentation-httpx
+
+# Monitoring
+prometheus-client
+psutil
+
+# Data processing
+apache-airflow
+
+# Protocol connectors
+pysnmp
+netmiko
+paramiko
+
+# OSS Connectors
+zeep
+
+# ITSM Connectors
+pysnow
+
+# IoT/Telemetry
+paho-mqtt
+influxdb-client
+
+# File formats
+xlsxwriter
+openpyxl
+xmltodict
+
+# Data validation
+cerberus
+jsonschema
+
+# Scheduling
+apscheduler

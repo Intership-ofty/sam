@@ -1,0 +1,21 @@
+Vu ton contexte (FastAPI, workers, Docker/K8s, Windows dev) :
+
+Par service (backend, workers, client-portal, etc.) :
+
+adopte pip-tools (simple, déterministe) ou Poetry (dev agréable) ;
+
+dans Docker, gèle les deps et installe depuis un lock/requirements exporté (pas de pip install <lib> à la volée).
+
+Airflow & autres frameworks “opinionated” :
+
+ne pas fixer manuellement leurs sous-deps (SQLAlchemy, Alembic, etc.) ;
+
+utiliser leurs constraints officiels via -c constraints.txt.
+
+Sécurité & reproductibilité :
+
+Active --require-hashes (pip-tools) pour empêcher les dérives.
+
+Conserve un cache de wheels en CI (ou pip download) pour des builds stables.
+
+Garde des constraints par environnement (prod, dev) séparés.
