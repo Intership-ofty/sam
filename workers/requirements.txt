@@ -1,6 +1,3 @@
-# Same as backend but with additional data processing libraries
-# -r ../backend/core/requirements.txt
-
 # Core Backend Dependencies
 
 # FastAPI and Pydantic
@@ -23,9 +20,10 @@ kafka-python==2.0.2  # For admin client used in messaging.py
 python-jose[cryptography]==3.3.0
 python-keycloak==3.7.0
 
-# HTTP Client (for OpenTelemetry)
+# HTTP Clients
 httpx==0.25.2
 requests>=2.28.0
+requests-oauthlib==1.3.1
 
 # OpenTelemetry
 opentelemetry-api==1.26.0
@@ -40,7 +38,7 @@ opentelemetry-instrumentation-httpx==0.47b0
 
 # Monitoring
 prometheus-client==0.19.0
-psutil==5.9.6 # Optional, for system metrics
+psutil==5.9.6  # Optional, for system metrics
 
 # Data processing
 apache-airflow==3.0.4
@@ -50,8 +48,7 @@ pysnmp==4.4.12
 netmiko==4.2.0
 paramiko==3.3.1
 
-# OSS Connectors  
-requests-oauthlib==1.3.1
+# OSS Connectors
 zeep==4.2.1
 
 # ITSM Connectors
@@ -72,6 +69,3 @@ jsonschema==4.20.0
 
 # Scheduling
 apscheduler==3.10.4
-
-# Health monitoring
-psutil==5.9.6
