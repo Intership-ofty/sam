@@ -5,7 +5,7 @@ services:
       dockerfile: frontend/Dockerfile
     image: ${REGISTRY:-local}/sam-frontend:${TAG:-dev}
     ports:
-      - "8080:80"
+      - "8090:8000"
     networks:
       - sam
 networks:
