@@ -13,6 +13,7 @@ services:
     depends_on:
       - postgres
       - redis
+      - keycloak
     networks:
       - sam
   postgres:
@@ -29,7 +30,22 @@ services:
     image: redis:7-alpine
     networks:
       - sam
+  keycloak:
+    image: quay.io/keycloak/keycloak:22.0.1
+    container_name: keycloak
+    command: start-dev
+    environment:
+      - KEYCLOAK_ADMIN=admin
+      - KEYCLOAK_ADMIN_PASSWORD=admin
+      - KC_HEALTH_ENABLED=true
+      - KC_METRICS_ENABLED=true
+    ports:
+      - "8081:8080"
+    networks:
+      - sam
+
 networks:
   sam:
+
 volumes:
   pgdata:
