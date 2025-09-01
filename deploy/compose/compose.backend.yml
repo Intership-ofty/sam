@@ -11,9 +11,12 @@ services:
     ports:
       - "8000:8000"
     depends_on:
-      - postgres
-      - redis
-      - keycloak
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_started
+      keycloak:
+        condition: service_healthy
     networks:
       - sam
   postgres:
@@ -26,6 +29,11 @@ services:
       - pgdata:/var/lib/postgresql/data
     networks:
       - sam
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-sam} -d ${POSTGRES_DB:-sam}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
   redis:
     image: redis:7-alpine
     networks:
@@ -43,6 +51,11 @@ services:
       - "8081:8080"
     networks:
       - sam
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/health/ready"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
 
 networks:
   sam:

@@ -1,53 +1,51 @@
- docker logs ed41081fa992
+ docker logs 08aa32e13c47
 INFO:     Will watch for changes in these directories: ['/app']
 WARNING:  "workers" flag is ignored when reloading is enabled.
 INFO:     Uvicorn running on http://0.0.0.0:8000 (Press CTRL+C to quit)
 INFO:     Started reloader process [1] using WatchFiles
-INFO:     Started server process [8]
+INFO:     Started server process [7]
 INFO:     Waiting for application startup.
-2025-09-01 13:34:14,902 - backend.main - INFO - Starting Towerco AIOps Platform...
-2025-09-01 13:34:14,902 - core.monitoring - INFO - OpenTelemetry endpoint not configured, using Prometheus only
-2025-09-01 13:34:14,903 - core.monitoring - INFO - Custom metrics initialized
-2025-09-01 13:34:14,903 - core.monitoring - INFO - Monitoring initialized successfully
-2025-09-01 13:34:16,271 INFO sqlalchemy.engine.Engine select pg_catalog.version()
-2025-09-01 13:34:16,272 INFO sqlalchemy.engine.Engine [raw sql] ()
-2025-09-01 13:34:16,271 - sqlalchemy.engine.Engine - INFO - select pg_catalog.version()
-2025-09-01 13:34:16,272 - sqlalchemy.engine.Engine - INFO - [raw sql] ()
-2025-09-01 13:34:16,316 - sqlalchemy.engine.Engine - INFO - select current_schema()
-2025-09-01 13:34:16,316 INFO sqlalchemy.engine.Engine select current_schema()
-2025-09-01 13:34:16,317 INFO sqlalchemy.engine.Engine [raw sql] ()
-2025-09-01 13:34:16,317 - sqlalchemy.engine.Engine - INFO - [raw sql] ()
-2025-09-01 13:34:16,410 INFO sqlalchemy.engine.Engine show standard_conforming_strings
-2025-09-01 13:34:16,410 - sqlalchemy.engine.Engine - INFO - show standard_conforming_strings
-2025-09-01 13:34:16,413 INFO sqlalchemy.engine.Engine [raw sql] ()
-2025-09-01 13:34:16,413 - sqlalchemy.engine.Engine - INFO - [raw sql] ()
-2025-09-01 13:34:16,431 - sqlalchemy.engine.Engine - INFO - BEGIN (implicit)
-2025-09-01 13:34:16,434 - sqlalchemy.engine.Engine - INFO - SELECT 1
-2025-09-01 13:34:16,434 - sqlalchemy.engine.Engine - INFO - [generated in 0.00061s] ()
-2025-09-01 13:34:16,431 INFO sqlalchemy.engine.Engine BEGIN (implicit)
-2025-09-01 13:34:16,434 INFO sqlalchemy.engine.Engine SELECT 1
-2025-09-01 13:34:16,434 INFO sqlalchemy.engine.Engine [generated in 0.00061s] ()
-2025-09-01 13:34:16,452 - sqlalchemy.engine.Engine - INFO - COMMIT
-2025-09-01 13:34:16,452 INFO sqlalchemy.engine.Engine COMMIT
-2025-09-01 13:34:16,506 - core.database - INFO - Database connection test successful
-2025-09-01 13:34:16,507 - core.database - INFO - Database connections initialized successfully
-2025-09-01 13:34:16,554 - core.cache - INFO - Redis connection initialized successfully
-2025-09-01 13:34:17,571 - core.messaging - WARNING - Could not create Kafka topics: No module named 'kafka'
-2025-09-01 13:34:17,571 - core.messaging - INFO - Kafka producer initialized successfully
-2025-09-01 13:34:17,935 - urllib3.connectionpool - WARNING - Retrying (Retry(total=0, connect=None, read=None, redirect=None, status=None)) after connection broken by 'NameResolutionError("<urllib3.connection.HTTPConnection object at 0x7f58be305110>: Failed to resolve 'keycloak' ([Errno -2] Name or service not known)")': /realms/towerco/.well-known/openid-configuration
-2025-09-01 13:34:18,063 - core.auth - ERROR - Keycloak connection test failed: Can't connect to server
-2025-09-01 13:34:18,063 - core.auth - ERROR - Failed to initialize Keycloak: Can't connect to server
+2025-09-01 13:55:09,759 - backend.main - INFO - Starting Towerco AIOps Platform...
+2025-09-01 13:55:09,759 - core.monitoring - INFO - OpenTelemetry endpoint not configured, using Prometheus only
+2025-09-01 13:55:09,760 - core.monitoring - INFO - Custom metrics initialized
+2025-09-01 13:55:09,761 - core.monitoring - INFO - Monitoring initialized successfully
+2025-09-01 13:55:10,198 INFO sqlalchemy.engine.Engine select pg_catalog.version()
+2025-09-01 13:55:10,198 INFO sqlalchemy.engine.Engine [raw sql] ()
+2025-09-01 13:55:10,198 - sqlalchemy.engine.Engine - INFO - select pg_catalog.version()
+2025-09-01 13:55:10,198 - sqlalchemy.engine.Engine - INFO - [raw sql] ()
+2025-09-01 13:55:10,210 - sqlalchemy.engine.Engine - INFO - select current_schema()
+2025-09-01 13:55:10,211 - sqlalchemy.engine.Engine - INFO - [raw sql] ()
+2025-09-01 13:55:10,210 INFO sqlalchemy.engine.Engine select current_schema()
+2025-09-01 13:55:10,211 INFO sqlalchemy.engine.Engine [raw sql] ()
+2025-09-01 13:55:10,221 INFO sqlalchemy.engine.Engine show standard_conforming_strings
+2025-09-01 13:55:10,221 - sqlalchemy.engine.Engine - INFO - show standard_conforming_strings
+2025-09-01 13:55:10,228 - sqlalchemy.engine.Engine - INFO - [raw sql] ()
+2025-09-01 13:55:10,228 INFO sqlalchemy.engine.Engine [raw sql] ()
+2025-09-01 13:55:10,245 INFO sqlalchemy.engine.Engine BEGIN (implicit)
+2025-09-01 13:55:10,246 INFO sqlalchemy.engine.Engine SELECT 1
+2025-09-01 13:55:10,246 INFO sqlalchemy.engine.Engine [generated in 0.00018s] ()
+2025-09-01 13:55:10,245 - sqlalchemy.engine.Engine - INFO - BEGIN (implicit)
+2025-09-01 13:55:10,246 - sqlalchemy.engine.Engine - INFO - SELECT 1
+2025-09-01 13:55:10,246 - sqlalchemy.engine.Engine - INFO - [generated in 0.00018s] ()
+2025-09-01 13:55:10,271 - sqlalchemy.engine.Engine - INFO - COMMIT
+2025-09-01 13:55:10,271 INFO sqlalchemy.engine.Engine COMMIT
+2025-09-01 13:55:10,304 - core.database - INFO - Database connection test successful
+2025-09-01 13:55:10,309 - core.database - INFO - Database connections initialized successfully
+2025-09-01 13:55:10,326 - core.cache - INFO - Redis connection initialized successfully
+2025-09-01 13:55:10,444 - core.messaging - WARNING - Could not create Kafka topics: No module named 'kafka'
+2025-09-01 13:55:10,444 - core.messaging - INFO - Kafka producer initialized successfully
+2025-09-01 13:55:10,510 - urllib3.connectionpool - WARNING - Retrying (Retry(total=0, connect=None, read=None, redirect=None, status=None)) after connection broken by 'NewConnectionError('<urllib3.connection.HTTPConnection object at 0x7f0455e01390>: Failed to establish a new connection: [Errno 111] Connection refused')': /realms/towerco/.well-known/openid-configuration
+2025-09-01 13:55:10,511 - core.auth - ERROR - Keycloak connection test failed: Can't connect to server
+2025-09-01 13:55:10,511 - core.auth - ERROR - Failed to initialize Keycloak: Can't connect to server
 ERROR:    Traceback (most recent call last):
   File "/usr/local/lib/python3.11/site-packages/urllib3/connection.py", line 198, in _new_conn
     sock = connection.create_connection(
            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/usr/local/lib/python3.11/site-packages/urllib3/util/connection.py", line 60, in create_connection
-    for res in socket.getaddrinfo(host, port, family, socket.SOCK_STREAM):
-               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/usr/local/lib/python3.11/socket.py", line 974, in getaddrinfo
-    for res in _socket.getaddrinfo(host, port, family, type, proto, flags):
-               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-socket.gaierror: [Errno -2] Name or service not known
+  File "/usr/local/lib/python3.11/site-packages/urllib3/util/connection.py", line 85, in create_connection
+    raise err
+  File "/usr/local/lib/python3.11/site-packages/urllib3/util/connection.py", line 73, in create_connection
+    sock.connect(sa)
+ConnectionRefusedError: [Errno 111] Connection refused
 
 The above exception was the direct cause of the following exception:
 
@@ -68,9 +66,9 @@ Traceback (most recent call last):
   File "/usr/local/lib/python3.11/site-packages/urllib3/connection.py", line 325, in connect
     self.sock = self._new_conn()
                 ^^^^^^^^^^^^^^^^
-  File "/usr/local/lib/python3.11/site-packages/urllib3/connection.py", line 205, in _new_conn
-    raise NameResolutionError(self.host, self, e) from e
-urllib3.exceptions.NameResolutionError: <urllib3.connection.HTTPConnection object at 0x7f58be305950>: Failed to resolve 'keycloak' ([Errno -2] Name or service not known)
+  File "/usr/local/lib/python3.11/site-packages/urllib3/connection.py", line 213, in _new_conn
+    raise NewConnectionError(
+urllib3.exceptions.NewConnectionError: <urllib3.connection.HTTPConnection object at 0x7f0455e01c90>: Failed to establish a new connection: [Errno 111] Connection refused
 
 The above exception was the direct cause of the following exception:
 
@@ -87,7 +85,7 @@ Traceback (most recent call last):
   File "/usr/local/lib/python3.11/site-packages/urllib3/util/retry.py", line 519, in increment
     raise MaxRetryError(_pool, url, reason) from reason  # type: ignore[arg-type]
     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-urllib3.exceptions.MaxRetryError: HTTPConnectionPool(host='keycloak', port=8080): Max retries exceeded with url: /realms/towerco/.well-known/openid-configuration (Caused by NameResolutionError("<urllib3.connection.HTTPConnection object at 0x7f58be305950>: Failed to resolve 'keycloak' ([Errno -2] Name or service not known)"))
+urllib3.exceptions.MaxRetryError: HTTPConnectionPool(host='keycloak', port=8080): Max retries exceeded with url: /realms/towerco/.well-known/openid-configuration (Caused by NewConnectionError('<urllib3.connection.HTTPConnection object at 0x7f0455e01c90>: Failed to establish a new connection: [Errno 111] Connection refused'))
 
 During handling of the above exception, another exception occurred:
 
@@ -106,7 +104,7 @@ Traceback (most recent call last):
         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
   File "/usr/local/lib/python3.11/site-packages/requests/adapters.py", line 677, in send
     raise ConnectionError(e, request=request)
-requests.exceptions.ConnectionError: HTTPConnectionPool(host='keycloak', port=8080): Max retries exceeded with url: /realms/towerco/.well-known/openid-configuration (Caused by NameResolutionError("<urllib3.connection.HTTPConnection object at 0x7f58be305950>: Failed to resolve 'keycloak' ([Errno -2] Name or service not known)"))
+requests.exceptions.ConnectionError: HTTPConnectionPool(host='keycloak', port=8080): Max retries exceeded with url: /realms/towerco/.well-known/openid-configuration (Caused by NewConnectionError('<urllib3.connection.HTTPConnection object at 0x7f0455e01c90>: Failed to establish a new connection: [Errno 111] Connection refused'))
 
 The above exception was the direct cause of the following exception:
 
@@ -141,5 +139,5 @@ Traceback (most recent call last):
 keycloak.exceptions.KeycloakConnectionError: Can't connect to server
 
 ERROR:    Application startup failed. Exiting.
-2025-09-01 13:34:18,855 - asyncio - ERROR - Unclosed AIOKafkaProducer
-producer: <aiokafka.producer.producer.AIOKafkaProducer object at 0x7f58c07cd250>
+2025-09-01 13:55:10,821 - asyncio - ERROR - Unclosed AIOKafkaProducer
+producer: <aiokafka.producer.producer.AIOKafkaProducer object at 0x7f045616e950>
