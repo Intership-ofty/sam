@@ -90,7 +90,7 @@ async def get_kpi_metrics(
                 calculated_at, target_value, metadata
             FROM kpi_calculations
             WHERE calculated_at >= NOW() - INTERVAL %s
-        "
+        """
         
         params = [time_range.replace('m', ' minutes').replace('h', ' hours').replace('d', ' days')]
         
@@ -144,7 +144,7 @@ async def get_kpi_metrics(
         LEFT JOIN predictions p ON k.kpi_name = p.kpi_name AND k.site_id = p.site_id
         ORDER BY k.category, k.kpi_name
         LIMIT $s
-        ""
+        """
         
         params.append(limit)
         
@@ -207,7 +207,7 @@ async def get_kpi_trend(
             FROM kpi_calculations
             WHERE kpi_name = $s
                 AND calculated_at >= NOW() - INTERVAL $s
-        "
+        """
         
         params = [resolution, kpi_name, time_interval]
         
@@ -226,7 +226,7 @@ async def get_kpi_trend(
                 true as predicted
             FROM kpi_predictions
             WHERE kpi_name = $s
-        "
+        """
         
         if site_id:
             query += " AND site_id = $s"
