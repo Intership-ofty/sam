@@ -31,13 +31,19 @@ async def init_db():
     
     try:
         # Create SQLAlchemy async engine
+        engine_options = {
+            "echo": settings.is_development,
+        }
+        if settings.is_development:
+            engine_options["poolclass"] = NullPool
+        else:
+            engine_options["pool_size"] = settings.DB_POOL_SIZE
+            engine_options["max_overflow"] = settings.DB_POOL_MAX_OVERFLOW
+            engine_options["pool_timeout"] = settings.DB_POOL_TIMEOUT
+
         engine = create_async_engine(
             settings.DATABASE_URL,
-            echo=settings.is_development,
-            pool_size=settings.DB_POOL_SIZE,
-            max_overflow=settings.DB_POOL_MAX_OVERFLOW,
-            pool_timeout=settings.DB_POOL_TIMEOUT,
-            poolclass=NullPool if settings.is_development else None,
+            **engine_options
         )
         
         # Create session factory
