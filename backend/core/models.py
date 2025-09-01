@@ -105,7 +105,7 @@ class KPICalculationRequest(BaseModel):
     site_ids: Optional[List[str]] = None
     kpi_names: Optional[List[str]] = None
     time_range: str = Field(default="1h", description="Time range for calculation")
-    priority: str = Field(default="normal", regex="^(low|normal|high|urgent)$")
+    priority: str = Field(default="normal", pattern="^(low|normal|high|urgent)$")
     requested_by: str
     recalculate: bool = Field(default=False, description="Force recalculation of existing KPIs")
 
@@ -114,7 +114,7 @@ class KPIDefinition(BaseModel):
     name: str = Field(..., description="KPI name/identifier")
     display_name: str
     description: str
-    category: str = Field(..., regex="^(network|energy|operational|financial)$")
+    category: str = Field(..., pattern="^(network|energy|operational|financial)$")
     unit: str
     formula: str = Field(..., description="Calculation formula")
     target_value: Optional[float] = None
@@ -132,7 +132,7 @@ class KPIAlert(BaseModel):
     threshold_value: float
     current_value: float
     severity: SeverityLevel
-    status: str = Field(regex="^(active|acknowledged|resolved)$")
+    status: str = Field(pattern="^(active|acknowledged|resolved)$")
     triggered_at: datetime
     acknowledged_at: Optional[datetime] = None
     resolved_at: Optional[datetime] = None
@@ -193,7 +193,7 @@ class User(BaseModel):
     """User model"""
     id: int
     username: str = Field(..., min_length=3, max_length=50)
-    email: str = Field(..., regex=r'^[^@]+@[^@]+\.[^@]+$')
+    email: str = Field(..., pattern=r'^[^@]+@[^@]+\.[^@]+$')
     full_name: Optional[str] = None
     is_active: bool = True
     is_superuser: bool = False
@@ -205,7 +205,7 @@ class User(BaseModel):
 class UserCreate(BaseModel):
     """User creation model"""
     username: str = Field(..., min_length=3, max_length=50)
-    email: str = Field(..., regex=r'^[^@]+@[^@]+\.[^@]+$')
+    email: str = Field(..., pattern=r'^[^@]+@[^@]+\.[^@]+$')
     password: str = Field(..., min_length=8)
     full_name: Optional[str] = None
     roles: List[str] = Field(default_factory=list)
@@ -247,10 +247,10 @@ class Notification(BaseModel):
 class ITSMTicket(BaseModel):
     """ITSM ticket model"""
     ticket_id: str
-    ticket_type: str = Field(regex="^(incident|request|change|problem)$")
+    ticket_type: str = Field(pattern="^(incident|request|change|problem)$")
     title: str
     description: str
-    priority: str = Field(regex="^(low|medium|high|critical)$")
+    priority: str = Field(pattern="^(low|medium|high|critical)$")
     status: str
     assigned_to: Optional[str] = None
     site_id: Optional[str] = None
@@ -276,11 +276,11 @@ class Report(BaseModel):
     id: int
     name: str
     description: Optional[str] = None
-    report_type: str = Field(regex="^(kpi|sla|availability|performance|financial)$")
+    report_type: str = Field(pattern="^(kpi|sla|availability|performance|financial)$")
     parameters: Dict[str, Any] = Field(default_factory=dict)
     schedule: Optional[str] = None
     recipients: List[str] = Field(default_factory=list)
-    format: str = Field(default="pdf", regex="^(pdf|xlsx|csv|json)$")
+    format: str = Field(default="pdf", pattern="^(pdf|xlsx|csv|json)$")
     enabled: bool = True
     last_generated: Optional[datetime] = None
     created_at: datetime
@@ -320,7 +320,7 @@ class AnomalyDetection(BaseModel):
     metric_name: str
     site_id: str
     anomaly_score: float = Field(ge=0.0, le=1.0)
-    anomaly_type: str = Field(regex="^(point|contextual|collective)$")
+    anomaly_type: str = Field(pattern="^(point|contextual|collective)$")
     detected_at: datetime
     value: float
     expected_range: Dict[str, float]
@@ -331,7 +331,7 @@ class AnomalyDetection(BaseModel):
 class SystemHealth(BaseModel):
     """System health status"""
     component: str
-    status: str = Field(regex="^(healthy|degraded|unhealthy|unknown)$")
+    status: str = Field(pattern="^(healthy|degraded|unhealthy|unknown)$")
     last_check: datetime
     response_time: Optional[float] = None
     error_rate: Optional[float] = None

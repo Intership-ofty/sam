@@ -53,7 +53,7 @@ class SiteUpdate(BaseModel):
     country: Optional[str] = None
     technology: Optional[Dict[str, Any]] = None
     energy_config: Optional[Dict[str, Any]] = None
-    status: Optional[str] = Field(None, regex='^(active|inactive|maintenance)$')
+    status: Optional[str] = Field(None, pattern='^(active|inactive|maintenance)$')
     
     @validator('site_type')
     def validate_site_type(cls, v):

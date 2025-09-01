@@ -42,12 +42,12 @@ class TenantUpdate(BaseModel):
 
 class TenantUserInvite(BaseModel):
     email: str
-    role: str = Field(..., regex="^(admin|manager|operator|viewer)$")
+    role: str = Field(..., pattern="^(admin|manager|operator|viewer)$")
     permissions: List[str] = Field(default_factory=list)
     expires_in_days: int = Field(default=7, ge=1, le=30)
 
 class SubscriptionUpdate(BaseModel):
-    plan: str = Field(..., regex="^(basic|professional|enterprise|custom)$")
+    plan: str = Field(..., pattern="^(basic|professional|enterprise|custom)$")
     features: List[str] = Field(default_factory=list)
     limits: Dict[str, int] = Field(default_factory=dict)
 

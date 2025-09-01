@@ -45,7 +45,7 @@ class RecommendationPriority(str, Enum):
 class OptimizationCreate(BaseModel):
     name: str = Field(..., min_length=1, max_length=100)
     description: str = Field(..., min_length=1, max_length=500)
-    optimization_type: str = Field(..., regex="^(energy|cost|performance|capacity|maintenance)$")
+    optimization_type: str = Field(..., pattern="^(energy|cost|performance|capacity|maintenance)$")
     affected_sites: List[str] = Field(default_factory=list)
     parameters: Dict[str, Any] = Field(default_factory=dict)
     constraints: Dict[str, Any] = Field(default_factory=dict)
@@ -53,7 +53,7 @@ class OptimizationCreate(BaseModel):
 
 @router.get("/dashboard")
 async def get_business_intelligence_dashboard(
-    time_range: str = Query("30d", regex="^(7d|30d|90d|1y)$"),
+    time_range: str = Query("30d", pattern="^(7d|30d|90d|1y)$"),
     current_user: User = Depends(get_current_user),
     conn: asyncpg.Connection = Depends(get_connection)
 ):
@@ -477,7 +477,7 @@ async def get_optimizations(
 
 @router.get("/roi-analysis")
 async def get_roi_analysis(
-    time_range: str = Query("90d", regex="^(30d|90d|180d|1y)$"),
+    time_range: str = Query("90d", pattern="^(30d|90d|180d|1y)$"),
     current_user: User = Depends(get_current_user),
     conn: asyncpg.Connection = Depends(get_connection)
 ):

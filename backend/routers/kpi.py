@@ -58,7 +58,7 @@ class KPIAlertCreate(BaseModel):
     site_id: Optional[str] = None
     condition: str = Field(..., description="gt, lt, eq, change_rate")
     threshold: float
-    severity: str = Field(..., regex="^(critical|major|minor|warning)$")
+    severity: str = Field(..., pattern="^(critical|major|minor|warning)$")
     notification_channels: List[str] = Field(default=["email"])
     enabled: bool = True
 
@@ -352,8 +352,8 @@ async def trigger_kpi_calculation(
 
 @router.get("/alerts", response_model=List[KPIAlert])
 async def get_kpi_alerts(
-    severity: Optional[str] = Query(None, regex="^(critical|major|minor|warning)$"),
-    status: Optional[str] = Query(None, regex="^(active|acknowledged|resolved)$"),
+    severity: Optional[str] = Query(None, pattern="^(critical|major|minor|warning)$"),
+    status: Optional[str] = Query(None, pattern="^(active|acknowledged|resolved)$"),
     site_id: Optional[str] = Query(None),
     limit: int = Query(100, le=1000),
     conn: asyncpg.Connection = Depends(get_connection)

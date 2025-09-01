@@ -71,7 +71,7 @@ class EscalationRuleCreate(BaseModel):
 
 @router.get("/dashboard")
 async def get_noc_dashboard(
-    time_range: str = Query("24h", regex="^(1h|6h|24h|7d|30d)$"),
+    time_range: str = Query("24h", pattern="^(1h|6h|24h|7d|30d)$"),
     current_user: User = Depends(get_current_user),
     conn: asyncpg.Connection = Depends(get_connection)
 ):
