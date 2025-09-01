@@ -13,7 +13,7 @@ import logging
 from pydantic import BaseModel, Field
 import asyncpg
 
-from core.database import get_connection
+from core.database import get_database_manager, DatabaseManager
 from core.auth import get_current_user
 from core.models import KPICalculationRequest, KPIAlert, KPIDashboard
 
@@ -78,7 +78,7 @@ async def get_kpi_metrics(
     category: Optional[str] = Query(None, description="KPI category: network, energy, operational, financial"),
     time_range: str = Query("1h", description="Time range: 15m, 1h, 4h, 24h, 7d"),
     limit: int = Query(50, le=500),
-    conn: asyncpg.Connection = Depends(get_connection)
+    db: DatabaseManager = Depends(get_database_manager)
 ):
     """Get current KPI metrics with trend analysis"""
     try:
@@ -90,17 +90,17 @@ async def get_kpi_metrics(
                 calculated_at, target_value, metadata
             FROM kpi_calculations
             WHERE calculated_at >= NOW() - INTERVAL %s
-        """
+        "
         
         params = [time_range.replace('m', ' minutes').replace('h', ' hours').replace('d', ' days')]
         
         # Add filters
         if site_id:
-            query += " AND site_id = $%s"
+            query += " AND site_id = $s"
             params.append(site_id)
             
         if category:
-            query += " AND category = $%s"
+            query += " AND category = $s"
             params.append(category)
         
         query += """
@@ -143,16 +143,16 @@ async def get_kpi_metrics(
         LEFT JOIN kpi_trends t ON k.kpi_name = t.kpi_name AND k.site_id = t.site_id
         LEFT JOIN predictions p ON k.kpi_name = p.kpi_name AND k.site_id = p.site_id
         ORDER BY k.category, k.kpi_name
-        LIMIT $%s
-        """
+        LIMIT $s
+        ""
         
         params.append(limit)
         
         # Execute query
-        query_params = [f"${i+1}" for i in range(len(params))]
-        final_query = query % tuple(query_params[:-1]) + f" LIMIT ${len(params)}"
+        query_params = [f"$s{i+1}" for i in range(len(params))]
+        final_query = query % tuple(query_params[:-1]) + f" LIMIT $s{len(params)}"
         
-        rows = await conn.fetch(final_query, *params)
+        rows = await db.execute_query(final_query, *params)
         
         # Transform results
         metrics = []
@@ -185,7 +185,7 @@ async def get_kpi_trend(
     time_range: str = Query("24h"),
     resolution: str = Query("1h", description="Data resolution: 5m, 15m, 1h, 4h"),
     include_predictions: bool = Query(True),
-    conn: asyncpg.Connection = Depends(get_connection)
+    db: DatabaseManager = Depends(get_database_manager)
 ):
     """Get KPI trend data with historical values and predictions"""
     try:
@@ -201,22 +201,22 @@ async def get_kpi_trend(
         query = """
         WITH historical_data AS (
             SELECT 
-                date_trunc(%s, calculated_at) as time_bucket,
+                date_trunc($s, calculated_at) as time_bucket,
                 AVG(kpi_value) as avg_value,
                 false as predicted
             FROM kpi_calculations
-            WHERE kpi_name = $2
-                AND calculated_at >= NOW() - INTERVAL %s
-        """
+            WHERE kpi_name = $s
+                AND calculated_at >= NOW() - INTERVAL $s
+        "
         
         params = [resolution, kpi_name, time_interval]
         
         if site_id:
-            query += " AND site_id = $4"
+            query += " AND site_id = $s"
             params.append(site_id)
         
         query += """
-            GROUP BY date_trunc(%s, calculated_at)
+            GROUP BY date_trunc($s, calculated_at)
             ORDER BY time_bucket
         ),
         prediction_data AS (
@@ -225,11 +225,11 @@ async def get_kpi_trend(
                 predicted_value as avg_value,
                 true as predicted
             FROM kpi_predictions
-            WHERE kpi_name = $2
-        """
+            WHERE kpi_name = $s
+        "
         
         if site_id:
-            query += " AND site_id = $4"
+            query += " AND site_id = $s"
         
         query += " AND prediction_date >= NOW()"
         
@@ -271,7 +271,7 @@ async def get_kpi_trend(
             else:
                 final_query += part
         
-        rows = await conn.fetch(final_query, *final_params)
+        rows = await db.execute_query(final_query, *final_params)
         
         # Transform to response format
         data_points = []
@@ -316,12 +316,13 @@ async def get_kpi_trend(
 async def trigger_kpi_calculation(
     request: KPICalculationRequest,
     background_tasks: BackgroundTasks,
-    conn: asyncpg.Connection = Depends(get_connection)
+    db: DatabaseManager = Depends(get_database_manager)
 ):
     """Trigger manual KPI calculation for specific sites/KPIs"""
     try:
         # Add calculation request to queue
-        calculation_id = await conn.fetchval("""
+        calculation_id = await db.execute_query_scalar(
+            """
             INSERT INTO kpi_calculation_requests (
                 site_ids, kpi_names, time_range, priority, status,
                 requested_by, created_at
@@ -356,7 +357,7 @@ async def get_kpi_alerts(
     status: Optional[str] = Query(None, pattern="^(active|acknowledged|resolved)$"),
     site_id: Optional[str] = Query(None),
     limit: int = Query(100, le=1000),
-    conn: asyncpg.Connection = Depends(get_connection)
+    db: DatabaseManager = Depends(get_database_manager)
 ):
     """Get KPI alerts with filtering options"""
     try:
@@ -371,21 +372,21 @@ async def get_kpi_alerts(
         params = []
         
         if severity:
-            query += f" AND severity = ${len(params) + 1}"
+            query += f" AND severity = $s{len(params) + 1}"
             params.append(severity)
             
         if status:
-            query += f" AND status = ${len(params) + 1}"
+            query += f" AND status = $s{len(params) + 1}"
             params.append(status)
             
         if site_id:
-            query += f" AND site_id = ${len(params) + 1}"
+            query += f" AND site_id = $s{len(params) + 1}"
             params.append(site_id)
         
-        query += f" ORDER BY triggered_at DESC LIMIT ${len(params) + 1}"
+        query += f" ORDER BY triggered_at DESC LIMIT $s{len(params) + 1}"
         params.append(limit)
         
-        rows = await conn.fetch(query, *params)
+        rows = await db.execute_query(query, *params)
         
         alerts = []
         for row in rows:
@@ -416,11 +417,12 @@ async def get_kpi_alerts(
 @router.post("/alerts", response_model=Dict[str, Any])
 async def create_kpi_alert(
     alert: KPIAlertCreate,
-    conn: asyncpg.Connection = Depends(get_connection)
+    db: DatabaseManager = Depends(get_database_manager)
 ):
     """Create new KPI alert rule"""
     try:
-        alert_id = await conn.fetchval("""
+        alert_id = await db.execute_query_scalar(
+            """
             INSERT INTO kpi_alert_rules (
                 kpi_name, site_id, condition_type, threshold_value,
                 severity, notification_channels, enabled, created_at
@@ -450,16 +452,18 @@ async def create_kpi_alert(
 
 @router.get("/dashboards", response_model=List[KPIDashboard])
 async def get_dashboards(
-    conn: asyncpg.Connection = Depends(get_connection)
+    db: DatabaseManager = Depends(get_database_manager)
 ):
     """Get available KPI dashboards"""
     try:
-        rows = await conn.fetch("""
+        rows = await db.execute_query(
+            """
             SELECT id, name, description, kpi_list, layout_config,
                    filters, refresh_interval, is_public, created_at, updated_at
             FROM kpi_dashboards
             ORDER BY name
-        """)
+        """
+        )
         
         dashboards = []
         for row in rows:
@@ -487,11 +491,12 @@ async def get_dashboards(
 @router.post("/dashboards", response_model=Dict[str, Any])
 async def create_dashboard(
     dashboard: KPIDashboardCreate,
-    conn: asyncpg.Connection = Depends(get_connection)
+    db: DatabaseManager = Depends(get_database_manager)
 ):
     """Create new KPI dashboard"""
     try:
-        dashboard_id = await conn.fetchval("""
+        dashboard_id = await db.execute_query_scalar(
+            """
             INSERT INTO kpi_dashboards (
                 name, description, kpi_list, layout_config, filters,
                 refresh_interval, is_public, created_at, updated_at
@@ -528,36 +533,36 @@ async def stream_kpi_data(
     """Stream real-time KPI data via Server-Sent Events"""
     async def event_stream():
         try:
+            db = DatabaseManager()
             while True:
                 # Get latest KPI value
-                async with get_connection() as conn:
-                    query = """
-                    SELECT kpi_value, unit, quality_score, calculated_at, metadata
-                    FROM kpi_calculations
-                    WHERE kpi_name = $1
-                    """
-                    params = [kpi_name]
+                query = """
+                SELECT kpi_value, unit, quality_score, calculated_at, metadata
+                FROM kpi_calculations
+                WHERE kpi_name = $1
+                """
+                params = [kpi_name]
+                
+                if site_id:
+                    query += " AND site_id = $2"
+                    params.append(site_id)
+                
+                query += " ORDER BY calculated_at DESC LIMIT 1"
+                
+                row = await db.execute_query_one(query, *params)
+                
+                if row:
+                    data = {
+                        "kpi_name": kpi_name,
+                        "value": float(row['kpi_value']),
+                        "unit": row['unit'],
+                        "quality_score": float(row['quality_score']),
+                        "timestamp": row['calculated_at'].isoformat(),
+                        "metadata": row['metadata']
+                    }
                     
-                    if site_id:
-                        query += " AND site_id = $2"
-                        params.append(site_id)
-                    
-                    query += " ORDER BY calculated_at DESC LIMIT 1"
-                    
-                    row = await conn.fetchrow(query, *params)
-                    
-                    if row:
-                        data = {
-                            "kpi_name": kpi_name,
-                            "value": float(row['kpi_value']),
-                            "unit": row['unit'],
-                            "quality_score": float(row['quality_score']),
-                            "timestamp": row['calculated_at'].isoformat(),
-                            "metadata": row['metadata']
-                        }
-                        
-                        yield f"data: {json.dumps(data)}\n\n"
-                    
+                    yield f"data: {json.dumps(data)}\n\n"
+                
                 await asyncio.sleep(interval)
                 
         except asyncio.CancelledError:
@@ -579,48 +584,55 @@ async def stream_kpi_data(
 async def process_kpi_calculation(calculation_id: int, request: KPICalculationRequest):
     """Background task to process KPI calculation"""
     try:
+        db = DatabaseManager()
         # This would integrate with the KPI worker
         # For now, just update the status
-        async with get_connection() as conn:
-            await conn.execute("""
-                UPDATE kpi_calculation_requests
-                SET status = 'processing', started_at = NOW()
-                WHERE id = $1
-            """, calculation_id)
-            
-            # Simulate processing time
-            await asyncio.sleep(5)
-            
-            await conn.execute("""
-                UPDATE kpi_calculation_requests
-                SET status = 'completed', completed_at = NOW()
-                WHERE id = $1
-            """, calculation_id)
+        await db.execute_command(
+            """
+            UPDATE kpi_calculation_requests
+            SET status = 'processing', started_at = NOW()
+            WHERE id = $1
+        """, calculation_id
+        )
+        
+        # Simulate processing time
+        await asyncio.sleep(5)
+        
+        await db.execute_command(
+            """
+            UPDATE kpi_calculation_requests
+            SET status = 'completed', completed_at = NOW()
+            WHERE id = $1
+        """, calculation_id
+        )
         
         logger.info(f"KPI calculation {calculation_id} completed")
         
     except Exception as e:
         logger.error(f"Error processing KPI calculation {calculation_id}: {e}")
-        async with get_connection() as conn:
-            await conn.execute("""
-                UPDATE kpi_calculation_requests
-                SET status = 'failed', error_message = $2, completed_at = NOW()
-                WHERE id = $1
-            """, calculation_id, str(e))
+        db = DatabaseManager()
+        await db.execute_command(
+            """
+            UPDATE kpi_calculation_requests
+            SET status = 'failed', error_message = $2, completed_at = NOW()
+            WHERE id = $1
+        """, calculation_id, str(e))
 
 @router.get("/categories")
 async def get_kpi_categories(
-    conn: asyncpg.Connection = Depends(get_connection)
+    db: DatabaseManager = Depends(get_database_manager)
 ):
     """Get available KPI categories with counts"""
     try:
-        rows = await conn.fetch("""
+        rows = await db.execute_query(
+            """
             SELECT category, COUNT(DISTINCT kpi_name) as kpi_count
             FROM kpi_calculations
             WHERE calculated_at >= NOW() - INTERVAL '1 day'
             GROUP BY category
             ORDER BY category
-        """)
+        """
+        )
         
         categories = []
         for row in rows:

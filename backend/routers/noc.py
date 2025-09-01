@@ -14,7 +14,7 @@ import uuid
 from enum import Enum
 from pydantic import BaseModel, Field
 
-from core.database import get_connection
+from core.database import get_database_manager, DatabaseManager
 from core.auth import get_current_user, require_permission
 from core.models import APIResponse, User
 
@@ -73,7 +73,7 @@ class EscalationRuleCreate(BaseModel):
 async def get_noc_dashboard(
     time_range: str = Query("24h", pattern="^(1h|6h|24h|7d|30d)$"),
     current_user: User = Depends(get_current_user),
-    conn: asyncpg.Connection = Depends(get_connection)
+    db: DatabaseManager = Depends(get_database_manager)
 ):
     """Get NOC operational dashboard data"""
     try:
@@ -88,7 +88,7 @@ async def get_noc_dashboard(
         start_time = datetime.utcnow() - time_delta_map[time_range]
 
         # Get incident statistics
-        incident_stats = await conn.fetchrow("""
+        incident_stats = await db.execute_query_one("""
             SELECT 
                 COUNT(*) as total_incidents,
                 COUNT(CASE WHEN status IN ('new', 'assigned', 'in_progress') THEN 1 END) as active_incidents,
@@ -103,7 +103,7 @@ async def get_noc_dashboard(
         """, current_user.tenant_id, start_time)
 
         # Get site health overview
-        site_health = await conn.fetch("""
+        site_health = await db.execute_query("""
             SELECT 
                 s.site_id,
                 s.name as site_name,
@@ -128,7 +128,7 @@ async def get_noc_dashboard(
         """, current_user.tenant_id)
 
         # Get recent incidents
-        recent_incidents = await conn.fetch("""
+        recent_incidents = await db.execute_query("""
             SELECT 
                 ni.id, ni.title, ni.severity, ni.status, ni.category,
                 ni.created_at, ni.updated_at, ni.assigned_to,
@@ -144,7 +144,7 @@ async def get_noc_dashboard(
         """, current_user.tenant_id, start_time)
 
         # Get escalation metrics
-        escalation_metrics = await conn.fetchrow("""
+        escalation_metrics = await db.execute_query_one("""
             SELECT 
                 COUNT(*) as total_escalations,
                 COUNT(CASE WHEN created_at >= $2 THEN 1 END) as recent_escalations,
@@ -155,7 +155,7 @@ async def get_noc_dashboard(
         """, current_user.tenant_id, start_time)
 
         # Get team performance
-        team_performance = await conn.fetch("""
+        team_performance = await db.execute_query("""
             SELECT 
                 u.id, u.full_name,
                 COUNT(ni.id) as assigned_incidents,
@@ -244,14 +244,14 @@ async def create_incident(
     incident: IncidentCreate,
     background_tasks: BackgroundTasks,
     current_user: User = Depends(require_permission("incidents.create")),
-    conn: asyncpg.Connection = Depends(get_connection)
+    db: DatabaseManager = Depends(get_database_manager)
 ):
     """Create a new incident"""
     try:
         incident_id = str(uuid.uuid4())
         
         # Create incident
-        await conn.execute("""
+        await db.execute_command("""
             INSERT INTO noc_incidents (
                 id, tenant_id, site_id, title, description, severity, status,
                 category, source_system, created_by, created_at, updated_at,
@@ -292,7 +292,7 @@ async def get_incidents(
     limit: int = Query(50, le=500),
     offset: int = Query(0, ge=0),
     current_user: User = Depends(get_current_user),
-    conn: asyncpg.Connection = Depends(get_connection)
+    db: DatabaseManager = Depends(get_database_manager)
 ):
     """Get incidents with filtering"""
     try:
@@ -338,7 +338,7 @@ async def get_incidents(
         query += f" ORDER BY ni.created_at DESC LIMIT ${param_count + 1} OFFSET ${param_count + 2}"
         params.extend([limit, offset])
 
-        rows = await conn.fetch(query, *params)
+        rows = await db.execute_query(query, *params)
 
         incidents = []
         total_count = 0
@@ -382,11 +382,11 @@ async def get_incidents(
 async def get_incident(
     incident_id: str,
     current_user: User = Depends(get_current_user),
-    conn: asyncpg.Connection = Depends(get_connection)
+    db: DatabaseManager = Depends(get_database_manager)
 ):
     """Get specific incident details"""
     try:
-        incident = await conn.fetchrow("""
+        incident = await db.execute_query_one("""
             SELECT 
                 ni.*, s.name as site_name,
                 u.full_name as assignee_name,
@@ -402,7 +402,7 @@ async def get_incident(
             raise HTTPException(status_code=404, detail="Incident not found")
 
         # Get incident timeline
-        timeline = await conn.fetch("""
+        timeline = await db.execute_query("""
             SELECT action, details, created_at, created_by,
                    u.full_name as created_by_name
             FROM incident_timeline it
@@ -456,12 +456,12 @@ async def update_incident(
     incident_update: IncidentUpdate,
     background_tasks: BackgroundTasks,
     current_user: User = Depends(require_permission("incidents.update")),
-    conn: asyncpg.Connection = Depends(get_connection)
+    db: DatabaseManager = Depends(get_database_manager)
 ):
     """Update incident"""
     try:
         # Verify incident exists and belongs to tenant
-        existing = await conn.fetchrow("""
+        existing = await db.execute_query_one("""
             SELECT id, status, assigned_to FROM noc_incidents 
             WHERE id = $1 AND tenant_id = $2
         """, incident_id, current_user.tenant_id)
@@ -530,10 +530,10 @@ async def update_incident(
             RETURNING id, title, status, updated_at
         """
 
-        result = await conn.fetchrow(query, *params)
+        result = await db.execute_query_one(query, *params)
 
         # Log the update in timeline
-        await conn.execute("""
+        await db.execute_command("""
             INSERT INTO incident_timeline (
                 incident_id, action, details, created_by, created_at
             ) VALUES ($1, $2, $3, $4, $5)
@@ -572,11 +572,11 @@ async def update_incident(
 @router.get("/escalation-rules")
 async def get_escalation_rules(
     current_user: User = Depends(require_permission("escalation.view")),
-    conn: asyncpg.Connection = Depends(get_connection)
+    db: DatabaseManager = Depends(get_database_manager)
 ):
     """Get escalation rules for tenant"""
     try:
-        rules = await conn.fetch("""
+        rules = await db.execute_query("""
             SELECT er.*, u.full_name as created_by_name
             FROM escalation_rules er
             LEFT JOIN users u ON er.created_by = u.id

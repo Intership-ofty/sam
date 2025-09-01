@@ -10,7 +10,7 @@ import logging
 import asyncpg
 import json
 
-from core.database import get_connection
+from core.database import get_database_manager, DatabaseManager
 from core.auth import get_current_user
 from core.models import APIResponse
 
@@ -29,7 +29,7 @@ async def get_recent_anomalies(
     anomaly_type: Optional[str] = Query(None),
     hours: int = Query(24, le=168),
     limit: int = Query(100, le=500),
-    conn: asyncpg.Connection = Depends(get_connection)
+    db: DatabaseManager = Depends(get_database_manager)
 ):
     """Get recent anomaly detections"""
     try:
@@ -61,7 +61,7 @@ async def get_recent_anomalies(
         # Replace %s with proper parameter
         query = query.replace('%s', '$1')
         
-        rows = await conn.fetch(query, *params)
+        rows = await db.execute_query(query, *params)
         
         anomalies = []
         for row in rows:
@@ -94,7 +94,7 @@ async def get_rca_results(
     confidence_min: Optional[float] = Query(None, ge=0.0, le=1.0),
     days: int = Query(7, le=90),
     limit: int = Query(50, le=200),
-    conn: asyncpg.Connection = Depends(get_connection)
+    db: DatabaseManager = Depends(get_database_manager)
 ):
     """Get Root Cause Analysis results"""
     try:
@@ -127,7 +127,7 @@ async def get_rca_results(
         # Replace %s with proper parameter
         query = query.replace('%s', '$1')
         
-        rows = await conn.fetch(query, *params)
+        rows = await db.execute_query(query, *params)
         
         rca_results = []
         for row in rows:
@@ -163,14 +163,14 @@ async def trigger_rca_analysis(
     primary_symptom: str,
     site_id: str,
     timestamp: Optional[str] = None,
-    conn: asyncpg.Connection = Depends(get_connection)
+    db: DatabaseManager = Depends(get_database_manager)
 ):
     """Trigger Root Cause Analysis for an incident"""
     try:
         analysis_timestamp = datetime.fromisoformat(timestamp) if timestamp else datetime.utcnow()
         
         # Store RCA request
-        request_id = await conn.fetchval("""
+        request_id = await db.execute_query_scalar("""
             INSERT INTO rca_requests (
                 incident_id, primary_symptom, site_id, requested_at,
                 status, priority
@@ -205,7 +205,7 @@ async def get_event_correlations(
     strength_min: Optional[str] = Query(None),
     hours: int = Query(6, le=48),
     limit: int = Query(100, le=500),
-    conn: asyncpg.Connection = Depends(get_connection)
+    db: DatabaseManager = Depends(get_database_manager)
 ):
     """Get event correlation results"""
     try:
@@ -238,7 +238,7 @@ async def get_event_correlations(
         # Replace %s with proper parameter
         query = query.replace('%s', '$1')
         
-        rows = await conn.fetch(query, *params)
+        rows = await db.execute_query(query, *params)
         
         correlations = []
         for row in rows:
@@ -274,7 +274,7 @@ async def get_maintenance_recommendations(
     maintenance_type: Optional[str] = Query(None),
     days_ahead: int = Query(90, le=365),
     limit: int = Query(100, le=500),
-    conn: asyncpg.Connection = Depends(get_connection)
+    db: DatabaseManager = Depends(get_database_manager)
 ):
     """Get predictive maintenance recommendations"""
     try:
@@ -312,7 +312,7 @@ async def get_maintenance_recommendations(
         # Replace %s with proper parameter
         query = query.replace('%s', '$1')
         
-        rows = await conn.fetch(query, *params)
+        rows = await db.execute_query(query, *params)
         
         recommendations = []
         for row in rows:
@@ -346,7 +346,7 @@ async def get_maintenance_recommendations(
 async def get_component_health(
     site_id: str,
     component_type: Optional[str] = Query(None),
-    conn: asyncpg.Connection = Depends(get_connection)
+    db: DatabaseManager = Depends(get_database_manager)
 ):
     """Get component health status for a site"""
     try:
@@ -368,7 +368,7 @@ async def get_component_health(
         
         query += " ORDER BY ch.health_score ASC, ch.remaining_useful_life_days ASC"
         
-        rows = await conn.fetch(query, *params)
+        rows = await db.execute_query(query, *params)
         
         components = []
         for row in rows:
@@ -403,12 +403,12 @@ async def trigger_health_assessment(
     component_id: str,
     site_id: str,
     background_tasks: BackgroundTasks,
-    conn: asyncpg.Connection = Depends(get_connection)
+    db: DatabaseManager = Depends(get_database_manager)
 ):
     """Trigger health assessment for a specific component"""
     try:
         # Verify component exists
-        component_exists = await conn.fetchval("""
+        component_exists = await db.execute_query_scalar("""
             SELECT COUNT(*) FROM equipment 
             WHERE equipment_id = $1 AND site_id = $2
         """, component_id, site_id)
@@ -417,7 +417,7 @@ async def trigger_health_assessment(
             raise HTTPException(status_code=404, detail="Component not found")
         
         # Queue health assessment
-        assessment_id = await conn.fetchval("""
+        assessment_id = await db.execute_query_scalar("""
             INSERT INTO health_assessment_requests (
                 component_id, site_id, requested_at, status, priority
             ) VALUES ($1, $2, NOW(), 'queued', 'normal')
@@ -448,7 +448,7 @@ async def get_failure_predictions(
     risk_min: Optional[float] = Query(0.3, ge=0.0, le=1.0),
     days_ahead: int = Query(90, le=365),
     limit: int = Query(100, le=500),
-    conn: asyncpg.Connection = Depends(get_connection)
+    db: DatabaseManager = Depends(get_database_manager)
 ):
     """Get failure predictions"""
     try:
@@ -480,7 +480,7 @@ async def get_failure_predictions(
         # Replace %s with proper parameter
         query = query.replace('%s', '$2')
         
-        rows = await conn.fetch(query, *params)
+        rows = await db.execute_query(query, *params)
         
         predictions = []
         for row in rows:
@@ -513,7 +513,7 @@ async def get_failure_predictions(
 async def get_aiops_insights_summary(
     site_id: Optional[str] = Query(None),
     hours: int = Query(24, le=168),
-    conn: asyncpg.Connection = Depends(get_connection)
+    db: DatabaseManager = Depends(get_database_manager)
 ):
     """Get AIOps insights summary"""
     try:
@@ -527,7 +527,7 @@ async def get_aiops_insights_summary(
             params.append(site_id)
         
         # Get anomaly counts
-        anomaly_stats = await conn.fetchrow(f"""
+        anomaly_stats = await db.execute_query_one(f"""
             SELECT 
                 COUNT(*) as total_anomalies,
                 COUNT(CASE WHEN anomaly_type = 'point' THEN 1 END) as point_anomalies,
@@ -539,7 +539,7 @@ async def get_aiops_insights_summary(
         """, *params)
         
         # Get RCA stats
-        rca_stats = await conn.fetchrow(f"""
+        rca_stats = await db.execute_query_one(f"""
             SELECT 
                 COUNT(*) as total_rca,
                 COUNT(CASE WHEN confidence_level = 'high' THEN 1 END) as high_confidence_rca,
@@ -550,7 +550,7 @@ async def get_aiops_insights_summary(
         """, *params)
         
         # Get correlation stats
-        correlation_stats = await conn.fetchrow(f"""
+        correlation_stats = await db.execute_query_one(f"""
             SELECT 
                 COUNT(*) as total_correlations,
                 COUNT(CASE WHEN correlation_strength = 'strong' THEN 1 END) as strong_correlations,
@@ -561,7 +561,7 @@ async def get_aiops_insights_summary(
         """, *params)
         
         # Get maintenance stats
-        maintenance_stats = await conn.fetchrow(f"""
+        maintenance_stats = await db.execute_query_one(f"""
             SELECT 
                 COUNT(*) as total_recommendations,
                 COUNT(CASE WHEN risk_level = 'critical' THEN 1 END) as critical_recommendations,
@@ -572,7 +572,7 @@ async def get_aiops_insights_summary(
         """, *params)
         
         # Get top issues
-        top_anomalous_metrics = await conn.fetch(f"""
+        top_anomalous_metrics = await db.execute_query(f"""
             SELECT metric_name, COUNT(*) as anomaly_count
             FROM anomaly_detections
             {time_condition.replace('%s', '$1')} {site_condition}

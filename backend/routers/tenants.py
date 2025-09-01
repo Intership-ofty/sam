@@ -12,7 +12,7 @@ import asyncpg
 import json
 from pydantic import BaseModel, Field
 
-from core.database import get_connection
+from core.database import get_database_manager, DatabaseManager
 from core.auth import get_current_user, require_permission
 from core.models import APIResponse, User
 
@@ -55,7 +55,7 @@ class SubscriptionUpdate(BaseModel):
 async def get_tenant(
     tenant_id: str,
     current_user: User = Depends(get_current_user),
-    conn: asyncpg.Connection = Depends(get_connection)
+    db: DatabaseManager = Depends(get_database_manager)
 ):
     """Get tenant information"""
     try:
@@ -78,7 +78,7 @@ async def get_tenant(
                  t.settings, t.branding, t.is_active, t.created_at, t.updated_at
         """
         
-        row = await conn.fetchrow(query, tenant_id)
+        row = await db.execute_query_one(query, tenant_id)
         
         if not row:
             raise HTTPException(status_code=404, detail="Tenant not found")
@@ -128,7 +128,7 @@ async def update_tenant(
     tenant_id: str,
     tenant_update: TenantUpdate,
     current_user: User = Depends(require_permission("tenant.manage")),
-    conn: asyncpg.Connection = Depends(get_connection)
+    db: DatabaseManager = Depends(get_database_manager)
 ):
     """Update tenant information"""
     try:
@@ -181,7 +181,7 @@ async def update_tenant(
         RETURNING id, display_name, updated_at
         """
         
-        row = await conn.fetchrow(query, *params)
+        row = await db.execute_query_one(query, *params)
         
         if not row:
             raise HTTPException(status_code=404, detail="Tenant not found")
@@ -209,7 +209,7 @@ async def get_tenant_users(
     limit: int = Query(100, le=500),
     offset: int = Query(0, ge=0),
     current_user: User = Depends(require_permission("users.view")),
-    conn: asyncpg.Connection = Depends(get_connection)
+    db: DatabaseManager = Depends(get_database_manager)
 ):
     """Get users for a tenant"""
     try:
@@ -238,7 +238,7 @@ async def get_tenant_users(
         query += f" ORDER BY u.created_at DESC LIMIT ${len(params) + 1} OFFSET ${len(params) + 2}"
         params.extend([limit, offset])
         
-        rows = await conn.fetch(query, *params)
+        rows = await db.execute_query(query, *params)
         
         users = []
         total_count = 0
@@ -282,7 +282,7 @@ async def invite_user_to_tenant(
     invite_data: TenantUserInvite,
     background_tasks: BackgroundTasks,
     current_user: User = Depends(require_permission("users.invite")),
-    conn: asyncpg.Connection = Depends(get_connection)
+    db: DatabaseManager = Depends(get_database_manager)
 ):
     """Invite a user to join the tenant"""
     try:
@@ -291,7 +291,7 @@ async def invite_user_to_tenant(
             raise HTTPException(status_code=403, detail="Access denied to this tenant")
         
         # Check if user already exists
-        existing_user = await conn.fetchrow("""
+        existing_user = await db.execute_query_one("""
             SELECT id, is_active FROM users 
             WHERE email = $1 AND tenant_id = $2
         """, invite_data.email, tenant_id)
@@ -301,7 +301,7 @@ async def invite_user_to_tenant(
                 raise HTTPException(status_code=400, detail="User already exists and is active")
             else:
                 # Reactivate existing user
-                await conn.execute("""
+                await db.execute_command("""
                     UPDATE users SET is_active = true, role = $3, permissions = $4, updated_at = NOW()
                     WHERE id = $1
                 """, existing_user['id'], invite_data.role, invite_data.permissions)
@@ -312,7 +312,7 @@ async def invite_user_to_tenant(
         # Create user invitation
         expires_at = datetime.utcnow() + timedelta(days=invite_data.expires_in_days)
         
-        invitation_id = await conn.fetchval("""
+        invitation_id = await db.execute_query_scalar("""
             INSERT INTO user_invitations (
                 email, tenant_id, role, permissions, invited_by,
                 expires_at, created_at
@@ -347,7 +347,7 @@ async def invite_user_to_tenant(
 async def get_tenant_subscription(
     tenant_id: str,
     current_user: User = Depends(get_current_user),
-    conn: asyncpg.Connection = Depends(get_connection)
+    db: DatabaseManager = Depends(get_database_manager)
 ):
     """Get tenant subscription details"""
     try:
@@ -362,13 +362,13 @@ async def get_tenant_subscription(
         WHERE id = $1
         """
         
-        row = await conn.fetchrow(query, tenant_id)
+        row = await db.execute_query_one(query, tenant_id)
         
         if not row:
             raise HTTPException(status_code=404, detail="Tenant not found")
         
         # Get usage statistics
-        usage_stats = await conn.fetchrow("""
+        usage_stats = await db.execute_query_one("""
             SELECT 
                 (SELECT COUNT(*) FROM users WHERE tenant_id = $1 AND is_active = true) as users_count,
                 (SELECT COUNT(*) FROM sites WHERE tenant_id = $1) as sites_count,
@@ -422,7 +422,7 @@ async def update_tenant_subscription(
     tenant_id: str,
     subscription_update: SubscriptionUpdate,
     current_user: User = Depends(require_permission("tenant.subscription")),
-    conn: asyncpg.Connection = Depends(get_connection)
+    db: DatabaseManager = Depends(get_database_manager)
 ):
     """Update tenant subscription"""
     try:
@@ -455,7 +455,7 @@ async def update_tenant_subscription(
             raise HTTPException(status_code=400, detail="Invalid subscription plan")
         
         # Update subscription
-        await conn.execute("""
+        await db.execute_command("""
             UPDATE tenants 
             SET subscription_plan = $2,
                 subscription_features = $3,
@@ -490,7 +490,7 @@ async def get_tenant_usage_summary(
     tenant_id: str,
     days: int = Query(30, ge=1, le=365),
     current_user: User = Depends(get_current_user),
-    conn: asyncpg.Connection = Depends(get_connection)
+    db: DatabaseManager = Depends(get_database_manager)
 ):
     """Get tenant usage summary and statistics"""
     try:
@@ -501,7 +501,7 @@ async def get_tenant_usage_summary(
         start_date = datetime.utcnow() - timedelta(days=days)
         
         # Get usage statistics
-        usage_stats = await conn.fetchrow("""
+        usage_stats = await db.execute_query_one("""
             SELECT 
                 COUNT(DISTINCT s.site_id) as total_sites,
                 COUNT(DISTINCT u.id) as total_users,
@@ -521,7 +521,7 @@ async def get_tenant_usage_summary(
         """, tenant_id, start_date)
         
         # Get daily metrics count for trend
-        daily_metrics = await conn.fetch("""
+        daily_metrics = await db.execute_query("""
             SELECT DATE(nm.timestamp) as date, COUNT(*) as metrics_count
             FROM network_metrics nm
             JOIN sites s ON nm.site_id = s.site_id
@@ -532,7 +532,7 @@ async def get_tenant_usage_summary(
         """, tenant_id, start_date)
         
         # Get top metrics by volume
-        top_metrics = await conn.fetch("""
+        top_metrics = await db.execute_query("""
             SELECT nm.metric_name, COUNT(*) as count
             FROM network_metrics nm
             JOIN sites s ON nm.site_id = s.site_id
@@ -543,7 +543,7 @@ async def get_tenant_usage_summary(
         """, tenant_id, start_date)
         
         # Get subscription limits
-        subscription = await conn.fetchrow("""
+        subscription = await db.execute_query_one("""
             SELECT subscription_limits FROM tenants WHERE id = $1
         """, tenant_id)
         
@@ -596,7 +596,7 @@ async def remove_user_from_tenant(
     tenant_id: str,
     user_id: str,
     current_user: User = Depends(require_permission("users.remove")),
-    conn: asyncpg.Connection = Depends(get_connection)
+    db: DatabaseManager = Depends(get_database_manager)
 ):
     """Remove a user from tenant (deactivate)"""
     try:
@@ -605,7 +605,7 @@ async def remove_user_from_tenant(
             raise HTTPException(status_code=403, detail="Access denied to this tenant")
         
         # Verify user exists and belongs to tenant
-        user_exists = await conn.fetchrow("""
+        user_exists = await db.execute_query_one("""
             SELECT id, email, is_active FROM users 
             WHERE id = $1 AND tenant_id = $2
         """, user_id, tenant_id)
@@ -617,7 +617,7 @@ async def remove_user_from_tenant(
             raise HTTPException(status_code=400, detail="Cannot remove yourself")
         
         # Deactivate user
-        await conn.execute("""
+        await db.execute_command("""
             UPDATE users 
             SET is_active = false, updated_at = NOW()
             WHERE id = $1

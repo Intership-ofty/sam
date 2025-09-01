@@ -9,7 +9,7 @@ from datetime import datetime, timedelta
 import logging
 import asyncpg
 
-from core.database import get_connection
+from core.database import get_database_manager, DatabaseManager
 from core.auth import get_current_user
 
 logger = logging.getLogger(__name__)
@@ -26,7 +26,7 @@ async def get_latest_metrics(
     metric_name: Optional[str] = Query(None),
     technology: Optional[str] = Query(None),
     limit: int = Query(100, le=1000),
-    conn: asyncpg.Connection = Depends(get_connection)
+    db: DatabaseManager = Depends(get_database_manager)
 ):
     """Get latest network metrics"""
     try:
@@ -55,7 +55,7 @@ async def get_latest_metrics(
         query += f" ORDER BY site_id, metric_name, timestamp DESC LIMIT ${len(params) + 1}"
         params.append(limit)
         
-        rows = await conn.fetch(query, *params)
+        rows = await db.execute_query(query, *params)
         
         metrics = []
         for row in rows:
@@ -85,7 +85,7 @@ async def get_recent_events(
     event_type: Optional[str] = Query(None),
     hours: int = Query(24, le=168),  # Max 1 week
     limit: int = Query(100, le=1000),
-    conn: asyncpg.Connection = Depends(get_connection)
+    db: DatabaseManager = Depends(get_database_manager)
 ):
     """Get recent events and alarms"""
     try:
@@ -116,7 +116,7 @@ async def get_recent_events(
         # Replace %s with proper parameter
         query = query.replace('%s', '$1')
         
-        rows = await conn.fetch(query, *params)
+        rows = await db.execute_query(query, *params)
         
         events = []
         for row in rows:
@@ -143,12 +143,12 @@ async def get_recent_events(
 
 @router.get("/system/status")
 async def get_system_status(
-    conn: asyncpg.Connection = Depends(get_connection)
+    db: DatabaseManager = Depends(get_database_manager)
 ):
     """Get overall system status and statistics"""
     try:
         # Get basic statistics
-        stats = await conn.fetchrow("""
+        stats = await db.execute_query_one("""
             SELECT 
                 (SELECT COUNT(*) FROM sites WHERE status = 'active') as active_sites,
                 (SELECT COUNT(*) FROM network_metrics WHERE timestamp >= NOW() - INTERVAL '1 hour') as recent_metrics,
@@ -157,7 +157,7 @@ async def get_system_status(
         """)
         
         # Get data quality statistics
-        quality_stats = await conn.fetchrow("""
+        quality_stats = await db.execute_query_one("""
             SELECT 
                 AVG(quality_score) as avg_quality_score,
                 MIN(quality_score) as min_quality_score,
@@ -167,7 +167,7 @@ async def get_system_status(
         """)
         
         # Get top alert sites
-        top_alert_sites = await conn.fetch("""
+        top_alert_sites = await db.execute_query("""
             SELECT site_id, COUNT(*) as alert_count
             FROM kpi_alerts
             WHERE status = 'active'

@@ -14,7 +14,7 @@ import uuid
 from enum import Enum
 from pydantic import BaseModel, Field
 
-from core.database import get_connection
+from core.database import get_database_manager, DatabaseManager
 from core.auth import get_current_user, require_permission
 from core.models import APIResponse, User
 
@@ -55,7 +55,7 @@ class OptimizationCreate(BaseModel):
 async def get_business_intelligence_dashboard(
     time_range: str = Query("30d", pattern="^(7d|30d|90d|1y)$"),
     current_user: User = Depends(get_current_user),
-    conn: asyncpg.Connection = Depends(get_connection)
+    db: DatabaseManager = Depends(get_database_manager)
 ):
     """Get Business Intelligence dashboard data"""
     try:
@@ -69,7 +69,7 @@ async def get_business_intelligence_dashboard(
         start_time = datetime.utcnow() - time_delta_map[time_range]
 
         # Get cost analytics
-        cost_analytics = await conn.fetchrow("""
+        cost_analytics = await db.execute_query_one("""
             SELECT 
                 SUM(energy_cost) as total_energy_cost,
                 SUM(maintenance_cost) as total_maintenance_cost,
@@ -81,7 +81,7 @@ async def get_business_intelligence_dashboard(
         """, current_user.tenant_id, start_time)
 
         # Get performance metrics
-        performance_metrics = await conn.fetchrow("""
+        performance_metrics = await db.execute_query_one("""
             SELECT 
                 AVG(availability) as avg_availability,
                 AVG(network_performance) as avg_network_performance,
@@ -92,7 +92,7 @@ async def get_business_intelligence_dashboard(
         """, current_user.tenant_id, start_time)
 
         # Get incident impact
-        incident_impact = await conn.fetchrow("""
+        incident_impact = await db.execute_query_one("""
             SELECT 
                 COUNT(*) as total_incidents,
                 AVG(EXTRACT(EPOCH FROM (COALESCE(resolution_time, NOW()) - created_at))/3600) as avg_resolution_hours,
@@ -102,7 +102,7 @@ async def get_business_intelligence_dashboard(
         """, current_user.tenant_id, start_time)
 
         # Get active insights
-        active_insights = await conn.fetch("""
+        active_insights = await db.execute_query("""
             SELECT 
                 insight_type, priority, COUNT(*) as count,
                 SUM(potential_savings) as total_potential_savings,
@@ -115,7 +115,7 @@ async def get_business_intelligence_dashboard(
         """, current_user.tenant_id, start_time)
 
         # Get optimization opportunities
-        optimization_opportunities = await conn.fetch("""
+        optimization_opportunities = await db.execute_query("""
             SELECT 
                 ot.optimization_type,
                 COUNT(*) as task_count,
@@ -128,7 +128,7 @@ async def get_business_intelligence_dashboard(
         """, current_user.tenant_id, start_time)
 
         # Get ROI tracking
-        roi_metrics = await conn.fetchrow("""
+        roi_metrics = await db.execute_query_one("""
             SELECT 
                 COUNT(DISTINCT bi.id) as total_insights,
                 SUM(bi.potential_savings) as total_potential_savings,
@@ -209,7 +209,7 @@ async def get_business_insights(
     limit: int = Query(50, le=200),
     offset: int = Query(0, ge=0),
     current_user: User = Depends(get_current_user),
-    conn: asyncpg.Connection = Depends(get_connection)
+    db: DatabaseManager = Depends(get_database_manager)
 ):
     """Get business insights with filtering"""
     try:
@@ -241,7 +241,7 @@ async def get_business_insights(
         query += f" ORDER BY bi.priority DESC, bi.potential_savings DESC LIMIT ${param_count + 1} OFFSET ${param_count + 2}"
         params.extend([limit, offset])
 
-        rows = await conn.fetch(query, *params)
+        rows = await db.execute_query(query, *params)
 
         insights = []
         total_count = 0
@@ -287,11 +287,11 @@ async def get_business_insights(
 async def get_insight_details(
     insight_id: str,
     current_user: User = Depends(get_current_user),
-    conn: asyncpg.Connection = Depends(get_connection)
+    db: DatabaseManager = Depends(get_database_manager)
 ):
     """Get detailed insight information"""
     try:
-        insight = await conn.fetchrow("""
+        insight = await db.execute_query_one("""
             SELECT bi.*, 
                    ARRAY_AGG(DISTINCT s.name) as site_names
             FROM business_insights bi
@@ -306,7 +306,7 @@ async def get_insight_details(
             raise HTTPException(status_code=404, detail="Insight not found")
 
         # Get related optimization tasks
-        related_tasks = await conn.fetch("""
+        related_tasks = await db.execute_query("""
             SELECT id, name, optimization_type, status, progress_percentage
             FROM optimization_tasks 
             WHERE tenant_id = $1 
@@ -359,14 +359,14 @@ async def create_optimization(
     optimization: OptimizationCreate,
     background_tasks: BackgroundTasks,
     current_user: User = Depends(require_permission("optimization.create")),
-    conn: asyncpg.Connection = Depends(get_connection)
+    db: DatabaseManager = Depends(get_database_manager)
 ):
     """Create new optimization task"""
     try:
         task_id = str(uuid.uuid4())
         
         # Create optimization task
-        await conn.execute("""
+        await db.execute_command("""
             INSERT INTO optimization_tasks (
                 id, tenant_id, name, description, optimization_type,
                 parameters, constraints, objectives, affected_sites,
@@ -405,7 +405,7 @@ async def get_optimizations(
     limit: int = Query(50, le=200),
     offset: int = Query(0, ge=0),
     current_user: User = Depends(get_current_user),
-    conn: asyncpg.Connection = Depends(get_connection)
+    db: DatabaseManager = Depends(get_database_manager)
 ):
     """Get optimization tasks"""
     try:
@@ -438,7 +438,7 @@ async def get_optimizations(
         query += f" ORDER BY ot.created_at DESC LIMIT ${param_count + 1} OFFSET ${param_count + 2}"
         params.extend([limit, offset])
 
-        rows = await conn.fetch(query, *params)
+        rows = await db.execute_query(query, *params)
 
         optimizations = []
         total_count = 0
@@ -479,7 +479,7 @@ async def get_optimizations(
 async def get_roi_analysis(
     time_range: str = Query("90d", pattern="^(30d|90d|180d|1y)$"),
     current_user: User = Depends(get_current_user),
-    conn: asyncpg.Connection = Depends(get_connection)
+    db: DatabaseManager = Depends(get_database_manager)
 ):
     """Get comprehensive ROI analysis"""
     try:
@@ -493,7 +493,7 @@ async def get_roi_analysis(
         start_time = datetime.utcnow() - time_delta_map[time_range]
 
         # Get baseline metrics
-        baseline_metrics = await conn.fetchrow("""
+        baseline_metrics = await db.execute_query_one("""
             SELECT 
                 AVG(energy_cost) as baseline_energy_cost,
                 AVG(maintenance_cost) as baseline_maintenance_cost,
@@ -505,7 +505,7 @@ async def get_roi_analysis(
         """, current_user.tenant_id, start_time - timedelta(days=30), start_time)
 
         # Get current metrics
-        current_metrics = await conn.fetchrow("""
+        current_metrics = await db.execute_query_one("""
             SELECT 
                 AVG(energy_cost) as current_energy_cost,
                 AVG(maintenance_cost) as current_maintenance_cost,
@@ -516,7 +516,7 @@ async def get_roi_analysis(
         """, current_user.tenant_id, start_time, datetime.utcnow())
 
         # Get implemented insights value
-        implemented_value = await conn.fetchrow("""
+        implemented_value = await db.execute_query_one("""
             SELECT 
                 COUNT(*) as implemented_insights,
                 SUM(potential_savings) as total_realized_savings,
@@ -600,12 +600,12 @@ async def implement_insight(
     insight_id: str,
     background_tasks: BackgroundTasks,
     current_user: User = Depends(require_permission("insights.implement")),
-    conn: asyncpg.Connection = Depends(get_connection)
+    db: DatabaseManager = Depends(get_database_manager)
 ):
     """Mark insight as implemented and track value"""
     try:
         # Update insight status
-        result = await conn.fetchrow("""
+        result = await db.execute_query_one("""
             UPDATE business_insights 
             SET status = 'implemented', implemented_at = NOW(), implemented_by = $2
             WHERE id = $1 AND tenant_id = $3
@@ -616,7 +616,7 @@ async def implement_insight(
             raise HTTPException(status_code=404, detail="Insight not found")
 
         # Create value tracking entry
-        await conn.execute("""
+        await db.execute_command("""
             INSERT INTO value_tracking (
                 insight_id, tenant_id, implemented_by, implemented_at,
                 estimated_value, tracking_start_date, status

@@ -14,7 +14,7 @@ import asyncio
 from enum import Enum
 from pydantic import BaseModel, Field
 
-from core.database import get_connection
+from core.database import get_database_manager, DatabaseManager
 from core.auth import get_current_user, require_permission
 from core.models import APIResponse, User
 from core.websocket import ConnectionManager
@@ -103,12 +103,12 @@ async def send_notification(
     notification: NotificationCreate,
     background_tasks: BackgroundTasks,
     current_user: User = Depends(require_permission("notifications.send")),
-    conn: asyncpg.Connection = Depends(get_connection)
+    db: DatabaseManager = Depends(get_database_manager)
 ):
     """Send a new notification"""
     try:
         # Create notification record
-        notification_id = await conn.fetchval("""
+        notification_id = await db.execute_query_scalar("""
             INSERT INTO notifications (
                 tenant_id, title, message, type, priority, channels,
                 created_by, site_id, expires_at, action_url, metadata, created_at
@@ -128,7 +128,7 @@ async def send_notification(
             target_user_ids.extend(notification.target_users)
         
         if notification.target_roles:
-            role_users = await conn.fetch("""
+            role_users = await db.execute_query("""
                 SELECT id FROM users 
                 WHERE tenant_id = $1 AND role = ANY($2) AND is_active = true
             """, current_user.tenant_id, notification.target_roles)
@@ -136,7 +136,7 @@ async def send_notification(
         
         if not target_user_ids:
             # Send to all active users in tenant if no specific targets
-            all_users = await conn.fetch("""
+            all_users = await db.execute_query("""
                 SELECT id FROM users 
                 WHERE tenant_id = $1 AND is_active = true
             """, current_user.tenant_id)
@@ -144,7 +144,7 @@ async def send_notification(
 
         # Create notification recipients
         for user_id in set(target_user_ids):  # Remove duplicates
-            await conn.execute("""
+            await db.execute_command("""
                 INSERT INTO notification_recipients (
                     notification_id, user_id, status, created_at
                 ) VALUES ($1, $2, 'pending', NOW())
@@ -179,7 +179,7 @@ async def get_notifications(
     priority_filter: Optional[NotificationPriority] = None,
     unread_only: bool = False,
     current_user: User = Depends(get_current_user),
-    conn: asyncpg.Connection = Depends(get_connection)
+    db: DatabaseManager = Depends(get_database_manager)
 ):
     """Get notifications for current user"""
     try:
@@ -216,7 +216,7 @@ async def get_notifications(
         query += f" ORDER BY n.created_at DESC LIMIT ${param_count + 1} OFFSET ${param_count + 2}"
         params.extend([limit, offset])
         
-        rows = await conn.fetch(query, *params)
+        rows = await db.execute_query(query, *params)
         
         notifications = []
         for row in rows:
@@ -256,12 +256,12 @@ async def get_notifications(
         if unread_only:
             count_query += " AND nr.read_at IS NULL"
         
-        total_count = await conn.fetchval(count_query, *count_params)
+        total_count = await db.execute_query_scalar(count_query, *count_params)
         
         return {
             "notifications": notifications,
             "total_count": total_count,
-            "unread_count": await get_unread_count(current_user.id, current_user.tenant_id, conn),
+            "unread_count": await get_unread_count(current_user.id, current_user.tenant_id, db),
             "page": offset // limit + 1,
             "page_size": limit,
             "has_more": (offset + limit) < total_count
@@ -275,11 +275,11 @@ async def get_notifications(
 async def mark_notification_read(
     notification_id: int,
     current_user: User = Depends(get_current_user),
-    conn: asyncpg.Connection = Depends(get_connection)
+    db: DatabaseManager = Depends(get_database_manager)
 ):
     """Mark a notification as read"""
     try:
-        result = await conn.execute("""
+        result = await db.execute_command("""
             UPDATE notification_recipients 
             SET status = 'read', read_at = NOW()
             WHERE notification_id = $1 AND user_id = $2 AND read_at IS NULL
@@ -299,11 +299,11 @@ async def mark_notification_read(
 @router.put("/read-all")
 async def mark_all_notifications_read(
     current_user: User = Depends(get_current_user),
-    conn: asyncpg.Connection = Depends(get_connection)
+    db: DatabaseManager = Depends(get_database_manager)
 ):
     """Mark all notifications as read for current user"""
     try:
-        result = await conn.execute("""
+        result = await db.execute_command("""
             UPDATE notification_recipients nr
             SET status = 'read', read_at = NOW()
             FROM notifications n
@@ -327,11 +327,11 @@ async def mark_all_notifications_read(
 @router.get("/preferences")
 async def get_notification_preferences(
     current_user: User = Depends(get_current_user),
-    conn: asyncpg.Connection = Depends(get_connection)
+    db: DatabaseManager = Depends(get_database_manager)
 ):
     """Get user notification preferences"""
     try:
-        prefs = await conn.fetchrow("""
+        prefs = await db.execute_query_one("""
             SELECT preferences FROM user_notification_preferences
             WHERE user_id = $1 AND tenant_id = $2
         """, current_user.id, current_user.tenant_id)
@@ -365,11 +365,11 @@ async def get_notification_preferences(
 async def update_notification_preferences(
     preferences: NotificationPreferences,
     current_user: User = Depends(get_current_user),
-    conn: asyncpg.Connection = Depends(get_connection)
+    db: DatabaseManager = Depends(get_database_manager)
 ):
     """Update user notification preferences"""
     try:
-        await conn.execute("""
+        await db.execute_command("""
             INSERT INTO user_notification_preferences (
                 user_id, tenant_id, preferences, updated_at
             ) VALUES ($1, $2, $3, NOW())
@@ -386,11 +386,11 @@ async def update_notification_preferences(
 @router.get("/unread-count")
 async def get_unread_notifications_count(
     current_user: User = Depends(get_current_user),
-    conn: asyncpg.Connection = Depends(get_connection)
+    db: DatabaseManager = Depends(get_database_manager)
 ):
     """Get count of unread notifications"""
     try:
-        count = await get_unread_count(current_user.id, current_user.tenant_id, conn)
+        count = await get_unread_count(current_user.id, current_user.tenant_id, db)
         return {"unread_count": count}
 
     except Exception as e:
@@ -401,12 +401,12 @@ async def get_unread_notifications_count(
 async def delete_notification(
     notification_id: int,
     current_user: User = Depends(require_permission("notifications.manage")),
-    conn: asyncpg.Connection = Depends(get_connection)
+    db: DatabaseManager = Depends(get_database_manager)
 ):
     """Delete a notification (admin only)"""
     try:
         # Verify notification belongs to user's tenant
-        notification = await conn.fetchrow("""
+        notification = await db.execute_query_one("""
             SELECT id FROM notifications 
             WHERE id = $1 AND tenant_id = $2
         """, notification_id, current_user.tenant_id)
@@ -415,8 +415,8 @@ async def delete_notification(
             raise HTTPException(status_code=404, detail="Notification not found")
         
         # Delete notification and recipients
-        await conn.execute("DELETE FROM notification_recipients WHERE notification_id = $1", notification_id)
-        await conn.execute("DELETE FROM notifications WHERE id = $1", notification_id)
+        await db.execute_command("DELETE FROM notification_recipients WHERE notification_id = $1", notification_id)
+        await db.execute_command("DELETE FROM notifications WHERE id = $1", notification_id)
         
         return {"message": "Notification deleted successfully"}
 
@@ -435,10 +435,10 @@ async def process_notification(
 ):
     """Process notification delivery across different channels"""
     try:
-        conn = await asyncpg.connect("postgresql://towerco:secure_password@localhost:5432/towerco_aiops")
+        db = DatabaseManager()
         
         # Get user preferences for each recipient
-        user_prefs = await conn.fetch("""
+        user_prefs = await db.execute_query("""
             SELECT user_id, preferences FROM user_notification_preferences
             WHERE user_id = ANY($1) AND tenant_id = $2
         """, target_user_ids, tenant_id)
@@ -465,13 +465,11 @@ async def process_notification(
                 await send_webhook_notification(user_id, notification)
         
         # Update notification status
-        await conn.execute("""
+        await db.execute_command("""
             UPDATE notification_recipients 
             SET status = 'delivered', delivered_at = NOW()
             WHERE notification_id = $1
         """, notification_id)
-        
-        await conn.close()
         
     except Exception as e:
         logger.error(f"Error processing notification {notification_id}: {e}")
@@ -525,9 +523,9 @@ async def send_webhook_notification(user_id: str, notification: NotificationCrea
     except Exception as e:
         logger.error(f"Error sending webhook notification: {e}")
 
-async def get_unread_count(user_id: str, tenant_id: str, conn: asyncpg.Connection) -> int:
+async def get_unread_count(user_id: str, tenant_id: str, db: DatabaseManager) -> int:
     """Get unread notification count for user"""
-    return await conn.fetchval("""
+    return await db.execute_query_scalar("""
         SELECT COUNT(*)
         FROM notifications n
         JOIN notification_recipients nr ON n.id = nr.notification_id

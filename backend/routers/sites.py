@@ -9,7 +9,7 @@ import logging
 import asyncpg
 from datetime import datetime, timedelta
 
-from core.database import get_connection
+from core.database import get_database_manager, DatabaseManager
 from core.auth import get_current_user
 from core.models import Site, Equipment, APIResponse
 
@@ -28,7 +28,7 @@ async def get_sites(
     status: Optional[str] = Query(None, description="Filter by status"),
     limit: int = Query(100, le=1000),
     offset: int = Query(0, ge=0),
-    conn: asyncpg.Connection = Depends(get_connection)
+    db: DatabaseManager = Depends(get_database_manager)
 ):
     """Get sites with filtering and pagination"""
     try:
@@ -56,7 +56,7 @@ async def get_sites(
         query += f" ORDER BY site_code LIMIT ${len(params) + 1} OFFSET ${len(params) + 2}"
         params.extend([limit, offset])
         
-        rows = await conn.fetch(query, *params)
+        rows = await db.execute_query(query, *params)
         
         sites = []
         for row in rows:
@@ -84,11 +84,11 @@ async def get_sites(
 @router.get("/{site_id}", response_model=Site)
 async def get_site(
     site_id: str,
-    conn: asyncpg.Connection = Depends(get_connection)
+    db: DatabaseManager = Depends(get_database_manager)
 ):
     """Get site by ID"""
     try:
-        row = await conn.fetchrow("""
+        row = await db.execute_query_one("""
             SELECT site_id, site_code, site_name, latitude, longitude,
                    address, region, country, technology, status, metadata
             FROM sites
@@ -126,12 +126,12 @@ async def get_site_equipment(
     equipment_type: Optional[str] = Query(None),
     vendor: Optional[str] = Query(None),
     status: Optional[str] = Query(None),
-    conn: asyncpg.Connection = Depends(get_connection)
+    db: DatabaseManager = Depends(get_database_manager)
 ):
     """Get equipment for a specific site"""
     try:
         # Verify site exists
-        site_exists = await conn.fetchval("SELECT COUNT(*) FROM sites WHERE site_id = $1", site_id)
+        site_exists = await db.execute_query_scalar("SELECT COUNT(*) FROM sites WHERE site_id = $1", site_id)
         if not site_exists:
             raise HTTPException(status_code=404, detail="Site not found")
         
@@ -158,7 +158,7 @@ async def get_site_equipment(
         
         query += " ORDER BY equipment_type, vendor, model"
         
-        rows = await conn.fetch(query, *params)
+        rows = await db.execute_query(query, *params)
         
         equipment_list = []
         for row in rows:
@@ -189,12 +189,12 @@ async def get_site_latest_metrics(
     site_id: str,
     metric_names: Optional[List[str]] = Query(None),
     time_range: str = Query("1h"),
-    conn: asyncpg.Connection = Depends(get_connection)
+    db: DatabaseManager = Depends(get_database_manager)
 ):
     """Get latest metrics for a specific site"""
     try:
         # Verify site exists
-        site_exists = await conn.fetchval("SELECT COUNT(*) FROM sites WHERE site_id = $1", site_id)
+        site_exists = await db.execute_query_scalar("SELECT COUNT(*) FROM sites WHERE site_id = $1", site_id)
         if not site_exists:
             raise HTTPException(status_code=404, detail="Site not found")
         
@@ -219,7 +219,7 @@ async def get_site_latest_metrics(
         # Replace %s with proper parameter number
         query = query.replace('%s', '$2')
         
-        rows = await conn.fetch(query, *params)
+        rows = await db.execute_query(query, *params)
         
         metrics = []
         for row in rows:
@@ -247,12 +247,12 @@ async def get_site_latest_metrics(
 async def get_site_latest_kpis(
     site_id: str,
     category: Optional[str] = Query(None, description="KPI category filter"),
-    conn: asyncpg.Connection = Depends(get_connection)
+    db: DatabaseManager = Depends(get_database_manager)
 ):
     """Get latest KPI values for a specific site"""
     try:
         # Verify site exists
-        site_exists = await conn.fetchval("SELECT COUNT(*) FROM sites WHERE site_id = $1", site_id)
+        site_exists = await db.execute_query_scalar("SELECT COUNT(*) FROM sites WHERE site_id = $1", site_id)
         if not site_exists:
             raise HTTPException(status_code=404, detail="Site not found")
         
@@ -272,7 +272,7 @@ async def get_site_latest_kpis(
         
         query += " ORDER BY kpi_name, calculated_at DESC"
         
-        rows = await conn.fetch(query, *params)
+        rows = await db.execute_query(query, *params)
         
         kpis = []
         for row in rows:
@@ -302,12 +302,12 @@ async def get_site_active_alerts(
     site_id: str,
     severity: Optional[str] = Query(None),
     limit: int = Query(50, le=200),
-    conn: asyncpg.Connection = Depends(get_connection)
+    db: DatabaseManager = Depends(get_database_manager)
 ):
     """Get active alerts for a specific site"""
     try:
         # Verify site exists
-        site_exists = await conn.fetchval("SELECT COUNT(*) FROM sites WHERE site_id = $1", site_id)
+        site_exists = await db.execute_query_scalar("SELECT COUNT(*) FROM sites WHERE site_id = $1", site_id)
         if not site_exists:
             raise HTTPException(status_code=404, detail="Site not found")
         
@@ -327,7 +327,7 @@ async def get_site_active_alerts(
         query += f" ORDER BY triggered_at DESC LIMIT ${len(params) + 1}"
         params.append(limit)
         
-        rows = await conn.fetch(query, *params)
+        rows = await db.execute_query(query, *params)
         
         alerts = []
         for row in rows:
@@ -357,17 +357,17 @@ async def get_site_active_alerts(
 @router.get("/{site_id}/health")
 async def get_site_health(
     site_id: str,
-    conn: asyncpg.Connection = Depends(get_connection)
+    db: DatabaseManager = Depends(get_database_manager)
 ):
     """Get overall site health status and score"""
     try:
         # Verify site exists
-        site_exists = await conn.fetchval("SELECT COUNT(*) FROM sites WHERE site_id = $1", site_id)
+        site_exists = await db.execute_query_scalar("SELECT COUNT(*) FROM sites WHERE site_id = $1", site_id)
         if not site_exists:
             raise HTTPException(status_code=404, detail="Site not found")
         
         # Get site health score using the database function
-        health_data = await conn.fetchrow("""
+        health_data = await db.execute_query_one("""
             SELECT 
                 get_site_health_score($1) as health_score,
                 (SELECT COUNT(*) FROM kpi_alerts WHERE site_id = $1 AND status = 'active') as active_alerts,
@@ -390,7 +390,7 @@ async def get_site_health(
             status = "critical"
         
         # Get latest KPI summary
-        kpi_summary = await conn.fetch("""
+        kpi_summary = await db.execute_query("""
             SELECT category, COUNT(*) as kpi_count, AVG(quality_score) as avg_quality
             FROM kpi_calculations
             WHERE site_id = $1 AND calculated_at >= NOW() - INTERVAL '1 hour'
@@ -429,12 +429,12 @@ async def get_site_itsm_tickets(
     status: Optional[str] = Query(None),
     ticket_type: Optional[str] = Query(None),
     limit: int = Query(50, le=200),
-    conn: asyncpg.Connection = Depends(get_connection)
+    db: DatabaseManager = Depends(get_database_manager)
 ):
     """Get ITSM tickets for a specific site"""
     try:
         # Verify site exists
-        site_exists = await conn.fetchval("SELECT COUNT(*) FROM sites WHERE site_id = $1", site_id)
+        site_exists = await db.execute_query_scalar("SELECT COUNT(*) FROM sites WHERE site_id = $1", site_id)
         if not site_exists:
             raise HTTPException(status_code=404, detail="Site not found")
         
@@ -458,7 +458,7 @@ async def get_site_itsm_tickets(
         query += f" ORDER BY created_at DESC LIMIT ${len(params) + 1}"
         params.append(limit)
         
-        rows = await conn.fetch(query, *params)
+        rows = await db.execute_query(query, *params)
         
         tickets = []
         for row in rows:
@@ -488,11 +488,11 @@ async def get_site_itsm_tickets(
 
 @router.get("/regions")
 async def get_regions(
-    conn: asyncpg.Connection = Depends(get_connection)
+    db: DatabaseManager = Depends(get_database_manager)
 ):
     """Get list of available regions with site counts"""
     try:
-        rows = await conn.fetch("""
+        rows = await db.execute_query("""
             SELECT region, COUNT(*) as site_count
             FROM sites
             WHERE region IS NOT NULL
@@ -515,11 +515,11 @@ async def get_regions(
 
 @router.get("/technologies")
 async def get_technologies(
-    conn: asyncpg.Connection = Depends(get_connection)
+    db: DatabaseManager = Depends(get_database_manager)
 ):
     """Get list of available technologies with site counts"""
     try:
-        rows = await conn.fetch("""
+        rows = await db.execute_query("""
             SELECT 
                 jsonb_object_keys(technology) as tech_name,
                 COUNT(*) as site_count
