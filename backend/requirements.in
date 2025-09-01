@@ -101,3 +101,7 @@ dynaconf
 # ServiceNow integration (replacement for pysnow)
 requests
 openpyxl
+
+# Monitoring
+prometheus-client
+psutil
