@@ -25,6 +25,7 @@ boto3
 python-jose[cryptography]
 passlib[bcrypt]
 python-keycloak
+PyJWT
 
 # HTTP Client
 httpx
@@ -105,3 +106,4 @@ openpyxl
 # Monitoring
 prometheus-client
 psutil
+
