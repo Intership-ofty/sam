@@ -12,9 +12,9 @@ import asyncpg
 import json
 from pydantic import BaseModel, Field
 
-from ..core.database import get_connection
-from ..core.auth import get_current_user, require_permission
-from ..core.models import APIResponse, User
+from core.database import get_connection
+from core.auth import get_current_user, require_permission
+from core.models import APIResponse, User
 
 logger = logging.getLogger(__name__)
 

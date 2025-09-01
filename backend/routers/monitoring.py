@@ -9,8 +9,8 @@ from datetime import datetime, timedelta
 import logging
 import asyncpg
 
-from ..core.database import get_connection
-from ..core.auth import get_current_user
+from core.database import get_connection
+from core.auth import get_current_user
 
 logger = logging.getLogger(__name__)
 

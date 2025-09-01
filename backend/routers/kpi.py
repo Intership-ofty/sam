@@ -13,9 +13,9 @@ import logging
 from pydantic import BaseModel, Field
 import asyncpg
 
-from ..core.database import get_connection
-from ..core.auth import get_current_user
-from ..core.models import KPICalculationRequest, KPIAlert, KPIDashboard
+from core.database import get_connection
+from core.auth import get_current_user
+from core.models import KPICalculationRequest, KPIAlert, KPIDashboard
 
 logger = logging.getLogger(__name__)
 

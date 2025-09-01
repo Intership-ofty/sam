@@ -10,9 +10,9 @@ import logging
 import asyncpg
 import json
 
-from ..core.database import get_connection
-from ..core.auth import get_current_user
-from ..core.models import APIResponse
+from core.database import get_connection
+from core.auth import get_current_user
+from core.models import APIResponse
 
 logger = logging.getLogger(__name__)
 
