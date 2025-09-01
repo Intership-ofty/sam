@@ -1,38 +1,47 @@
-✔ backend                            Built                                                                                                            0.0s
+[+] Running 15/15
+ ✔ backend                            Built                                                                                                            0.0s
  ✔ client-portal                      Built                                                                                                            0.0s
  ✔ frontend                           Built                                                                                                            0.0s
  ✔ workers                            Built                                                                                                            0.0s
+ ✔ Container compose-frontend-1       Running                                                                                                          0.0s
+ ✔ Container compose-kafka-1          Running                                                                                                          0.0s
  ✔ Container compose-grafana-1        Running                                                                                                          0.0s
  ✔ Container compose-prometheus-1     Running                                                                                                          0.0s
- ✔ Container compose-frontend-1       Running                                                                                                          0.0s
  ✔ Container compose-redis-1          Running                                                                                                          0.0s
- ✔ Container compose-kafka-1          Running                                                                                                          0.0s
+ ✔ Container compose-postgres-1       Healthy                                                                                                          6.8s
  ✔ Container compose-zookeeper-1      Running                                                                                                          0.0s
- ✔ Container compose-backend-1        Recreated                                                                                                        5.5s
- ✔ Container compose-postgres-1       Healthy                                                                                                         21.6s
- ✘ Container keycloak                 Error                                                                                                          166.6s
- ✔ Container compose-client-portal-1  Created                                                                                                          2.0s
+ ✔ Container compose-backend-1        Recreated                                                                                                        5.1s
+ ✘ Container keycloak                 Error                                                                                                          160.2s
+ ✔ Container compose-client-portal-1  Created                                                                                                          0.0s
  ✔ Container compose-workers-1        Created                                                                                                          0.0s
 dependency failed to start: container keycloak is unhealthy
-
- docker ps
-CONTAINER ID   IMAGE                              COMMAND                  CREATED          STATUS                      PORTS                                    NAMES
-1b689594258a   postgres:16-alpine                 "docker-entrypoint.s…"   12 minutes ago   Up 12 minutes (healthy)     5432/tcp                                 compose-postgres-1
-374e9ed5efb4   quay.io/keycloak/keycloak:22.0.1   "/opt/keycloak/bin/k…"   12 minutes ago   Up 12 minutes (unhealthy)   8443/tcp, 0.0.0.0:8081->8080/tcp         keycloak
-
- docker logs 374e9ed5efb4
+[root@vmi2390455 sam]# docker ps
+CONTAINER ID   IMAGE                              COMMAND                  CREATED          STATUS                     PORTS                                    NAMES
+46cfe742e7c5   quay.io/keycloak/keycloak:22.0.1   "/opt/keycloak/bin/k…"   3 minutes ago    Up 3 minutes (unhealthy)   8443/tcp, 0.0.0.0:8081->8080/tcp         keycloak
+1b689594258a   postgres:16-alpine                 "docker-entrypoint.s…"   31 minutes ago   Up 31 minutes (healthy)    5432/tcp                                 compose-postgres-1
+901df4057e94   local/sam-frontend:dev             "python -m http.serv…"   11 hours ago     Up 11 hours                0.0.0.0:8090->8000/tcp                   compose-frontend-1
+7574eb17442a   redis:7-alpine                     "docker-entrypoint.s…"   3 days ago       Up 3 days                  6379/tcp                                 compose-redis-1
+e3f29fa6e9fc   bitnami/kafka:3.7                  "/opt/bitnami/script…"   3 days ago       Up 3 days                  9092/tcp                                 compose-kafka-1
+ab0561ac4aaa   prom/prometheus:v2.55.0            "/bin/prometheus --c…"   3 days ago       Up 3 days                  0.0.0.0:9090->9090/tcp                   compose-prometheus-1
+9be988640eec   bitnami/zookeeper:3.9              "/opt/bitnami/script…"   3 days ago       Up 3 days                  2181/tcp, 2888/tcp, 3888/tcp, 8080/tcp   compose-zookeeper-1
+432dbfb07e7e   grafana/grafana:11.1.0             "/run.sh"                3 days ago       Up 3 days                  0.0.0.0:3001->3000/tcp                   compose-grafana-1
+101308e7791c   minio/mc:latest                    "/bin/sh -c ' echo '…"   2 weeks ago      Up 2 weeks                                                          minio-client
+9864a7b37372   minio/minio:latest                 "/usr/bin/docker-ent…"   2 weeks ago      Up 2 weeks (healthy)       0.0.0.0:9000-9001->9000-9001/tcp         minio-server
+f219b96258b5   txe-web_app                        "docker-entrypoint.s…"   6 weeks ago      Up 6 weeks                 0.0.0.0:3002->3002/tcp                   txe-web_app_1
+b76b69afa727   website_app                        "docker-entrypoint.s…"   4 months ago     Up 4 months                0.0.0.0:3000->3000/tcp                   website_app_1
+[root@vmi2390455 sam]# docker logs 46cfe742e7c5
 Updating the configuration and installing your custom providers, if any. Please wait.
-2025-09-01 14:14:52,672 INFO  [io.quarkus.deployment.QuarkusAugmentor] (main) Quarkus augmentation completed in 36075ms
-2025-09-01 14:14:57,798 INFO  [org.keycloak.quarkus.runtime.hostname.DefaultHostnameProvider] (main) Hostname settings: Base URL: <unset>, Hostname: <request>, Strict HTTPS: false, Path: <request>, Strict BackChannel: false, Admin URL: <unset>, Admin: <request>, Port: -1, Proxied: false
-2025-09-01 14:15:06,162 WARN  [io.quarkus.agroal.runtime.DataSources] (main) Datasource <default> enables XA but transaction recovery is not enabled. Please enable transaction recovery by setting quarkus.transaction-manager.enable-recovery=true, otherwise data may be lost if the application is terminated abruptly
-2025-09-01 14:15:11,575 WARN  [org.infinispan.PERSISTENCE] (keycloak-cache-init) ISPN000554: jboss-marshalling is deprecated and planned for removal
-2025-09-01 14:15:12,145 INFO  [org.infinispan.CONTAINER] (keycloak-cache-init) ISPN000556: Starting user marshaller 'org.infinispan.jboss.marshalling.core.JBossUserMarshaller'
-2025-09-01 14:15:14,566 INFO  [org.keycloak.broker.provider.AbstractIdentityProviderMapper] (main) Registering class org.keycloak.broker.provider.mappersync.ConfigSyncEventListener
-2025-09-01 14:15:19,297 INFO  [org.keycloak.quarkus.runtime.storage.legacy.liquibase.QuarkusJpaUpdaterProvider] (main) Initializing database schema. Using changelog META-INF/jpa-changelog-master.xml
-2025-09-01 14:15:28,616 INFO  [org.keycloak.connections.infinispan.DefaultInfinispanConnectionProviderFactory] (main) Node name: node_834988, Site name: null
-2025-09-01 14:15:29,042 INFO  [org.keycloak.services] (main) KC-SERVICES0050: Initializing master realm
-2025-09-01 14:15:39,246 INFO  [io.quarkus] (main) Keycloak 22.0.1 on JVM (powered by Quarkus 3.2.0.Final) started in 46.163s. Listening on: http://0.0.0.0:8080
-2025-09-01 14:15:39,249 INFO  [io.quarkus] (main) Profile dev activated.
-2025-09-01 14:15:39,249 INFO  [io.quarkus] (main) Installed features: [agroal, cdi, hibernate-orm, jdbc-h2, jdbc-mariadb, jdbc-mssql, jdbc-mysql, jdbc-oracle, jdbc-postgresql, keycloak, logging-gelf, micrometer, narayana-jta, reactive-routes, resteasy, resteasy-jackson, smallrye-context-propagation, smallrye-health, vertx]
-2025-09-01 14:15:39,997 INFO  [org.keycloak.services] (main) KC-SERVICES0009: Added user 'admin' to realm 'master'
-2025-09-01 14:15:40,006 WARN  [org.keycloak.quarkus.runtime.KeycloakMain] (main) Running the server in development mode. DO NOT use this configuration in production.
+2025-09-01 14:43:39,660 INFO  [io.quarkus.deployment.QuarkusAugmentor] (main) Quarkus augmentation completed in 54044ms
+2025-09-01 14:43:46,180 INFO  [org.keycloak.quarkus.runtime.hostname.DefaultHostnameProvider] (main) Hostname settings: Base URL: <unset>, Hostname: localhost, Strict HTTPS: false, Path: <request>, Strict BackChannel: false, Admin URL: <unset>, Admin: <request>, Port: -1, Proxied: false
+2025-09-01 14:43:53,164 WARN  [io.quarkus.agroal.runtime.DataSources] (main) Datasource <default> enables XA but transaction recovery is not enabled. Please enable transaction recovery by setting quarkus.transaction-manager.enable-recovery=true, otherwise data may be lost if the application is terminated abruptly
+2025-09-01 14:43:56,168 WARN  [org.infinispan.PERSISTENCE] (keycloak-cache-init) ISPN000554: jboss-marshalling is deprecated and planned for removal
+2025-09-01 14:43:57,327 INFO  [org.infinispan.CONTAINER] (keycloak-cache-init) ISPN000556: Starting user marshaller 'org.infinispan.jboss.marshalling.core.JBossUserMarshaller'
+2025-09-01 14:44:04,887 INFO  [org.keycloak.quarkus.runtime.storage.legacy.liquibase.QuarkusJpaUpdaterProvider] (main) Initializing database schema. Using changelog META-INF/jpa-changelog-master.xml
+2025-09-01 14:44:13,398 INFO  [org.keycloak.connections.infinispan.DefaultInfinispanConnectionProviderFactory] (main) Node name: node_396580, Site name: null
+2025-09-01 14:44:14,322 INFO  [org.keycloak.broker.provider.AbstractIdentityProviderMapper] (main) Registering class org.keycloak.broker.provider.mappersync.ConfigSyncEventListener
+2025-09-01 14:44:14,549 INFO  [org.keycloak.services] (main) KC-SERVICES0050: Initializing master realm
+2025-09-01 14:44:25,538 INFO  [io.quarkus] (main) Keycloak 22.0.1 on JVM (powered by Quarkus 3.2.0.Final) started in 45.105s. Listening on: http://0.0.0.0:8080
+2025-09-01 14:44:25,545 INFO  [io.quarkus] (main) Profile dev activated.
+2025-09-01 14:44:25,545 INFO  [io.quarkus] (main) Installed features: [agroal, cdi, hibernate-orm, jdbc-h2, jdbc-mariadb, jdbc-mssql, jdbc-mysql, jdbc-oracle, jdbc-postgresql, keycloak, logging-gelf, micrometer, narayana-jta, reactive-routes, resteasy, resteasy-jackson, smallrye-context-propagation, smallrye-health, vertx]
+2025-09-01 14:44:26,184 INFO  [org.keycloak.services] (main) KC-SERVICES0009: Added user 'admin' to realm 'master'
+2025-09-01 14:44:26,193 WARN  [org.keycloak.quarkus.runtime.KeycloakMain] (main) Running the server in development mode. DO NOT use this configuration in production.

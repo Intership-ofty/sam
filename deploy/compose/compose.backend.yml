@@ -53,10 +53,11 @@ services:
     networks:
       - sam
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:8080/health/ready"]
-      interval: 30s
-      timeout: 10s
-      retries: 5
+      test: ["CMD-SHELL", "bash -lc 'exec 3<>/dev/tcp/127.0.0.1/8080 && printf \"GET /health/ready HTTP/1.0\\r\\n\\r\\n\" >&3 && head -n1 <&3 | grep -q \"200\"'"]
+      interval: 10s
+      timeout: 5s
+      retries: 20
+      start_period: 45s
 
 networks:
   sam:
