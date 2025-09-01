@@ -4,7 +4,7 @@ Handles real-time connections for notifications and live updates
 """
 
 from fastapi import WebSocket, WebSocketDisconnect
-from typing import List, Dict
+from typing import List, Dict, Optional
 import logging
 import json
 import asyncio
