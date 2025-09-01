@@ -172,6 +172,8 @@ joblib==1.5.2
     #   scikit-learn
 jwcrypto==1.5.6
     # via python-keycloak
+kafka-python==2.2.15
+    # via -r requirements.in
 kiwisolver==1.4.9
     # via matplotlib
 kombu==5.5.4
