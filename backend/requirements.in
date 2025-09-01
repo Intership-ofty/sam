@@ -16,6 +16,7 @@ redis[hiredis]
 # Message Queue
 aiokafka
 confluent-kafka
+python-snappy
 
 # Object Storage
 minio
