@@ -58,6 +58,8 @@ services:
       timeout: 5s
       retries: 20
       start_period: 45s
+    volumes:
+      - ./towerco-realm.json:/opt/keycloak/data/import/realm.json
 
 networks:
   sam:
