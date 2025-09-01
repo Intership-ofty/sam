@@ -1,3 +1,8 @@
+ docker loggs
+docker: unknown command: docker loggs
+
+Run 'docker --help' for more information
+[root@vmi2390455 sam]# docker logs f183ab08dcd4
 INFO:     Will watch for changes in these directories: ['/app']
 WARNING:  "workers" flag is ignored when reloading is enabled.
 INFO:     Uvicorn running on http://0.0.0.0:8000 (Press CTRL+C to quit)
@@ -27,6 +32,8 @@ Traceback (most recent call last):
   File "/usr/local/lib/python3.11/site-packages/uvicorn/config.py", line 436, in load
     self.loaded_app = import_from_string(self.app)
                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.11/site-packages/uvicorn/importer.py", line 22, in import_from_string
+    raise exc from None
   File "/usr/local/lib/python3.11/site-packages/uvicorn/importer.py", line 19, in import_from_string
     module = importlib.import_module(module_str)
              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -39,29 +46,8 @@ Traceback (most recent call last):
   File "<frozen importlib._bootstrap>", line 690, in _load_unlocked
   File "<frozen importlib._bootstrap_external>", line 940, in exec_module
   File "<frozen importlib._bootstrap>", line 241, in _call_with_frames_removed
-  File "/app/backend/main.py", line 20, in <module>
-    from core.config import settings
-  File "/app/backend/core/config.py", line 194, in <module>
-    settings = Settings()
-               ^^^^^^^^^^
-  File "/usr/local/lib/python3.11/site-packages/pydantic_settings/main.py", line 188, in __init__
-    super().__init__(
-  File "/usr/local/lib/python3.11/site-packages/pydantic/main.py", line 253, in __init__
-    validated_self = self.__pydantic_validator__.validate_python(data, self_instance=self)
-                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-pydantic_core._pydantic_core.ValidationError: 5 validation errors for Settings
-KAFKA_BROKERS
-  Field required [type=missing, input_value={'DATABASE_URL': 'postgre... 'redis://redis:6379/0'}, input_type=dict]
-    For further information visit https://errors.pydantic.dev/2.11/v/missing
-MINIO_ENDPOINT
-  Field required [type=missing, input_value={'DATABASE_URL': 'postgre... 'redis://redis:6379/0'}, input_type=dict]
-    For further information visit https://errors.pydantic.dev/2.11/v/missing
-MINIO_ACCESS_KEY
-  Field required [type=missing, input_value={'DATABASE_URL': 'postgre... 'redis://redis:6379/0'}, input_type=dict]
-    For further information visit https://errors.pydantic.dev/2.11/v/missing
-MINIO_SECRET_KEY
-  Field required [type=missing, input_value={'DATABASE_URL': 'postgre... 'redis://redis:6379/0'}, input_type=dict]
-    For further information visit https://errors.pydantic.dev/2.11/v/missing
-KEYCLOAK_SERVER_URL
-  Field required [type=missing, input_value={'DATABASE_URL': 'postgre... 'redis://redis:6379/0'}, input_type=dict]
-    For further information visit https://errors.pydantic.dev/2.11/v/missing
+  File "/app/backend/main.py", line 26, in <module>
+    from api.v1 import api_router
+  File "/app/backend/api/v1/__init__.py", line 7, in <module>
+    from .metrics import router as metrics_router
+ModuleNotFoundError: No module named 'api.v1.metrics'

@@ -1098,7 +1098,6 @@ class EventCorrelationEngine:
             except Exception as e:
                 logger.error(f"Error in correlation maintenance loop: {e}")
 
-
 # Main worker function
 async def main():
     """Main event correlation worker"""
@@ -1122,7 +1121,6 @@ async def main():
     except Exception as e:
         logger.error(f"Fatal error in event correlation worker: {e}")
         raise
-
 
 if __name__ == "__main__":
     asyncio.run(main())
