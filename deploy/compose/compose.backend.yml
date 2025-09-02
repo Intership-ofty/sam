@@ -15,8 +15,8 @@ services:
         condition: service_healthy
       redis:
         condition: service_healthy
-      keycloak-healthcheck:
-        condition: service_healthy
+      keycloak-checker:
+        condition: service_completed_successfully
     networks:
       - sam
   postgres:
@@ -59,17 +59,19 @@ services:
       - sam
     volumes:
       - ./towerco-realm.json:/opt/keycloak/data/import/realm.json
-  keycloak-healthcheck:
+  keycloak-checker:
     image: curlimages/curl:latest
     depends_on:
       - keycloak
-    healthcheck:
-      test: ["CMD", "curl", "-f", "http://keycloak:8080/realms/towerco/.well-known/openid-configuration"]
-      interval: 30s
-      timeout: 10s
-      retries: 5
-      start_period: 60s
-    restart: "no"
+    command: >
+      sh -c "
+        echo 'Waiting for Keycloak realm to be ready...';
+        until curl -f http://keycloak:8080/realms/towerco/.well-known/openid-configuration; do
+          echo 'Keycloak realm not ready yet, sleeping for 5s...';
+          sleep 5;
+        done;
+        echo 'Keycloak realm is ready!';
+      "
     networks:
       - sam
 
