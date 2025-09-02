@@ -14,8 +14,8 @@ services:
       postgres:
         condition: service_healthy
       redis:
-        condition: service_started
-      keycloak:
+        condition: service_healthy
+      keycloak-healthcheck:
         condition: service_healthy
     networks:
       - sam
@@ -38,6 +38,11 @@ services:
     image: redis:7-alpine
     networks:
       - sam
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
   keycloak:
     image: quay.io/keycloak/keycloak:22.0.1
     container_name: keycloak
@@ -52,14 +57,21 @@ services:
       - "8081:8080"
     networks:
       - sam
-    healthcheck:
-      test: ["CMD-SHELL", "bash -lc 'exec 3<>/dev/tcp/127.0.0.1/8080 && printf \"GET /realms/towerco/.well-known/openid-configuration HTTP/1.0\r\nHost: localhost\r\n\r\n\" >&3 && head -n1 <&3 | grep -q \"200\"'"]
-      interval: 10s
-      timeout: 5s
-      retries: 20
-      start_period: 45s
     volumes:
       - ./towerco-realm.json:/opt/keycloak/data/import/realm.json
+  keycloak-healthcheck:
+    image: curlimages/curl:latest
+    depends_on:
+      - keycloak
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://keycloak:8080/realms/towerco/.well-known/openid-configuration"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 60s
+    restart: "no"
+    networks:
+      - sam
 
 networks:
   sam:

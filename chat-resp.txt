@@ -1,21 +1,50 @@
-Vu ton contexte (FastAPI, workers, Docker/K8s, Windows dev) :
+Voici 3 solutions pour résoudre ce problème :
+Solution 1 : Utiliser un healthcheck externe (Recommandée)
+Au lieu d'exécuter le healthcheck dans le conteneur Keycloak, utilisez un conteneur séparé :
+yamlversion: '3.8'
+services:
+  keycloak:
+    image: quay.io/keycloak/keycloak:22.0.1
+    # ... autres configurations
+    # Pas de healthcheck ici
+    
+  keycloak-healthcheck:
+    image: curlimages/curl:latest
+    depends_on:
+      - keycloak
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://keycloak:8080/realms/towerco/.well-known/openid-configuration"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 60s
+    restart: "no"
+    
+  backend:
+    # ... votre backend
+    depends_on:
+      keycloak-healthcheck:
+        condition: service_healthy
+Solution 2 : Utiliser wget (si disponible)
+Vérifiez si wget est disponible dans votre image. Si oui :
+yamlhealthcheck:
+  test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost:8080/realms/towerco/.well-known/openid-configuration"]
+  interval: 30s
+  timeout: 10s
+  retries: 5
+  start_period: 60s
+Solution 3 : Script bash avec netcat/telnet
+Si ni curl ni wget ne sont disponibles, utilisez une approche plus basique :
+yamlhealthcheck:
+  test: ["CMD-SHELL", "timeout 5 bash -c '</dev/tcp/localhost/8080' && wget -q -O /dev/null http://localhost:8080/realms/towerco/.well-known/openid-configuration 2>/dev/null || exit 1"]
+  interval: 30s
+  timeout: 10s
+  retries: 5
+  start_period: 60s
+Ma recommandation
+Je recommande la Solution 1 (healthcheck externe) car :
 
-Par service (backend, workers, client-portal, etc.) :
-
-adopte pip-tools (simple, déterministe) ou Poetry (dev agréable) ;
-
-dans Docker, gèle les deps et installe depuis un lock/requirements exporté (pas de pip install <lib> à la volée).
-
-Airflow & autres frameworks “opinionated” :
-
-ne pas fixer manuellement leurs sous-deps (SQLAlchemy, Alembic, etc.) ;
-
-utiliser leurs constraints officiels via -c constraints.txt.
-
-Sécurité & reproductibilité :
-
-Active --require-hashes (pip-tools) pour empêcher les dérives.
-
-Conserve un cache de wheels en CI (ou pip download) pour des builds stables.
-
-Garde des constraints par environnement (prod, dev) séparés.
+Elle évite de modifier l'image Keycloak
+Elle est plus maintenable
+Elle utilise des outils dédiés
+Elle respecte le principe de séparation des responsabilités
