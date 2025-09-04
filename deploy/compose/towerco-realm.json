@@ -1,14 +1,151 @@
 {
   "realm": "towerco",
   "enabled": true,
+  "displayName": "Towerco AIOps Platform",
+  "displayNameHtml": "<div class=\"kc-logo-text\"><span>Towerco AIOps</span></div>",
+  "loginTheme": "keycloak",
+  "accountTheme": "keycloak",
+  "adminTheme": "keycloak",
+  "emailTheme": "keycloak",
   "clients": [
     {
       "clientId": "towerco-aiops",
+      "name": "Towerco AIOps Frontend",
+      "description": "Frontend application for Towerco AIOps platform",
       "publicClient": true,
+      "enabled": true,
       "redirectUris": [
+        "http://localhost:3000/*",
+        "http://localhost:5173/*",
         "http://localhost:8000/*"
       ],
-      "directAccessGrantsEnabled": true
+      "webOrigins": [
+        "http://localhost:3000",
+        "http://localhost:5173",
+        "http://localhost:8000"
+      ],
+      "directAccessGrantsEnabled": true,
+      "standardFlowEnabled": true,
+      "implicitFlowEnabled": false,
+      "serviceAccountsEnabled": true,
+      "authorizationServicesEnabled": true,
+      "protocol": "openid-connect",
+      "attributes": {
+        "access.token.lifespan": "1800",
+        "client.session.idle.timeout": "1800",
+        "client.session.max.lifespan": "36000"
+      }
+    },
+    {
+      "clientId": "towerco-api",
+      "name": "Towerco AIOps API",
+      "description": "Backend API for Towerco AIOps platform",
+      "publicClient": false,
+      "enabled": true,
+      "serviceAccountsEnabled": true,
+      "authorizationServicesEnabled": true,
+      "protocol": "openid-connect",
+      "attributes": {
+        "access.token.lifespan": "1800"
+      }
     }
-  ]
+  ],
+  "roles": {
+    "realm": [
+      {
+        "name": "admin",
+        "description": "Administrator role with full access"
+      },
+      {
+        "name": "operator",
+        "description": "Operator role for monitoring and management"
+      },
+      {
+        "name": "viewer",
+        "description": "Viewer role for read-only access"
+      },
+      {
+        "name": "tenant_admin",
+        "description": "Tenant administrator role"
+      },
+      {
+        "name": "tenant_user",
+        "description": "Tenant user role"
+      }
+    ]
+  },
+  "users": [
+    {
+      "username": "admin",
+      "enabled": true,
+      "emailVerified": true,
+      "firstName": "System",
+      "lastName": "Administrator",
+      "email": "admin@towerco.com",
+      "credentials": [
+        {
+          "type": "password",
+          "value": "admin123",
+          "temporary": false
+        }
+      ],
+      "realmRoles": ["admin"],
+      "clientRoles": {
+        "towerco-aiops": ["admin"]
+      }
+    },
+    {
+      "username": "operator",
+      "enabled": true,
+      "emailVerified": true,
+      "firstName": "System",
+      "lastName": "Operator",
+      "email": "operator@towerco.com",
+      "credentials": [
+        {
+          "type": "password",
+          "value": "operator123",
+          "temporary": false
+        }
+      ],
+      "realmRoles": ["operator"],
+      "clientRoles": {
+        "towerco-aiops": ["operator"]
+      }
+    },
+    {
+      "username": "viewer",
+      "enabled": true,
+      "emailVerified": true,
+      "firstName": "System",
+      "lastName": "Viewer",
+      "email": "viewer@towerco.com",
+      "credentials": [
+        {
+          "type": "password",
+          "value": "viewer123",
+          "temporary": false
+        }
+      ],
+      "realmRoles": ["viewer"],
+      "clientRoles": {
+        "towerco-aiops": ["viewer"]
+      }
+    }
+  ],
+  "defaultRoles": ["viewer"],
+  "passwordPolicy": "length(8) and digits(1) and lowerCase(1) and upperCase(1)",
+  "browserFlow": "browser",
+  "registrationFlow": "registration",
+  "directGrantFlow": "direct grant",
+  "resetCredentialsFlow": "reset credentials",
+  "clientAuthenticationFlow": "clients",
+  "dockerAuthenticationFlow": "docker auth",
+  "attributes": {
+    "frontendUrl": "http://localhost:3000",
+    "adminEventsEnabled": "true",
+    "adminEventsDetailsEnabled": "true",
+    "eventsEnabled": "true",
+    "eventsExpiration": "86400"
+  }
 }
