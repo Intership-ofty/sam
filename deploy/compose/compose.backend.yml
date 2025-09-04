@@ -61,10 +61,10 @@ services:
       - ./towerco-realm.json:/opt/keycloak/data/import/realm.json
     healthcheck:
       test: ["CMD-SHELL", "curl -f http://localhost:8080/health/ready || exit 1"]
-      interval: 30s
-      timeout: 10s
-      retries: 5
-      start_period: 60s
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 120s
 
 networks:
   sam:
