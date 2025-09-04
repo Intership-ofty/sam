@@ -16,7 +16,7 @@ services:
       redis:
         condition: service_healthy
       keycloak:
-        condition: service_healthy
+        condition: service_started
     networks:
       - sam
   postgres:
@@ -53,18 +53,19 @@ services:
       - KC_HOSTNAME=localhost
       - KC_HEALTH_ENABLED=true
       - KC_METRICS_ENABLED=true
+      - KC_HOSTNAME_STRICT=false
+      - KC_HOSTNAME_STRICT_HTTPS=false
     ports:
       - "8081:8080"
     networks:
       - sam
     volumes:
       - ./towerco-realm.json:/opt/keycloak/data/import/realm.json
-    # Health check simplifié - Keycloak démarre en ~45s
     healthcheck:
-      test: ["CMD-SHELL", "exit 0"]
-      interval: 30s
+      test: ["CMD-SHELL", "nc -z localhost 8080 || exit 1"]
+      interval: 10s
       timeout: 5s
-      retries: 3
+      retries: 10
       start_period: 60s
 
 networks:

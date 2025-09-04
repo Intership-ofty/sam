@@ -26,8 +26,35 @@ security = HTTPBearer()
 
 
 async def init_auth():
-    """Initialize Keycloak authentication"""
+    """Initialize Keycloak authentication with retry logic"""
     global keycloak_openid, keycloak_admin
+    
+    import socket
+    import time
+    
+    # Wait for Keycloak to be available
+    max_retries = 30
+    retry_delay = 2
+    
+    for attempt in range(max_retries):
+        try:
+            # Test socket connection first
+            sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+            sock.settimeout(5)
+            result = sock.connect_ex(('keycloak', 8080))
+            sock.close()
+            
+            if result == 0:
+                logger.info("Keycloak socket is available, initializing...")
+                break
+            else:
+                logger.info(f"Keycloak not ready, attempt {attempt + 1}/{max_retries}")
+                time.sleep(retry_delay)
+        except Exception as e:
+            logger.info(f"Socket test failed, attempt {attempt + 1}/{max_retries}: {e}")
+            time.sleep(retry_delay)
+    else:
+        raise RuntimeError("Keycloak not available after maximum retries")
     
     try:
         # Initialize OpenID client
@@ -49,7 +76,7 @@ async def init_auth():
                 verify=True
             )
         
-        # Test connection
+        # Test connection with retry
         await test_keycloak_connection()
         
         logger.info("Keycloak authentication initialized successfully")
