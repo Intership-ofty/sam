@@ -2,11 +2,6 @@
   "realm": "towerco",
   "enabled": true,
   "displayName": "Towerco AIOps Platform",
-  "displayNameHtml": "<div class=\"kc-logo-text\"><span>Towerco AIOps</span></div>",
-  "loginTheme": "keycloak",
-  "accountTheme": "keycloak",
-  "adminTheme": "keycloak",
-  "emailTheme": "keycloak",
   "clients": [
     {
       "clientId": "towerco-aiops",
@@ -133,19 +128,5 @@
       }
     }
   ],
-  "defaultRoles": ["viewer"],
-  "passwordPolicy": "length(8) and digits(1) and lowerCase(1) and upperCase(1)",
-  "browserFlow": "browser",
-  "registrationFlow": "registration",
-  "directGrantFlow": "direct grant",
-  "resetCredentialsFlow": "reset credentials",
-  "clientAuthenticationFlow": "clients",
-  "dockerAuthenticationFlow": "docker auth",
-  "attributes": {
-    "frontendUrl": "http://localhost:3000",
-    "adminEventsEnabled": "true",
-    "adminEventsDetailsEnabled": "true",
-    "eventsEnabled": "true",
-    "eventsExpiration": "86400"
-  }
+  "defaultRoles": ["viewer"]
 }
