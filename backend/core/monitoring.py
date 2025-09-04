@@ -60,6 +60,12 @@ class Metrics:
             registry=registry
         )
         
+        self.db_health = Gauge(
+            'db_health',
+            'Database health status (1=healthy, 0=unhealthy)',
+            registry=registry
+        )
+        
         self.db_query_duration_seconds = Histogram(
             'db_query_duration_seconds',
             'Database query duration in seconds',

@@ -267,13 +267,22 @@ async def background_tasks():
 async def update_system_metrics():
     """Update system performance metrics"""
     try:
-        # Update database connection pool metrics
+        # Database health check - test connectivity
         from core.database import get_db_pool
         pool = await get_db_pool()
         if pool:
-            # Use correct SQLAlchemy pool methods
-            metrics.db_connections_active.set(pool.size())
-            metrics.db_connections_idle.set(pool.checkedin())
+            try:
+                # Test database connectivity
+                async with pool.acquire() as conn:
+                    await conn.fetchval("SELECT 1")
+                # Database is healthy
+                metrics.db_health.set(1)
+            except Exception as e:
+                # Database is unhealthy
+                logger.warning(f"Database health check failed: {e}")
+                metrics.db_health.set(0)
+        else:
+            metrics.db_health.set(0)
         
         # Update Redis connection metrics
         from core.cache import redis_client
