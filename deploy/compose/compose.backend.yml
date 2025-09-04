@@ -53,19 +53,15 @@ services:
       - KC_HOSTNAME=localhost
       - KC_HEALTH_ENABLED=true
       - KC_METRICS_ENABLED=true
-      - KC_DB=postgres
-      - KC_DB_URL=jdbc:postgresql://postgres:5432/keycloak
-      - KC_DB_USERNAME=sam
-      - KC_DB_PASSWORD=sam
+      - KC_DB=h2
+      - KC_DB_URL=jdbc:h2:mem:keycloak
     ports:
       - "8081:8080"
     networks:
       - sam
     volumes:
       - ./towerco-realm.json:/opt/keycloak/data/import/realm.json
-    depends_on:
-      postgres:
-        condition: service_healthy
+    # Keycloak utilise H2 en mémoire, pas besoin de PostgreSQL
     healthcheck:
       test: ["CMD-SHELL", "curl -f http://localhost:8080/health/ready || exit 1"]
       interval: 30s
