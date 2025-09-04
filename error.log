@@ -1,166 +1,182 @@
-[root@vmi2390455 ~]# docker ps
-CONTAINER ID   IMAGE                              COMMAND                  CREATED          STATUS                      PORTS                                    NAMES
-f4bf99572596   local/sam-backend:dev              "uvicorn backend.mai…"   10 minutes ago   Up 10 minutes (unhealthy)   0.0.0.0:8000->8000/tcp                   compose-backend-1
-3446d753dc27   quay.io/keycloak/keycloak:22.0.1   "/opt/keycloak/bin/k…"   10 minutes ago   Up 10 minutes (healthy)     8443/tcp, 0.0.0.0:8081->8080/tcp         keycloak
-7ecf3252a266   local/sam-client-portal:dev        "docker-entrypoint.s…"   10 hours ago     Up 10 minutes               0.0.0.0:5173->3000/tcp                   compose-client-portal-1
-0c795dd2d567   prom/prometheus:v2.55.0            "/bin/prometheus --c…"   10 hours ago     Up 10 hours                 0.0.0.0:9090->9090/tcp                   compose-prometheus-1
-da0104c8a5cc   bitnami/zookeeper:3.9              "/opt/bitnami/script…"   10 hours ago     Up 10 hours                 2181/tcp, 2888/tcp, 3888/tcp, 8080/tcp   compose-zookeeper-1
-d2a97aef8817   bitnami/kafka:3.7                  "/opt/bitnami/script…"   10 hours ago     Up 10 hours                 9092/tcp                                 compose-kafka-1
-96ad0e1d10d6   redis:7-alpine                     "docker-entrypoint.s…"   10 hours ago     Up 10 hours (healthy)       6379/tcp                                 compose-redis-1
-3b7a6d11cc07   local/sam-frontend:dev             "python -m http.serv…"   10 hours ago     Up 10 hours                 0.0.0.0:8090->8000/tcp                   compose-frontend-1
-2b3daff8b89c   grafana/grafana:11.1.0             "/run.sh"                10 hours ago     Up 10 hours                 0.0.0.0:3001->3000/tcp                   compose-grafana-1
-2f0c26a49e22   postgres:16-alpine                 "docker-entrypoint.s…"   10 hours ago     Up 10 hours (healthy)       5432/tcp                                 compose-postgres-1
-101308e7791c   minio/mc:latest                    "/bin/sh -c ' echo '…"   2 weeks ago      Up 2 weeks                                                           minio-client
-9864a7b37372   minio/minio:latest                 "/usr/bin/docker-ent…"   2 weeks ago      Up 2 weeks (healthy)        0.0.0.0:9000-9001->9000-9001/tcp         minio-server
-f219b96258b5   txe-web_app                        "docker-entrypoint.s…"   6 weeks ago      Up 6 weeks                  0.0.0.0:3002->3002/tcp                   txe-web_app_1
-b76b69afa727   website_app                        "docker-entrypoint.s…"   4 months ago     Up 4 months                 0.0.0.0:3000->3000/tcp                   website_app_1
-[root@vmi2390455 ~]# docker logs f4bf99572596
+[+] Running 15/15
+ ✔ backend                            Built                                                                                                                                       0.0s
+ ✔ client-portal                      Built                                                                                                                                       0.0s
+ ✔ frontend                           Built                                                                                                                                       0.0s
+ ✔ workers                            Built                                                                                                                                       0.0s
+ ✔ Container compose-kafka-1          Running                                                                                                                                     0.0s
+ ✔ Container compose-grafana-1        Running                                                                                                                                     0.0s
+ ✔ Container compose-redis-1          Healthy                                                                                                                                     7.7s
+ ✔ Container compose-prometheus-1     Running                                                                                                                                     0.0s
+ ✔ Container compose-frontend-1       Running                                                                                                                                     0.0s
+ ✔ Container compose-postgres-1       Healthy                                                                                                                                     7.7s
+ ✔ Container compose-zookeeper-1      Running                                                                                                                                     0.0s
+ ✔ Container compose-backend-1        Started                                                                                                                                     8.6s
+ ✔ Container keycloak                 Started                                                                                                                                     5.4s
+ ✔ Container compose-workers-1        Started                                                                                                                                     8.3s
+ ✔ Container compose-client-portal-1  Started                                                                                                                                     8.6s
+[root@vmi2390455 sam]# docker ps
+CONTAINER ID   IMAGE                              COMMAND                  CREATED          STATUS                             PORTS                                    NAMES
+2bfcc388a131   local/sam-backend:dev              "uvicorn backend.mai…"   23 seconds ago   Up 19 seconds (health: starting)   0.0.0.0:8000->8000/tcp                   compose-backend-1
+e84de939f47b   quay.io/keycloak/keycloak:22.0.1   "/opt/keycloak/bin/k…"   26 seconds ago   Up 22 seconds (health: starting)   8443/tcp, 0.0.0.0:8081->8080/tcp         keycloak
+7ecf3252a266   local/sam-client-portal:dev        "docker-entrypoint.s…"   10 hours ago     Up 19 seconds                      0.0.0.0:5173->3000/tcp                   compose-client-portal-1
+0c795dd2d567   prom/prometheus:v2.55.0            "/bin/prometheus --c…"   10 hours ago     Up 10 hours                        0.0.0.0:9090->9090/tcp                   compose-prometheus-1
+da0104c8a5cc   bitnami/zookeeper:3.9              "/opt/bitnami/script…"   10 hours ago     Up 10 hours                        2181/tcp, 2888/tcp, 3888/tcp, 8080/tcp   compose-zookeeper-1
+d2a97aef8817   bitnami/kafka:3.7                  "/opt/bitnami/script…"   10 hours ago     Up 10 hours                        9092/tcp                                 compose-kafka-1
+96ad0e1d10d6   redis:7-alpine                     "docker-entrypoint.s…"   10 hours ago     Up 10 hours (healthy)              6379/tcp                                 compose-redis-1
+3b7a6d11cc07   local/sam-frontend:dev             "python -m http.serv…"   10 hours ago     Up 10 hours                        0.0.0.0:8090->8000/tcp                   compose-frontend-1
+2b3daff8b89c   grafana/grafana:11.1.0             "/run.sh"                10 hours ago     Up 10 hours                        0.0.0.0:3001->3000/tcp                   compose-grafana-1
+2f0c26a49e22   postgres:16-alpine                 "docker-entrypoint.s…"   10 hours ago     Up 10 hours (healthy)              5432/tcp                                 compose-postgres-1
+101308e7791c   minio/mc:latest                    "/bin/sh -c ' echo '…"   2 weeks ago      Up 2 weeks                                                                  minio-client
+9864a7b37372   minio/minio:latest                 "/usr/bin/docker-ent…"   2 weeks ago      Up 2 weeks (healthy)               0.0.0.0:9000-9001->9000-9001/tcp         minio-server
+f219b96258b5   txe-web_app                        "docker-entrypoint.s…"   6 weeks ago      Up 6 weeks                         0.0.0.0:3002->3002/tcp                   txe-web_app_1
+b76b69afa727   website_app                        "docker-entrypoint.s…"   4 months ago     Up 4 months                        0.0.0.0:3000->3000/tcp                   website_app_1
+[root@vmi2390455 sam]# docker ps
+CONTAINER ID   IMAGE                              COMMAND                  CREATED          STATUS                             PORTS                                    NAMES
+2bfcc388a131   local/sam-backend:dev              "uvicorn backend.mai…"   36 seconds ago   Up 33 seconds (health: starting)   0.0.0.0:8000->8000/tcp                   compose-backend-1
+e84de939f47b   quay.io/keycloak/keycloak:22.0.1   "/opt/keycloak/bin/k…"   39 seconds ago   Up 35 seconds (health: starting)   8443/tcp, 0.0.0.0:8081->8080/tcp         keycloak
+7ecf3252a266   local/sam-client-portal:dev        "docker-entrypoint.s…"   10 hours ago     Up 32 seconds                      0.0.0.0:5173->3000/tcp                   compose-client-portal-1
+0c795dd2d567   prom/prometheus:v2.55.0            "/bin/prometheus --c…"   10 hours ago     Up 10 hours                        0.0.0.0:9090->9090/tcp                   compose-prometheus-1
+da0104c8a5cc   bitnami/zookeeper:3.9              "/opt/bitnami/script…"   10 hours ago     Up 10 hours                        2181/tcp, 2888/tcp, 3888/tcp, 8080/tcp   compose-zookeeper-1
+d2a97aef8817   bitnami/kafka:3.7                  "/opt/bitnami/script…"   10 hours ago     Up 10 hours                        9092/tcp                                 compose-kafka-1
+96ad0e1d10d6   redis:7-alpine                     "docker-entrypoint.s…"   10 hours ago     Up 10 hours (healthy)              6379/tcp                                 compose-redis-1
+3b7a6d11cc07   local/sam-frontend:dev             "python -m http.serv…"   10 hours ago     Up 10 hours                        0.0.0.0:8090->8000/tcp                   compose-frontend-1
+2b3daff8b89c   grafana/grafana:11.1.0             "/run.sh"                10 hours ago     Up 10 hours                        0.0.0.0:3001->3000/tcp                   compose-grafana-1
+2f0c26a49e22   postgres:16-alpine                 "docker-entrypoint.s…"   10 hours ago     Up 10 hours (healthy)              5432/tcp                                 compose-postgres-1
+101308e7791c   minio/mc:latest                    "/bin/sh -c ' echo '…"   2 weeks ago      Up 2 weeks                                                                  minio-client
+9864a7b37372   minio/minio:latest                 "/usr/bin/docker-ent…"   2 weeks ago      Up 2 weeks (healthy)               0.0.0.0:9000-9001->9000-9001/tcp         minio-server
+f219b96258b5   txe-web_app                        "docker-entrypoint.s…"   6 weeks ago      Up 6 weeks                         0.0.0.0:3002->3002/tcp                   txe-web_app_1
+b76b69afa727   website_app                        "docker-entrypoint.s…"   4 months ago     Up 4 months                        0.0.0.0:3000->3000/tcp                   website_app_1
+[root@vmi2390455 sam]# docker logs 2bfcc388a131
 INFO:     Will watch for changes in these directories: ['/app']
 WARNING:  "workers" flag is ignored when reloading is enabled.
 INFO:     Uvicorn running on http://0.0.0.0:8000 (Press CTRL+C to quit)
 INFO:     Started reloader process [1] using WatchFiles
-INFO:     Started server process [9]
+INFO:     Started server process [8]
 INFO:     Waiting for application startup.
-2025-09-04 14:54:06,079 - backend.main - INFO - Starting Towerco AIOps Platform...
-2025-09-04 14:54:06,079 - core.monitoring - INFO - OpenTelemetry endpoint not configured, using Prometheus only
-2025-09-04 14:54:06,080 - core.monitoring - INFO - Custom metrics initialized
-2025-09-04 14:54:06,080 - core.monitoring - INFO - Monitoring initialized successfully
-2025-09-04 14:54:08,327 INFO sqlalchemy.engine.Engine select pg_catalog.version()
-2025-09-04 14:54:08,327 INFO sqlalchemy.engine.Engine [raw sql] ()
-2025-09-04 14:54:08,327 - sqlalchemy.engine.Engine - INFO - select pg_catalog.version()
-2025-09-04 14:54:08,327 - sqlalchemy.engine.Engine - INFO - [raw sql] ()
-2025-09-04 14:54:08,343 INFO sqlalchemy.engine.Engine select current_schema()
-2025-09-04 14:54:08,344 INFO sqlalchemy.engine.Engine [raw sql] ()
-2025-09-04 14:54:08,343 - sqlalchemy.engine.Engine - INFO - select current_schema()
-2025-09-04 14:54:08,344 - sqlalchemy.engine.Engine - INFO - [raw sql] ()
-2025-09-04 14:54:08,359 - sqlalchemy.engine.Engine - INFO - show standard_conforming_strings
-2025-09-04 14:54:08,359 - sqlalchemy.engine.Engine - INFO - [raw sql] ()
-2025-09-04 14:54:08,359 INFO sqlalchemy.engine.Engine show standard_conforming_strings
-2025-09-04 14:54:08,359 INFO sqlalchemy.engine.Engine [raw sql] ()
-2025-09-04 14:54:08,361 - sqlalchemy.engine.Engine - INFO - BEGIN (implicit)
-2025-09-04 14:54:08,361 INFO sqlalchemy.engine.Engine BEGIN (implicit)
-2025-09-04 14:54:08,363 - sqlalchemy.engine.Engine - INFO - SELECT 1
-2025-09-04 14:54:08,363 INFO sqlalchemy.engine.Engine SELECT 1
-2025-09-04 14:54:08,363 INFO sqlalchemy.engine.Engine [generated in 0.00029s] ()
-2025-09-04 14:54:08,363 - sqlalchemy.engine.Engine - INFO - [generated in 0.00029s] ()
-2025-09-04 14:54:08,364 INFO sqlalchemy.engine.Engine COMMIT
-2025-09-04 14:54:08,364 - sqlalchemy.engine.Engine - INFO - COMMIT
-2025-09-04 14:54:08,388 - core.database - INFO - Database connection test successful
-2025-09-04 14:54:08,388 - core.database - INFO - Database connections initialized successfully
-2025-09-04 14:54:08,407 - core.cache - INFO - Redis connection initialized successfully
-2025-09-04 14:54:10,648 - kafka.conn - INFO - <BrokerConnection client_id=towerco_admin, node_id=bootstrap-0 host=kafka:9092 <connecting> [IPv4 ('172.23.0.5', 9092)]>: connecting to kafka:9092 [('172.23.0.5', 9092) IPv4]
-2025-09-04 14:54:10,664 - kafka.conn - INFO - <BrokerConnection client_id=towerco_admin, node_id=bootstrap-0 host=kafka:9092 <checking_api_versions_recv> [IPv4 ('172.23.0.5', 9092)]>: Broker version identified as 2.6
-2025-09-04 14:54:10,664 - kafka.conn - INFO - <BrokerConnection client_id=towerco_admin, node_id=bootstrap-0 host=kafka:9092 <connected> [IPv4 ('172.23.0.5', 9092)]>: Connection complete.
-2025-09-04 14:54:10,681 - kafka.conn - INFO - <BrokerConnection client_id=towerco_admin, node_id=1 host=kafka:9092 <connecting> [IPv4 ('172.23.0.5', 9092)]>: connecting to kafka:9092 [('172.23.0.5', 9092) IPv4]
-2025-09-04 14:54:10,682 - kafka.conn - INFO - <BrokerConnection client_id=towerco_admin, node_id=1 host=kafka:9092 <connected> [IPv4 ('172.23.0.5', 9092)]>: Connection complete.
-2025-09-04 14:54:10,682 - kafka.conn - INFO - <BrokerConnection client_id=towerco_admin, node_id=bootstrap-0 host=kafka:9092 <connected> [IPv4 ('172.23.0.5', 9092)]>: Closing connection.
-2025-09-04 14:54:11,068 - core.messaging - INFO - Kafka topics created successfully
-2025-09-04 14:54:11,068 - kafka.conn - INFO - <BrokerConnection client_id=towerco_admin, node_id=1 host=kafka:9092 <connected> [IPv4 ('172.23.0.5', 9092)]>: Closing connection.
-2025-09-04 14:54:11,068 - core.messaging - INFO - Kafka producer initialized successfully
-2025-09-04 14:54:11,480 - urllib3.connectionpool - WARNING - Retrying (Retry(total=0, connect=None, read=None, redirect=None, status=None)) after connection broken by 'NewConnectionError('<urllib3.connection.HTTPConnection object at 0x7f4857f6f050>: Failed to establish a new connection: [Errno 111] Connection refused')': /realms/towerco/.well-known/openid-configuration
-2025-09-04 14:54:11,481 - core.auth - ERROR - Keycloak connection test failed: Can't connect to server
-2025-09-04 14:54:11,481 - core.auth - ERROR - Failed to initialize Keycloak: Can't connect to server
-ERROR:    Traceback (most recent call last):
-  File "/usr/local/lib/python3.11/site-packages/urllib3/connection.py", line 198, in _new_conn
-    sock = connection.create_connection(
-           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/usr/local/lib/python3.11/site-packages/urllib3/util/connection.py", line 85, in create_connection
-    raise err
-  File "/usr/local/lib/python3.11/site-packages/urllib3/util/connection.py", line 73, in create_connection
-    sock.connect(sa)
-ConnectionRefusedError: [Errno 111] Connection refused
-
-The above exception was the direct cause of the following exception:
-
-Traceback (most recent call last):
-  File "/usr/local/lib/python3.11/site-packages/urllib3/connectionpool.py", line 787, in urlopen
-    response = self._make_request(
-               ^^^^^^^^^^^^^^^^^^^
-  File "/usr/local/lib/python3.11/site-packages/urllib3/connectionpool.py", line 493, in _make_request
-    conn.request(
-  File "/usr/local/lib/python3.11/site-packages/urllib3/connection.py", line 494, in request
-    self.endheaders()
-  File "/usr/local/lib/python3.11/http/client.py", line 1298, in endheaders
-    self._send_output(message_body, encode_chunked=encode_chunked)
-  File "/usr/local/lib/python3.11/http/client.py", line 1058, in _send_output
-    self.send(msg)
-  File "/usr/local/lib/python3.11/http/client.py", line 996, in send
-    self.connect()
-  File "/usr/local/lib/python3.11/site-packages/urllib3/connection.py", line 325, in connect
-    self.sock = self._new_conn()
-                ^^^^^^^^^^^^^^^^
-  File "/usr/local/lib/python3.11/site-packages/urllib3/connection.py", line 213, in _new_conn
-    raise NewConnectionError(
-urllib3.exceptions.NewConnectionError: <urllib3.connection.HTTPConnection object at 0x7f485547ca50>: Failed to establish a new connection: [Errno 111] Connection refused
-
-The above exception was the direct cause of the following exception:
-
-Traceback (most recent call last):
-  File "/usr/local/lib/python3.11/site-packages/requests/adapters.py", line 644, in send
-    resp = conn.urlopen(
-           ^^^^^^^^^^^^^
-  File "/usr/local/lib/python3.11/site-packages/urllib3/connectionpool.py", line 871, in urlopen
-    return self.urlopen(
-           ^^^^^^^^^^^^^
-  File "/usr/local/lib/python3.11/site-packages/urllib3/connectionpool.py", line 841, in urlopen
-    retries = retries.increment(
-              ^^^^^^^^^^^^^^^^^^
-  File "/usr/local/lib/python3.11/site-packages/urllib3/util/retry.py", line 519, in increment
-    raise MaxRetryError(_pool, url, reason) from reason  # type: ignore[arg-type]
-    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-urllib3.exceptions.MaxRetryError: HTTPConnectionPool(host='keycloak', port=8080): Max retries exceeded with url: /realms/towerco/.well-known/openid-configuration (Caused by NewConnectionError('<urllib3.connection.HTTPConnection object at 0x7f485547ca50>: Failed to establish a new connection: [Errno 111] Connection refused'))
-
-During handling of the above exception, another exception occurred:
-
-Traceback (most recent call last):
-  File "/usr/local/lib/python3.11/site-packages/keycloak/connection.py", line 260, in raw_get
-    return self._s.get(
-           ^^^^^^^^^^^^
-  File "/usr/local/lib/python3.11/site-packages/requests/sessions.py", line 602, in get
-    return self.request("GET", url, **kwargs)
-           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/usr/local/lib/python3.11/site-packages/requests/sessions.py", line 589, in request
-    resp = self.send(prep, **send_kwargs)
-           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/usr/local/lib/python3.11/site-packages/requests/sessions.py", line 703, in send
-    r = adapter.send(request, **kwargs)
-        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/usr/local/lib/python3.11/site-packages/requests/adapters.py", line 677, in send
-    raise ConnectionError(e, request=request)
-requests.exceptions.ConnectionError: HTTPConnectionPool(host='keycloak', port=8080): Max retries exceeded with url: /realms/towerco/.well-known/openid-configuration (Caused by NewConnectionError('<urllib3.connection.HTTPConnection object at 0x7f485547ca50>: Failed to establish a new connection: [Errno 111] Connection refused'))
-
-The above exception was the direct cause of the following exception:
-
-Traceback (most recent call last):
-  File "/usr/local/lib/python3.11/site-packages/starlette/routing.py", line 694, in lifespan
-    async with self.lifespan_context(app) as maybe_state:
-  File "/usr/local/lib/python3.11/contextlib.py", line 210, in __aenter__
-    return await anext(self.gen)
-           ^^^^^^^^^^^^^^^^^^^^^
-  File "/usr/local/lib/python3.11/site-packages/fastapi/routing.py", line 134, in merged_lifespan
-    async with original_context(app) as maybe_original_state:
-  File "/usr/local/lib/python3.11/contextlib.py", line 210, in __aenter__
-    return await anext(self.gen)
-           ^^^^^^^^^^^^^^^^^^^^^
-  File "/usr/local/lib/python3.11/site-packages/fastapi/routing.py", line 134, in merged_lifespan
-    async with original_context(app) as maybe_original_state:
-  File "/usr/local/lib/python3.11/contextlib.py", line 210, in __aenter__
-    return await anext(self.gen)
-           ^^^^^^^^^^^^^^^^^^^^^
-  File "/app/backend/main.py", line 50, in lifespan
-    await init_auth()
-  File "/app/backend/core/auth.py", line 53, in init_auth
-    await test_keycloak_connection()
-  File "/app/backend/core/auth.py", line 67, in test_keycloak_connection
-    config = keycloak_openid.well_known()
-             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/usr/local/lib/python3.11/site-packages/keycloak/keycloak_openid.py", line 276, in well_known
-    data_raw = self.connection.raw_get(URL_WELL_KNOWN.format(**params_path))
-               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/usr/local/lib/python3.11/site-packages/keycloak/connection.py", line 270, in raw_get
-    raise KeycloakConnectionError(msg) from e
-keycloak.exceptions.KeycloakConnectionError: Can't connect to server
-
-ERROR:    Application startup failed. Exiting.
-2025-09-04 14:54:12,258 - asyncio - ERROR - Unclosed AIOKafkaProducer
-producer: <aiokafka.producer.producer.AIOKafkaProducer object at 0x7f4858041710>
+2025-09-04 15:27:54,963 - backend.main - INFO - Starting Towerco AIOps Platform...
+2025-09-04 15:27:54,963 - core.monitoring - INFO - OpenTelemetry endpoint not configured, using Prometheus only
+2025-09-04 15:27:54,964 - core.monitoring - INFO - Custom metrics initialized
+2025-09-04 15:27:54,964 - core.monitoring - INFO - Monitoring initialized successfully
+2025-09-04 15:27:55,486 INFO sqlalchemy.engine.Engine select pg_catalog.version()
+2025-09-04 15:27:55,486 - sqlalchemy.engine.Engine - INFO - select pg_catalog.version()
+2025-09-04 15:27:55,487 INFO sqlalchemy.engine.Engine [raw sql] ()
+2025-09-04 15:27:55,487 - sqlalchemy.engine.Engine - INFO - [raw sql] ()
+2025-09-04 15:27:55,490 INFO sqlalchemy.engine.Engine select current_schema()
+2025-09-04 15:27:55,490 - sqlalchemy.engine.Engine - INFO - select current_schema()
+2025-09-04 15:27:55,491 INFO sqlalchemy.engine.Engine [raw sql] ()
+2025-09-04 15:27:55,491 - sqlalchemy.engine.Engine - INFO - [raw sql] ()
+2025-09-04 15:27:55,493 INFO sqlalchemy.engine.Engine show standard_conforming_strings
+2025-09-04 15:27:55,493 - sqlalchemy.engine.Engine - INFO - show standard_conforming_strings
+2025-09-04 15:27:55,494 INFO sqlalchemy.engine.Engine [raw sql] ()
+2025-09-04 15:27:55,494 - sqlalchemy.engine.Engine - INFO - [raw sql] ()
+2025-09-04 15:27:55,496 INFO sqlalchemy.engine.Engine BEGIN (implicit)
+2025-09-04 15:27:55,496 - sqlalchemy.engine.Engine - INFO - BEGIN (implicit)
+2025-09-04 15:27:55,498 INFO sqlalchemy.engine.Engine SELECT 1
+2025-09-04 15:27:55,498 - sqlalchemy.engine.Engine - INFO - SELECT 1
+2025-09-04 15:27:55,498 INFO sqlalchemy.engine.Engine [generated in 0.00055s] ()
+2025-09-04 15:27:55,498 - sqlalchemy.engine.Engine - INFO - [generated in 0.00055s] ()
+2025-09-04 15:27:55,501 INFO sqlalchemy.engine.Engine COMMIT
+2025-09-04 15:27:55,501 - sqlalchemy.engine.Engine - INFO - COMMIT
+2025-09-04 15:27:55,512 - core.database - INFO - Database connection test successful
+2025-09-04 15:27:55,512 - core.database - INFO - Database connections initialized successfully
+2025-09-04 15:27:55,517 - core.cache - INFO - Redis connection initialized successfully
+2025-09-04 15:27:56,040 - kafka.conn - INFO - <BrokerConnection client_id=towerco_admin, node_id=bootstrap-0 host=kafka:9092 <connecting> [IPv4 ('172.23.0.5', 9092)]>: connecting to kafka:9092 [('172.23.0.5', 9092) IPv4]
+2025-09-04 15:27:56,050 - kafka.conn - INFO - <BrokerConnection client_id=towerco_admin, node_id=bootstrap-0 host=kafka:9092 <checking_api_versions_recv> [IPv4 ('172.23.0.5', 9092)]>: Broker version identified as 2.6
+2025-09-04 15:27:56,050 - kafka.conn - INFO - <BrokerConnection client_id=towerco_admin, node_id=bootstrap-0 host=kafka:9092 <connected> [IPv4 ('172.23.0.5', 9092)]>: Connection complete.
+2025-09-04 15:27:56,070 - kafka.conn - INFO - <BrokerConnection client_id=towerco_admin, node_id=1 host=kafka:9092 <connecting> [IPv4 ('172.23.0.5', 9092)]>: connecting to kafka:9092 [('172.23.0.5', 9092) IPv4]
+2025-09-04 15:27:56,071 - kafka.conn - INFO - <BrokerConnection client_id=towerco_admin, node_id=1 host=kafka:9092 <connected> [IPv4 ('172.23.0.5', 9092)]>: Connection complete.
+2025-09-04 15:27:56,071 - kafka.conn - INFO - <BrokerConnection client_id=towerco_admin, node_id=bootstrap-0 host=kafka:9092 <connected> [IPv4 ('172.23.0.5', 9092)]>: Closing connection.
+2025-09-04 15:27:56,091 - core.messaging - INFO - Kafka topics already exist
+2025-09-04 15:27:56,091 - kafka.conn - INFO - <BrokerConnection client_id=towerco_admin, node_id=1 host=kafka:9092 <connected> [IPv4 ('172.23.0.5', 9092)]>: Closing connection.
+2025-09-04 15:27:56,091 - core.messaging - INFO - Kafka producer initialized successfully
+2025-09-04 15:27:56,092 - core.auth - INFO - Keycloak not ready, attempt 1/30
+2025-09-04 15:27:58,096 - core.auth - INFO - Keycloak not ready, attempt 2/30
+2025-09-04 15:28:00,098 - core.auth - INFO - Keycloak not ready, attempt 3/30
+2025-09-04 15:28:02,106 - core.auth - INFO - Keycloak not ready, attempt 4/30
+2025-09-04 15:28:04,152 - core.auth - INFO - Keycloak not ready, attempt 5/30
+2025-09-04 15:28:06,178 - core.auth - INFO - Keycloak not ready, attempt 6/30
+2025-09-04 15:28:08,453 - core.auth - INFO - Keycloak not ready, attempt 7/30
+2025-09-04 15:28:10,649 - core.auth - INFO - Keycloak not ready, attempt 8/30
+2025-09-04 15:28:12,654 - core.auth - INFO - Keycloak not ready, attempt 9/30
+2025-09-04 15:28:14,702 - core.auth - INFO - Keycloak not ready, attempt 10/30
+2025-09-04 15:28:16,703 - core.auth - INFO - Keycloak not ready, attempt 11/30
+2025-09-04 15:28:18,704 - core.auth - INFO - Keycloak not ready, attempt 12/30
+2025-09-04 15:28:20,720 - core.auth - INFO - Keycloak not ready, attempt 13/30
+2025-09-04 15:28:22,729 - core.auth - INFO - Keycloak not ready, attempt 14/30
+2025-09-04 15:28:24,799 - core.auth - INFO - Keycloak not ready, attempt 15/30
+2025-09-04 15:28:26,805 - core.auth - INFO - Keycloak not ready, attempt 16/30
+2025-09-04 15:28:28,809 - core.auth - INFO - Keycloak not ready, attempt 17/30
+2025-09-04 15:28:30,819 - core.auth - INFO - Keycloak not ready, attempt 18/30
+2025-09-04 15:28:32,827 - core.auth - INFO - Keycloak not ready, attempt 19/30
+2025-09-04 15:28:34,842 - core.auth - INFO - Keycloak not ready, attempt 20/30
+2025-09-04 15:28:36,848 - core.auth - INFO - Keycloak not ready, attempt 21/30
+2025-09-04 15:28:38,853 - core.auth - INFO - Keycloak not ready, attempt 22/30
+2025-09-04 15:28:40,866 - core.auth - INFO - Keycloak not ready, attempt 23/30
+2025-09-04 15:28:42,871 - core.auth - INFO - Keycloak not ready, attempt 24/30
+2025-09-04 15:28:44,873 - core.auth - INFO - Keycloak not ready, attempt 25/30
+2025-09-04 15:28:46,876 - core.auth - INFO - Keycloak not ready, attempt 26/30
+2025-09-04 15:28:48,894 - core.auth - INFO - Keycloak not ready, attempt 27/30
+[root@vmi2390455 sam]# docker ps
+CONTAINER ID   IMAGE                              COMMAND                  CREATED              STATUS                                 PORTS                                    NAMES
+2bfcc388a131   local/sam-backend:dev              "uvicorn backend.mai…"   About a minute ago   Up About a minute (unhealthy)          0.0.0.0:8000->8000/tcp                   compose-backend-1
+e84de939f47b   quay.io/keycloak/keycloak:22.0.1   "/opt/keycloak/bin/k…"   About a minute ago   Up About a minute (health: starting)   8443/tcp, 0.0.0.0:8081->8080/tcp         keycloak
+7ecf3252a266   local/sam-client-portal:dev        "docker-entrypoint.s…"   11 hours ago         Up About a minute                      0.0.0.0:5173->3000/tcp                   compose-client-portal-1
+0c795dd2d567   prom/prometheus:v2.55.0            "/bin/prometheus --c…"   11 hours ago         Up 11 hours                            0.0.0.0:9090->9090/tcp                   compose-prometheus-1
+da0104c8a5cc   bitnami/zookeeper:3.9              "/opt/bitnami/script…"   11 hours ago         Up 11 hours                            2181/tcp, 2888/tcp, 3888/tcp, 8080/tcp   compose-zookeeper-1
+d2a97aef8817   bitnami/kafka:3.7                  "/opt/bitnami/script…"   11 hours ago         Up 11 hours                            9092/tcp                                 compose-kafka-1
+96ad0e1d10d6   redis:7-alpine                     "docker-entrypoint.s…"   11 hours ago         Up 11 hours (healthy)                  6379/tcp                                 compose-redis-1
+3b7a6d11cc07   local/sam-frontend:dev             "python -m http.serv…"   11 hours ago         Up 11 hours                            0.0.0.0:8090->8000/tcp                   compose-frontend-1
+2b3daff8b89c   grafana/grafana:11.1.0             "/run.sh"                11 hours ago         Up 11 hours                            0.0.0.0:3001->3000/tcp                   compose-grafana-1
+2f0c26a49e22   postgres:16-alpine                 "docker-entrypoint.s…"   11 hours ago         Up 11 hours (healthy)                  5432/tcp                                 compose-postgres-1
+101308e7791c   minio/mc:latest                    "/bin/sh -c ' echo '…"   2 weeks ago          Up 2 weeks                                                                      minio-client
+9864a7b37372   minio/minio:latest                 "/usr/bin/docker-ent…"   2 weeks ago          Up 2 weeks (healthy)                   0.0.0.0:9000-9001->9000-9001/tcp         minio-server
+f219b96258b5   txe-web_app                        "docker-entrypoint.s…"   6 weeks ago          Up 6 weeks                             0.0.0.0:3002->3002/tcp                   txe-web_app_1
+b76b69afa727   website_app                        "docker-entrypoint.s…"   4 months ago         Up 4 months                            0.0.0.0:3000->3000/tcp                   website_app_1
+[root@vmi2390455 sam]# docker logs e84de939f47b
+Updating the configuration and installing your custom providers, if any. Please wait.
+2025-09-04 15:28:31,775 INFO  [io.quarkus.deployment.QuarkusAugmentor] (main) Quarkus augmentation completed in 32122ms
+2025-09-04 15:28:37,103 INFO  [org.keycloak.quarkus.runtime.hostname.DefaultHostnameProvider] (main) Hostname settings: Base URL: <unset>, Hostname: localhost, Strict HTTPS: false, Path: <request>, Strict BackChannel: false, Admin URL: <unset>, Admin: <request>, Port: -1, Proxied: false
+2025-09-04 15:28:46,911 WARN  [io.quarkus.agroal.runtime.DataSources] (main) Datasource <default> enables XA but transaction recovery is not enabled. Please enable transaction recovery by setting quarkus.transaction-manager.enable-recovery=true, otherwise data may be lost if the application is terminated abruptly
+2025-09-04 15:28:51,948 WARN  [org.infinispan.PERSISTENCE] (keycloak-cache-init) ISPN000554: jboss-marshalling is deprecated and planned for removal
+2025-09-04 15:28:52,560 INFO  [org.infinispan.CONTAINER] (keycloak-cache-init) ISPN000556: Starting user marshaller 'org.infinispan.jboss.marshalling.core.JBossUserMarshaller'
+2025-09-04 15:28:59,210 INFO  [org.keycloak.quarkus.runtime.storage.legacy.liquibase.QuarkusJpaUpdaterProvider] (main) Initializing database schema. Using changelog META-INF/jpa-changelog-master.xml
+2025-09-04 15:29:14,402 INFO  [org.keycloak.connections.infinispan.DefaultInfinispanConnectionProviderFactory] (main) Node name: node_803837, Site name: null
+2025-09-04 15:29:16,034 INFO  [org.keycloak.broker.provider.AbstractIdentityProviderMapper] (main) Registering class org.keycloak.broker.provider.mappersync.ConfigSyncEventListener
+2025-09-04 15:29:16,345 INFO  [org.keycloak.services] (main) KC-SERVICES0050: Initializing master realm
+[root@vmi2390455 sam]# docker ps
+CONTAINER ID   IMAGE                              COMMAND                  CREATED         STATUS                     PORTS                                    NAMES
+2bfcc388a131   local/sam-backend:dev              "uvicorn backend.mai…"   3 minutes ago   Up 3 minutes (unhealthy)   0.0.0.0:8000->8000/tcp                   compose-backend-1
+e84de939f47b   quay.io/keycloak/keycloak:22.0.1   "/opt/keycloak/bin/k…"   3 minutes ago   Up 3 minutes (unhealthy)   8443/tcp, 0.0.0.0:8081->8080/tcp         keycloak
+7ecf3252a266   local/sam-client-portal:dev        "docker-entrypoint.s…"   11 hours ago    Up 3 minutes               0.0.0.0:5173->3000/tcp                   compose-client-portal-1
+0c795dd2d567   prom/prometheus:v2.55.0            "/bin/prometheus --c…"   11 hours ago    Up 11 hours                0.0.0.0:9090->9090/tcp                   compose-prometheus-1
+da0104c8a5cc   bitnami/zookeeper:3.9              "/opt/bitnami/script…"   11 hours ago    Up 11 hours                2181/tcp, 2888/tcp, 3888/tcp, 8080/tcp   compose-zookeeper-1
+d2a97aef8817   bitnami/kafka:3.7                  "/opt/bitnami/script…"   11 hours ago    Up 11 hours                9092/tcp                                 compose-kafka-1
+96ad0e1d10d6   redis:7-alpine                     "docker-entrypoint.s…"   11 hours ago    Up 11 hours (healthy)      6379/tcp                                 compose-redis-1
+3b7a6d11cc07   local/sam-frontend:dev             "python -m http.serv…"   11 hours ago    Up 11 hours                0.0.0.0:8090->8000/tcp                   compose-frontend-1
+2b3daff8b89c   grafana/grafana:11.1.0             "/run.sh"                11 hours ago    Up 11 hours                0.0.0.0:3001->3000/tcp                   compose-grafana-1
+2f0c26a49e22   postgres:16-alpine                 "docker-entrypoint.s…"   11 hours ago    Up 11 hours (healthy)      5432/tcp                                 compose-postgres-1
+101308e7791c   minio/mc:latest                    "/bin/sh -c ' echo '…"   2 weeks ago     Up 2 weeks                                                          minio-client
+9864a7b37372   minio/minio:latest                 "/usr/bin/docker-ent…"   2 weeks ago     Up 2 weeks (healthy)       0.0.0.0:9000-9001->9000-9001/tcp         minio-server
+f219b96258b5   txe-web_app                        "docker-entrypoint.s…"   6 weeks ago     Up 6 weeks                 0.0.0.0:3002->3002/tcp                   txe-web_app_1
+b76b69afa727   website_app                        "docker-entrypoint.s…"   4 months ago    Up 4 months                0.0.0.0:3000->3000/tcp                   website_app_1
+[root@vmi2390455 sam]# docker logs e84de939f47b
+Updating the configuration and installing your custom providers, if any. Please wait.
+2025-09-04 15:28:31,775 INFO  [io.quarkus.deployment.QuarkusAugmentor] (main) Quarkus augmentation completed in 32122ms
+2025-09-04 15:28:37,103 INFO  [org.keycloak.quarkus.runtime.hostname.DefaultHostnameProvider] (main) Hostname settings: Base URL: <unset>, Hostname: localhost, Strict HTTPS: false, Path: <request>, Strict BackChannel: false, Admin URL: <unset>, Admin: <request>, Port: -1, Proxied: false
+2025-09-04 15:28:46,911 WARN  [io.quarkus.agroal.runtime.DataSources] (main) Datasource <default> enables XA but transaction recovery is not enabled. Please enable transaction recovery by setting quarkus.transaction-manager.enable-recovery=true, otherwise data may be lost if the application is terminated abruptly
+2025-09-04 15:28:51,948 WARN  [org.infinispan.PERSISTENCE] (keycloak-cache-init) ISPN000554: jboss-marshalling is deprecated and planned for removal
+2025-09-04 15:28:52,560 INFO  [org.infinispan.CONTAINER] (keycloak-cache-init) ISPN000556: Starting user marshaller 'org.infinispan.jboss.marshalling.core.JBossUserMarshaller'
+2025-09-04 15:28:59,210 INFO  [org.keycloak.quarkus.runtime.storage.legacy.liquibase.QuarkusJpaUpdaterProvider] (main) Initializing database schema. Using changelog META-INF/jpa-changelog-master.xml
+2025-09-04 15:29:14,402 INFO  [org.keycloak.connections.infinispan.DefaultInfinispanConnectionProviderFactory] (main) Node name: node_803837, Site name: null
+2025-09-04 15:29:16,034 INFO  [org.keycloak.broker.provider.AbstractIdentityProviderMapper] (main) Registering class org.keycloak.broker.provider.mappersync.ConfigSyncEventListener
+2025-09-04 15:29:16,345 INFO  [org.keycloak.services] (main) KC-SERVICES0050: Initializing master realm
+2025-09-04 15:29:22,884 INFO  [org.keycloak.exportimport.singlefile.SingleFileImportProvider] (main) Full importing from file /opt/keycloak/bin/../data/import/realm.json
+2025-09-04 15:29:32,001 INFO  [org.keycloak.exportimport.util.ImportUtils] (main) Realm 'towerco' imported
+2025-09-04 15:29:32,307 INFO  [org.keycloak.exportimport.dir.DirImportProvider] (main) Importing from directory /opt/keycloak/bin/../data/import
+2025-09-04 15:29:32,312 INFO  [org.keycloak.services] (main) KC-SERVICES0030: Full model import requested. Strategy: IGNORE_EXISTING
+2025-09-04 15:29:32,318 INFO  [org.keycloak.services] (main) KC-SERVICES0032: Import finished successfully
+2025-09-04 15:29:34,115 INFO  [io.quarkus] (main) Keycloak 22.0.1 on JVM (powered by Quarkus 3.2.0.Final) started in 62.005s. Listening on: http://0.0.0.0:8080
+2025-09-04 15:29:34,139 INFO  [io.quarkus] (main) Profile dev activated.
+2025-09-04 15:29:34,139 INFO  [io.quarkus] (main) Installed features: [agroal, cdi, hibernate-orm, jdbc-h2, jdbc-mariadb, jdbc-mssql, jdbc-mysql, jdbc-oracle, jdbc-postgresql, keycloak, logging-gelf, micrometer, narayana-jta, reactive-routes, resteasy, resteasy-jackson, smallrye-context-propagation, smallrye-health, vertx]
+2025-09-04 15:29:34,414 INFO  [org.keycloak.services] (main) KC-SERVICES0009: Added user 'admin' to realm 'master'
+2025-09-04 15:29:34,418 WARN  [org.keycloak.quarkus.runtime.KeycloakMain] (main) Running the server in development mode. DO NOT use this configuration in production.

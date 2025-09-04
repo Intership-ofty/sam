@@ -33,8 +33,12 @@ async def init_auth():
     import time
     
     # Wait for Keycloak to be available
-    max_retries = 30
+    max_retries = 60  # 2 minutes au lieu de 1 minute
     retry_delay = 2
+    
+    # Attendre un peu avant de commencer les tests
+    logger.info("Waiting for Keycloak to start...")
+    time.sleep(10)
     
     for attempt in range(max_retries):
         try:
