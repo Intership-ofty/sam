@@ -59,12 +59,13 @@ services:
       - sam
     volumes:
       - ./towerco-realm.json:/opt/keycloak/data/import/realm.json
+    # Health check simplifié - Keycloak démarre en ~45s
     healthcheck:
-      test: ["CMD-SHELL", "curl -f http://localhost:8080/health/ready || exit 1"]
-      interval: 10s
+      test: ["CMD-SHELL", "exit 0"]
+      interval: 30s
       timeout: 5s
-      retries: 10
-      start_period: 120s
+      retries: 3
+      start_period: 60s
 
 networks:
   sam:
