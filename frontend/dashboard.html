@@ -258,7 +258,7 @@
 
         function setupEventSource() {
             // Connect to real-time KPI stream
-            eventSource = new EventSource('http://http://37.60.242.104:8000/api/v1/kpi/stream/all');
+            eventSource = new EventSource('http://localhost:8000/api/v1/kpi/stream/network_performance');
             
             eventSource.onmessage = function(event) {
                 try {
@@ -288,7 +288,7 @@
 
         async function loadKPIData() {
             try {
-                const response = await fetch('/api/v1/kpi/metrics?limit=100');
+                const response = await fetch('http://localhost:8000/api/v1/kpi/metrics?limit=100');
                 const data = await response.json();
                 
                 updateKPICards(data);

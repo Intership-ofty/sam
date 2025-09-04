@@ -25,6 +25,7 @@ from core.monitoring import init_monitoring, metrics
 from core.auth import init_auth
 from api.v1 import api_router
 from api.health import router as health_router
+from api.auth import router as auth_router
 
 # Configure logging
 logging.basicConfig(
@@ -223,6 +224,7 @@ async def monitoring_middleware(request: Request, call_next):
 
 # Include routers
 app.include_router(health_router, prefix="/health", tags=["health"])
+app.include_router(auth_router)  # No prefix, already has /api/v1/auth
 app.include_router(api_router, prefix="/api/v1")
 
 

@@ -1,0 +1,450 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sites - Towerco AIOps Platform</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        .card-hover {
+            transition: all 0.3s ease;
+        }
+        .card-hover:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+        }
+        .pulse-animation {
+            animation: pulse 2s infinite;
+        }
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+        .status-indicator {
+            display: inline-flex;
+            align-items: center;
+            padding: 0.25rem 0.75rem;
+            border-radius: 9999px;
+            font-size: 0.75rem;
+            font-weight: 500;
+        }
+        .status-active { background-color: #dcfce7; color: #166534; }
+        .status-inactive { background-color: #f3f4f6; color: #374151; }
+        .status-maintenance { background-color: #fef3c7; color: #92400e; }
+        .health-excellent { background-color: #dcfce7; color: #166534; }
+        .health-good { background-color: #dbeafe; color: #1e40af; }
+        .health-fair { background-color: #fef3c7; color: #92400e; }
+        .health-poor { background-color: #fed7aa; color: #ea580c; }
+        .health-critical { background-color: #fee2e2; color: #991b1b; }
+    </style>
+</head>
+<body class="bg-gray-50">
+    <!-- Navigation -->
+    <nav class="bg-white shadow-lg">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between h-16">
+                <div class="flex items-center">
+                    <div class="flex-shrink-0">
+                        <a href="index.html" class="text-2xl font-bold text-gray-900">Towerco AIOps</a>
+                    </div>
+                    <div class="hidden md:ml-6 md:flex md:space-x-8">
+                        <a href="dashboard.html" class="text-gray-500 hover:text-blue-600 px-3 py-2 rounded-md text-sm font-medium transition-colors">
+                            <i class="fas fa-tachometer-alt mr-2"></i>Dashboard
+                        </a>
+                        <a href="sites.html" class="text-gray-900 hover:text-blue-600 px-3 py-2 rounded-md text-sm font-medium transition-colors">
+                            <i class="fas fa-broadcast-tower mr-2"></i>Sites
+                        </a>
+                        <a href="#kpis" class="text-gray-500 hover:text-blue-600 px-3 py-2 rounded-md text-sm font-medium transition-colors">
+                            <i class="fas fa-chart-line mr-2"></i>KPIs
+                        </a>
+                        <a href="#alerts" class="text-gray-500 hover:text-blue-600 px-3 py-2 rounded-md text-sm font-medium transition-colors">
+                            <i class="fas fa-exclamation-triangle mr-2"></i>Alerts
+                        </a>
+                    </div>
+                </div>
+                <div class="flex items-center">
+                    <div class="flex items-center space-x-4">
+                        <div class="relative">
+                            <div class="flex items-center space-x-2">
+                                <div class="w-2 h-2 bg-green-500 rounded-full pulse-animation"></div>
+                                <span class="text-sm text-gray-600">System Online</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="max-w-7xl mx-auto py-8 px-4 sm:px-6 lg:px-8">
+        <!-- Header -->
+        <div class="mb-8">
+            <h1 class="text-3xl font-bold text-gray-900">Sites Management</h1>
+            <p class="mt-2 text-gray-600">Monitor and manage your telecom infrastructure sites</p>
+        </div>
+
+        <!-- Filters -->
+        <div class="bg-white rounded-lg shadow p-6 mb-8">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Search</label>
+                    <input type="text" id="searchInput" placeholder="Search sites..." 
+                           class="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Region</label>
+                    <select id="regionFilter" class="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                        <option value="">All Regions</option>
+                        <option value="North">North</option>
+                        <option value="South">South</option>
+                        <option value="East">East</option>
+                        <option value="West">West</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Technology</label>
+                    <select id="techFilter" class="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                        <option value="">All Technologies</option>
+                        <option value="5G">5G</option>
+                        <option value="4G">4G</option>
+                        <option value="3G">3G</option>
+                        <option value="2G">2G</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Status</label>
+                    <select id="statusFilter" class="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                        <option value="">All Status</option>
+                        <option value="active">Active</option>
+                        <option value="inactive">Inactive</option>
+                        <option value="maintenance">Maintenance</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+
+        <!-- Stats Cards -->
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+            <div class="bg-white rounded-lg shadow p-6">
+                <div class="flex items-center">
+                    <div class="flex-shrink-0">
+                        <div class="w-8 h-8 bg-blue-500 rounded-md flex items-center justify-center">
+                            <i class="fas fa-broadcast-tower text-white"></i>
+                        </div>
+                    </div>
+                    <div class="ml-4">
+                        <p class="text-sm font-medium text-gray-500">Total Sites</p>
+                        <p class="text-2xl font-semibold text-gray-900" id="totalSites">0</p>
+                    </div>
+                </div>
+            </div>
+            <div class="bg-white rounded-lg shadow p-6">
+                <div class="flex items-center">
+                    <div class="flex-shrink-0">
+                        <div class="w-8 h-8 bg-green-500 rounded-md flex items-center justify-center">
+                            <i class="fas fa-check-circle text-white"></i>
+                        </div>
+                    </div>
+                    <div class="ml-4">
+                        <p class="text-sm font-medium text-gray-500">Active Sites</p>
+                        <p class="text-2xl font-semibold text-gray-900" id="activeSites">0</p>
+                    </div>
+                </div>
+            </div>
+            <div class="bg-white rounded-lg shadow p-6">
+                <div class="flex items-center">
+                    <div class="flex-shrink-0">
+                        <div class="w-8 h-8 bg-yellow-500 rounded-md flex items-center justify-center">
+                            <i class="fas fa-tools text-white"></i>
+                        </div>
+                    </div>
+                    <div class="ml-4">
+                        <p class="text-sm font-medium text-gray-500">Maintenance</p>
+                        <p class="text-2xl font-semibold text-gray-900" id="maintenanceSites">0</p>
+                    </div>
+                </div>
+            </div>
+            <div class="bg-white rounded-lg shadow p-6">
+                <div class="flex items-center">
+                    <div class="flex-shrink-0">
+                        <div class="w-8 h-8 bg-red-500 rounded-md flex items-center justify-center">
+                            <i class="fas fa-exclamation-triangle text-white"></i>
+                        </div>
+                    </div>
+                    <div class="ml-4">
+                        <p class="text-sm font-medium text-gray-500">Alerts</p>
+                        <p class="text-2xl font-semibold text-gray-900" id="totalAlerts">0</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Sites Grid -->
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" id="sitesGrid">
+            <!-- Sites will be loaded here -->
+        </div>
+
+        <!-- Loading State -->
+        <div id="loadingState" class="text-center py-12">
+            <i class="fas fa-spinner fa-spin text-4xl text-gray-400 mb-4"></i>
+            <p class="text-gray-500">Loading sites...</p>
+        </div>
+
+        <!-- Empty State -->
+        <div id="emptyState" class="text-center py-12 hidden">
+            <i class="fas fa-broadcast-tower text-6xl text-gray-300 mb-4"></i>
+            <h3 class="text-lg font-medium text-gray-900 mb-2">No sites found</h3>
+            <p class="text-gray-500">Try adjusting your filters or check back later.</p>
+        </div>
+    </div>
+
+    <script>
+        // Mock data for demonstration
+        const mockSites = [
+            {
+                id: '1',
+                name: 'Downtown Tower A',
+                code: 'DT-A-001',
+                region: 'North',
+                technology: ['5G', '4G'],
+                status: 'active',
+                healthScore: 95,
+                alerts: 0,
+                address: '123 Main St, Downtown',
+                lastUpdate: '2024-01-15T10:30:00Z'
+            },
+            {
+                id: '2',
+                name: 'Suburban Site B',
+                code: 'SUB-B-002',
+                region: 'South',
+                technology: ['4G', '3G'],
+                status: 'active',
+                healthScore: 87,
+                alerts: 1,
+                address: '456 Oak Ave, Suburbia',
+                lastUpdate: '2024-01-15T09:45:00Z'
+            },
+            {
+                id: '3',
+                name: 'Industrial Complex C',
+                code: 'IND-C-003',
+                region: 'East',
+                technology: ['5G'],
+                status: 'maintenance',
+                healthScore: 72,
+                alerts: 3,
+                address: '789 Industrial Blvd, Factory District',
+                lastUpdate: '2024-01-15T08:15:00Z'
+            },
+            {
+                id: '4',
+                name: 'Rural Coverage D',
+                code: 'RUR-D-004',
+                region: 'West',
+                technology: ['3G', '2G'],
+                status: 'active',
+                healthScore: 91,
+                alerts: 0,
+                address: '321 Country Rd, Rural Area',
+                lastUpdate: '2024-01-15T11:00:00Z'
+            },
+            {
+                id: '5',
+                name: 'Airport Terminal E',
+                code: 'APT-E-005',
+                region: 'North',
+                technology: ['5G', '4G', 'WiFi'],
+                status: 'active',
+                healthScore: 98,
+                alerts: 0,
+                address: '555 Airport Blvd, Terminal 1',
+                lastUpdate: '2024-01-15T12:15:00Z'
+            },
+            {
+                id: '6',
+                name: 'Shopping Mall F',
+                code: 'MAL-F-006',
+                region: 'South',
+                technology: ['4G', 'WiFi'],
+                status: 'inactive',
+                healthScore: 45,
+                alerts: 5,
+                address: '999 Mall Dr, Shopping Center',
+                lastUpdate: '2024-01-14T16:30:00Z'
+            }
+        ];
+
+        let filteredSites = [...mockSites];
+
+        function getHealthClass(score) {
+            if (score >= 90) return 'health-excellent';
+            if (score >= 80) return 'health-good';
+            if (score >= 70) return 'health-fair';
+            if (score >= 50) return 'health-poor';
+            return 'health-critical';
+        }
+
+        function getHealthText(score) {
+            if (score >= 90) return 'Excellent';
+            if (score >= 80) return 'Good';
+            if (score >= 70) return 'Fair';
+            if (score >= 50) return 'Poor';
+            return 'Critical';
+        }
+
+        function getStatusClass(status) {
+            switch (status) {
+                case 'active': return 'status-active';
+                case 'inactive': return 'status-inactive';
+                case 'maintenance': return 'status-maintenance';
+                default: return 'status-inactive';
+            }
+        }
+
+        function formatLastUpdate(dateString) {
+            const date = new Date(dateString);
+            const now = new Date();
+            const diffMs = now - date;
+            const diffHours = Math.floor(diffMs / (1000 * 60 * 60));
+            
+            if (diffHours < 1) return 'Just now';
+            if (diffHours < 24) return `${diffHours}h ago`;
+            const diffDays = Math.floor(diffHours / 24);
+            return `${diffDays}d ago`;
+        }
+
+        function renderSites() {
+            const grid = document.getElementById('sitesGrid');
+            const loadingState = document.getElementById('loadingState');
+            const emptyState = document.getElementById('emptyState');
+
+            loadingState.classList.add('hidden');
+
+            if (filteredSites.length === 0) {
+                emptyState.classList.remove('hidden');
+                grid.innerHTML = '';
+                return;
+            }
+
+            emptyState.classList.add('hidden');
+
+            grid.innerHTML = filteredSites.map(site => `
+                <div class="card-hover bg-white rounded-lg shadow p-6">
+                    <div class="flex items-center justify-between mb-4">
+                        <h3 class="text-lg font-semibold text-gray-900">${site.name}</h3>
+                        <span class="status-indicator ${getStatusClass(site.status)}">
+                            ${site.status}
+                        </span>
+                    </div>
+
+                    <div class="space-y-3">
+                        <div class="flex items-center justify-between">
+                            <span class="text-sm text-gray-500">Site Code</span>
+                            <span class="text-sm font-medium text-gray-900">${site.code}</span>
+                        </div>
+
+                        <div class="flex items-center justify-between">
+                            <span class="text-sm text-gray-500">Region</span>
+                            <span class="text-sm font-medium text-gray-900">${site.region}</span>
+                        </div>
+
+                        <div class="flex items-center justify-between">
+                            <span class="text-sm text-gray-500">Technology</span>
+                            <div class="flex flex-wrap gap-1">
+                                ${site.technology.map(tech => 
+                                    `<span class="px-2 py-1 bg-blue-100 text-blue-800 text-xs rounded">${tech}</span>`
+                                ).join('')}
+                            </div>
+                        </div>
+
+                        <div class="flex items-center justify-between">
+                            <span class="text-sm text-gray-500">Health Score</span>
+                            <div class="flex items-center space-x-2">
+                                <span class="status-indicator ${getHealthClass(site.healthScore)}">
+                                    ${site.healthScore}%
+                                </span>
+                                <span class="text-xs text-gray-500">
+                                    ${getHealthText(site.healthScore)}
+                                </span>
+                            </div>
+                        </div>
+
+                        ${site.alerts > 0 ? `
+                            <div class="flex items-center justify-between">
+                                <span class="text-sm text-gray-500">Active Alerts</span>
+                                <span class="text-sm font-medium text-red-600">${site.alerts}</span>
+                            </div>
+                        ` : ''}
+
+                        <div class="pt-2 border-t border-gray-200">
+                            <p class="text-xs text-gray-500 truncate">${site.address}</p>
+                        </div>
+
+                        <div class="pt-2">
+                            <p class="text-xs text-gray-400">
+                                Last updated: ${formatLastUpdate(site.lastUpdate)}
+                            </p>
+                        </div>
+
+                        <div class="pt-4">
+                            <button class="w-full bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 transition-colors">
+                                <i class="fas fa-eye mr-2"></i>View Details
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function updateStats() {
+            const totalSites = filteredSites.length;
+            const activeSites = filteredSites.filter(site => site.status === 'active').length;
+            const maintenanceSites = filteredSites.filter(site => site.status === 'maintenance').length;
+            const totalAlerts = filteredSites.reduce((sum, site) => sum + site.alerts, 0);
+
+            document.getElementById('totalSites').textContent = totalSites;
+            document.getElementById('activeSites').textContent = activeSites;
+            document.getElementById('maintenanceSites').textContent = maintenanceSites;
+            document.getElementById('totalAlerts').textContent = totalAlerts;
+        }
+
+        function filterSites() {
+            const search = document.getElementById('searchInput').value.toLowerCase();
+            const region = document.getElementById('regionFilter').value;
+            const tech = document.getElementById('techFilter').value;
+            const status = document.getElementById('statusFilter').value;
+
+            filteredSites = mockSites.filter(site => {
+                const matchesSearch = !search || 
+                    site.name.toLowerCase().includes(search) ||
+                    site.code.toLowerCase().includes(search) ||
+                    site.address.toLowerCase().includes(search);
+
+                const matchesRegion = !region || site.region === region;
+                const matchesTech = !tech || site.technology.includes(tech);
+                const matchesStatus = !status || site.status === status;
+
+                return matchesSearch && matchesRegion && matchesTech && matchesStatus;
+            });
+
+            updateStats();
+            renderSites();
+        }
+
+        // Event listeners
+        document.getElementById('searchInput').addEventListener('input', filterSites);
+        document.getElementById('regionFilter').addEventListener('change', filterSites);
+        document.getElementById('techFilter').addEventListener('change', filterSites);
+        document.getElementById('statusFilter').addEventListener('change', filterSites);
+
+        // Initial load
+        setTimeout(() => {
+            updateStats();
+            renderSites();
+        }, 1000);
+    </script>
+</body>
+</html>
