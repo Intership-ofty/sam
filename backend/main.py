@@ -271,8 +271,9 @@ async def update_system_metrics():
         from core.database import get_db_pool
         pool = await get_db_pool()
         if pool:
-            metrics.db_connections_active.set(pool.get_size() - pool.get_available_size())
-            metrics.db_connections_idle.set(pool.get_available_size())
+            # Use correct SQLAlchemy pool methods
+            metrics.db_connections_active.set(pool.size())
+            metrics.db_connections_idle.set(pool.checkedin())
         
         # Update Redis connection metrics
         from core.cache import redis_client
