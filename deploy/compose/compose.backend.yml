@@ -65,15 +65,19 @@ services:
       - keycloak
     command: >
       sh -c "
+        echo 'Waiting for Keycloak to start...';
+        sleep 10;
         echo 'Waiting for Keycloak realm to be ready...';
-        until curl -f http://keycloak:8080/realms/towerco/.well-known/openid-configuration; do
+        until curl -f -s http://keycloak:8080/realms/towerco/.well-known/openid-configuration > /dev/null 2>&1; do
           echo 'Keycloak realm not ready yet, sleeping for 5s...';
           sleep 5;
         done;
         echo 'Keycloak realm is ready!';
+        exit 0;
       "
     networks:
       - sam
+    restart: "no"
 
 networks:
   sam:
