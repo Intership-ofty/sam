@@ -15,8 +15,6 @@ services:
         condition: service_healthy
       redis:
         condition: service_healthy
-      keycloak-checker:
-        condition: service_completed_successfully
     networks:
       - sam
   postgres:
@@ -43,41 +41,24 @@ services:
       interval: 10s
       timeout: 5s
       retries: 5
-  keycloak:
-    image: quay.io/keycloak/keycloak:22.0.1
-    container_name: keycloak
-    command: start-dev
-    environment:
-      - KEYCLOAK_ADMIN=admin
-      - KEYCLOAK_ADMIN_PASSWORD=admin
-      - KC_HOSTNAME=localhost
-      - KC_HEALTH_ENABLED=true
-      - KC_METRICS_ENABLED=true
-    ports:
-      - "8081:8080"
-    networks:
-      - sam
-    volumes:
-      - ./towerco-realm.json:/opt/keycloak/data/import/realm.json
-  keycloak-checker:
-    image: curlimages/curl:latest
-    depends_on:
-      - keycloak
-    command: >
-      sh -c "
-        echo 'Waiting for Keycloak to start...';
-        sleep 10;
-        echo 'Waiting for Keycloak realm to be ready...';
-        until curl -f -s http://keycloak:8080/realms/towerco/.well-known/openid-configuration > /dev/null 2>&1; do
-          echo 'Keycloak realm not ready yet, sleeping for 5s...';
-          sleep 5;
-        done;
-        echo 'Keycloak realm is ready!';
-        exit 0;
-      "
-    networks:
-      - sam
-    restart: "no"
+# Keycloak removed - using simple JWT authentication instead
+# Uncomment the following section if you want to use Keycloak:
+#   keycloak:
+#     image: quay.io/keycloak/keycloak:22.0.1
+#     container_name: keycloak
+#     command: start-dev
+#     environment:
+#       - KEYCLOAK_ADMIN=admin
+#       - KEYCLOAK_ADMIN_PASSWORD=admin
+#       - KC_HOSTNAME=localhost
+#       - KC_HEALTH_ENABLED=true
+#       - KC_METRICS_ENABLED=true
+#     ports:
+#       - "8081:8080"
+#     networks:
+#       - sam
+#     volumes:
+#       - ./towerco-realm.json:/opt/keycloak/data/import/realm.json
 
 networks:
   sam:
