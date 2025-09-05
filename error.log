@@ -1,102 +1,140 @@
-[root@vmi2390455 sam]# docker ps
-CONTAINER ID   IMAGE                              COMMAND                  CREATED        STATUS                   PORTS                                    NAMES
-d8f30aa19aa0   local/sam-backend:dev              "uvicorn backend.mai…"   2 hours ago    Up 2 hours (unhealthy)   0.0.0.0:8000->8000/tcp                   compose-backend-1
-ec6f68d2213f   quay.io/keycloak/keycloak:22.0.1   "/opt/keycloak/bin/k…"   2 hours ago    Up 2 hours (unhealthy)   8443/tcp, 0.0.0.0:8081->8080/tcp         keycloak
-7b1d90eb0a37   local/sam-frontend:dev             "python -m http.serv…"   2 hours ago    Up 2 hours               0.0.0.0:8090->8000/tcp                   compose-frontend-1
-76faa6300fe2   local/sam-client-portal:dev        "docker-entrypoint.s…"   2 hours ago    Up 2 hours               0.0.0.0:5173->3000/tcp                   compose-client-portal-1
-9631688662f0   postgres:16-alpine                 "docker-entrypoint.s…"   24 hours ago   Up 24 hours (healthy)    5432/tcp                                 compose-postgres-1
-b0cdfdf91899   redis:7-alpine                     "docker-entrypoint.s…"   24 hours ago   Up 24 hours (healthy)    6379/tcp                                 compose-redis-1
-0c795dd2d567   prom/prometheus:v2.55.0            "/bin/prometheus --c…"   35 hours ago   Up 35 hours              0.0.0.0:9090->9090/tcp                   compose-prometheus-1
-da0104c8a5cc   bitnami/zookeeper:3.9              "/opt/bitnami/script…"   35 hours ago   Up 35 hours              2181/tcp, 2888/tcp, 3888/tcp, 8080/tcp   compose-zookeeper-1
-d2a97aef8817   bitnami/kafka:3.7                  "/opt/bitnami/script…"   35 hours ago   Up 35 hours              9092/tcp                                 compose-kafka-1
-2b3daff8b89c   grafana/grafana:11.1.0             "/run.sh"                35 hours ago   Up 35 hours              0.0.0.0:3001->3000/tcp                   compose-grafana-1
-101308e7791c   minio/mc:latest                    "/bin/sh -c ' echo '…"   2 weeks ago    Up 2 weeks                                                        minio-client
-9864a7b37372   minio/minio:latest                 "/usr/bin/docker-ent…"   2 weeks ago    Up 2 weeks (healthy)     0.0.0.0:9000-9001->9000-9001/tcp         minio-server
-f219b96258b5   txe-web_app                        "docker-entrypoint.s…"   6 weeks ago    Up 6 weeks               0.0.0.0:3002->3002/tcp                   txe-web_app_1
-b76b69afa727   website_app                        "docker-entrypoint.s…"   4 months ago   Up 4 months              0.0.0.0:3000->3000/tcp                   website_app_1
-[root@vmi2390455 sam]# docker logs d8f30aa19aa0
+docker ps
+CONTAINER ID   IMAGE                              COMMAND                  CREATED         STATUS                     PORTS                                    NAMES
+71f8d9846317   local/sam-backend:dev              "uvicorn backend.mai…"   3 minutes ago   Up 3 minutes (unhealthy)   0.0.0.0:8000->8000/tcp                   compose-backend-1
+
+...
+
+docker logs 71f8d9846317
 INFO:     Will watch for changes in these directories: ['/app']
 WARNING:  "workers" flag is ignored when reloading is enabled.
 INFO:     Uvicorn running on http://0.0.0.0:8000 (Press CTRL+C to quit)
 INFO:     Started reloader process [1] using WatchFiles
-Process SpawnProcess-1:
-Traceback (most recent call last):
-  File "/usr/local/lib/python3.11/site-packages/pydantic_settings/sources/base.py", line 490, in __call__
-    field_value = self.prepare_field_value(field_name, field, field_value, value_is_complex)
-                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/usr/local/lib/python3.11/site-packages/pydantic_settings/sources/providers/env.py", line 120, in prepare_field_value
-    raise e
-  File "/usr/local/lib/python3.11/site-packages/pydantic_settings/sources/providers/env.py", line 117, in prepare_field_value
-    value = self.decode_complex_value(field_name, field, value)
-            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/usr/local/lib/python3.11/site-packages/pydantic_settings/sources/base.py", line 186, in decode_complex_value
-    return json.loads(value)
-           ^^^^^^^^^^^^^^^^^
-  File "/usr/local/lib/python3.11/json/__init__.py", line 346, in loads
-    return _default_decoder.decode(s)
-           ^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/usr/local/lib/python3.11/json/decoder.py", line 337, in decode
-    obj, end = self.raw_decode(s, idx=_w(s, 0).end())
-               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/usr/local/lib/python3.11/json/decoder.py", line 355, in raw_decode
-    raise JSONDecodeError("Expecting value", s, err.value) from None
-json.decoder.JSONDecodeError: Expecting value: line 1 column 1 (char 0)
+INFO:     Started server process [8]
+INFO:     Waiting for application startup.
+2025-09-05 15:50:55,769 - backend.main - INFO - Starting Towerco AIOps Platform...
+2025-09-05 15:50:55,769 - core.monitoring - INFO - OpenTelemetry endpoint not configured, using Prometheus only
+2025-09-05 15:50:55,770 - core.monitoring - INFO - Custom metrics initialized
+2025-09-05 15:50:55,770 - core.monitoring - INFO - Monitoring initialized successfully
+2025-09-05 15:50:59,151 INFO sqlalchemy.engine.Engine select pg_catalog.version()
+2025-09-05 15:50:59,151 INFO sqlalchemy.engine.Engine [raw sql] ()
+2025-09-05 15:50:59,151 - sqlalchemy.engine.Engine - INFO - select pg_catalog.version()
+2025-09-05 15:50:59,151 - sqlalchemy.engine.Engine - INFO - [raw sql] ()
+2025-09-05 15:50:59,164 INFO sqlalchemy.engine.Engine select current_schema()
+2025-09-05 15:50:59,164 INFO sqlalchemy.engine.Engine [raw sql] ()
+2025-09-05 15:50:59,164 - sqlalchemy.engine.Engine - INFO - select current_schema()
+2025-09-05 15:50:59,164 - sqlalchemy.engine.Engine - INFO - [raw sql] ()
+2025-09-05 15:50:59,173 INFO sqlalchemy.engine.Engine show standard_conforming_strings
+2025-09-05 15:50:59,173 - sqlalchemy.engine.Engine - INFO - show standard_conforming_strings
+2025-09-05 15:50:59,175 INFO sqlalchemy.engine.Engine [raw sql] ()
+2025-09-05 15:50:59,175 - sqlalchemy.engine.Engine - INFO - [raw sql] ()
+2025-09-05 15:50:59,181 INFO sqlalchemy.engine.Engine BEGIN (implicit)
+2025-09-05 15:50:59,181 - sqlalchemy.engine.Engine - INFO - BEGIN (implicit)
+2025-09-05 15:50:59,183 INFO sqlalchemy.engine.Engine SELECT 1
+2025-09-05 15:50:59,183 - sqlalchemy.engine.Engine - INFO - SELECT 1
+2025-09-05 15:50:59,189 INFO sqlalchemy.engine.Engine [generated in 0.00600s] ()
+2025-09-05 15:50:59,189 - sqlalchemy.engine.Engine - INFO - [generated in 0.00600s] ()
+2025-09-05 15:50:59,191 INFO sqlalchemy.engine.Engine COMMIT
+2025-09-05 15:50:59,191 - sqlalchemy.engine.Engine - INFO - COMMIT
+2025-09-05 15:50:59,231 - core.database - INFO - Database connection test successful
+2025-09-05 15:50:59,231 - core.database - INFO - Database connections initialized successfully
+2025-09-05 15:50:59,235 - core.cache - INFO - Redis connection initialized successfully
+2025-09-05 15:51:01,733 - kafka.conn - INFO - <BrokerConnection client_id=towerco_admin, node_id=bootstrap-0 host=kafka:9092 <connecting> [IPv4 ('172.23.0.5', 9092)]>: connecting to kafka:9092 [('172.23.0.5', 9092) IPv4]
+2025-09-05 15:51:01,755 - kafka.conn - INFO - <BrokerConnection client_id=towerco_admin, node_id=bootstrap-0 host=kafka:9092 <checking_api_versions_recv> [IPv4 ('172.23.0.5', 9092)]>: Broker version identified as 2.6
+2025-09-05 15:51:01,756 - kafka.conn - INFO - <BrokerConnection client_id=towerco_admin, node_id=bootstrap-0 host=kafka:9092 <connected> [IPv4 ('172.23.0.5', 9092)]>: Connection complete.
+2025-09-05 15:51:01,777 - kafka.conn - INFO - <BrokerConnection client_id=towerco_admin, node_id=1 host=kafka:9092 <connecting> [IPv4 ('172.23.0.5', 9092)]>: connecting to kafka:9092 [('172.23.0.5', 9092) IPv4]
+2025-09-05 15:51:01,778 - kafka.conn - INFO - <BrokerConnection client_id=towerco_admin, node_id=1 host=kafka:9092 <connected> [IPv4 ('172.23.0.5', 9092)]>: Connection complete.
+2025-09-05 15:51:01,778 - kafka.conn - INFO - <BrokerConnection client_id=towerco_admin, node_id=bootstrap-0 host=kafka:9092 <connected> [IPv4 ('172.23.0.5', 9092)]>: Closing connection.
+2025-09-05 15:51:02,493 - core.messaging - INFO - Kafka topics already exist
+2025-09-05 15:51:02,493 - kafka.conn - INFO - <BrokerConnection client_id=towerco_admin, node_id=1 host=kafka:9092 <connected> [IPv4 ('172.23.0.5', 9092)]>: Closing connection.
+2025-09-05 15:51:02,493 - core.messaging - INFO - Kafka producer initialized successfully
+2025-09-05 15:51:02,493 - core.auth - INFO - Waiting for Keycloak to start...
+2025-09-05 15:51:12,677 - core.auth - INFO - Keycloak not ready, attempt 1/60
+2025-09-05 15:51:14,678 - core.auth - INFO - Keycloak not ready, attempt 2/60
+2025-09-05 15:51:16,681 - core.auth - INFO - Keycloak not ready, attempt 3/60
+2025-09-05 15:51:18,802 - core.auth - INFO - Keycloak not ready, attempt 4/60
+2025-09-05 15:51:20,811 - core.auth - INFO - Keycloak not ready, attempt 5/60
+2025-09-05 15:51:22,830 - core.auth - INFO - Keycloak not ready, attempt 6/60
+2025-09-05 15:51:24,840 - core.auth - INFO - Keycloak not ready, attempt 7/60
+2025-09-05 15:51:26,851 - core.auth - INFO - Keycloak not ready, attempt 8/60
+2025-09-05 15:51:28,927 - core.auth - INFO - Keycloak not ready, attempt 9/60
+2025-09-05 15:51:30,928 - core.auth - INFO - Keycloak not ready, attempt 10/60
+2025-09-05 15:51:32,971 - core.auth - INFO - Keycloak not ready, attempt 11/60
+2025-09-05 15:51:34,976 - core.auth - INFO - Keycloak not ready, attempt 12/60
+2025-09-05 15:51:36,978 - core.auth - INFO - Keycloak not ready, attempt 13/60
+2025-09-05 15:51:38,983 - core.auth - INFO - Keycloak not ready, attempt 14/60
+2025-09-05 15:51:40,984 - core.auth - INFO - Keycloak not ready, attempt 15/60
+2025-09-05 15:51:43,008 - core.auth - INFO - Keycloak not ready, attempt 16/60
+2025-09-05 15:51:45,009 - core.auth - INFO - Keycloak not ready, attempt 17/60
+2025-09-05 15:51:47,014 - core.auth - INFO - Keycloak not ready, attempt 18/60
+2025-09-05 15:51:49,042 - core.auth - INFO - Keycloak not ready, attempt 19/60
+2025-09-05 15:51:51,122 - core.auth - INFO - Keycloak not ready, attempt 20/60
+2025-09-05 15:51:53,243 - core.auth - INFO - Keycloak not ready, attempt 21/60
+2025-09-05 15:51:55,538 - core.auth - INFO - Keycloak not ready, attempt 22/60
+2025-09-05 15:51:57,588 - core.auth - INFO - Keycloak not ready, attempt 23/60
+2025-09-05 15:51:59,591 - core.auth - INFO - Keycloak not ready, attempt 24/60
+2025-09-05 15:52:01,598 - core.auth - INFO - Keycloak not ready, attempt 25/60
+2025-09-05 15:52:03,602 - core.auth - INFO - Keycloak not ready, attempt 26/60
+2025-09-05 15:52:05,605 - core.auth - INFO - Keycloak not ready, attempt 27/60
+2025-09-05 15:52:07,616 - core.auth - INFO - Keycloak not ready, attempt 28/60
+2025-09-05 15:52:09,638 - core.auth - INFO - Keycloak not ready, attempt 29/60
+2025-09-05 15:52:11,640 - core.auth - INFO - Keycloak not ready, attempt 30/60
+2025-09-05 15:52:13,659 - core.auth - INFO - Keycloak not ready, attempt 31/60
+2025-09-05 15:52:15,663 - core.auth - INFO - Keycloak not ready, attempt 32/60
+2025-09-05 15:52:17,671 - core.auth - INFO - Keycloak not ready, attempt 33/60
+2025-09-05 15:52:19,680 - core.auth - INFO - Keycloak not ready, attempt 34/60
+2025-09-05 15:52:21,690 - core.auth - INFO - Keycloak not ready, attempt 35/60
+2025-09-05 15:52:23,693 - core.auth - INFO - Keycloak not ready, attempt 36/60
+2025-09-05 15:52:25,704 - core.auth - INFO - Keycloak not ready, attempt 37/60
+2025-09-05 15:52:27,709 - core.auth - INFO - Keycloak not ready, attempt 38/60
+2025-09-05 15:52:29,717 - core.auth - INFO - Keycloak not ready, attempt 39/60
+2025-09-05 15:52:31,721 - core.auth - INFO - Keycloak not ready, attempt 40/60
+2025-09-05 15:52:33,741 - core.auth - INFO - Keycloak not ready, attempt 41/60
+2025-09-05 15:52:35,754 - core.auth - INFO - Keycloak not ready, attempt 42/60
+2025-09-05 15:52:37,770 - core.auth - INFO - Keycloak not ready, attempt 43/60
+2025-09-05 15:52:39,772 - core.auth - INFO - Keycloak not ready, attempt 44/60
+2025-09-05 15:52:41,777 - core.auth - INFO - Keycloak not ready, attempt 45/60
+2025-09-05 15:52:43,821 - core.auth - INFO - Keycloak not ready, attempt 46/60
+2025-09-05 15:52:45,920 - core.auth - INFO - Keycloak not ready, attempt 47/60
+2025-09-05 15:52:47,954 - core.auth - INFO - Keycloak not ready, attempt 48/60
+2025-09-05 15:52:49,960 - core.auth - INFO - Keycloak not ready, attempt 49/60
+2025-09-05 15:52:51,967 - core.auth - INFO - Keycloak not ready, attempt 50/60
+2025-09-05 15:52:54,005 - core.auth - INFO - Keycloak not ready, attempt 51/60
+2025-09-05 15:52:56,133 - core.auth - INFO - Keycloak not ready, attempt 52/60
+2025-09-05 15:52:58,250 - core.auth - INFO - Keycloak not ready, attempt 53/60
+2025-09-05 15:53:00,261 - core.auth - INFO - Keycloak not ready, attempt 54/60
+2025-09-05 15:53:02,263 - core.auth - INFO - Keycloak not ready, attempt 55/60
+2025-09-05 15:53:04,282 - core.auth - INFO - Keycloak not ready, attempt 56/60
+2025-09-05 15:53:06,392 - core.auth - INFO - Keycloak not ready, attempt 57/60
+2025-09-05 15:53:08,398 - core.auth - INFO - Keycloak not ready, attempt 58/60
+2025-09-05 15:53:10,430 - core.auth - INFO - Keycloak not ready, attempt 59/60
+2025-09-05 15:53:12,438 - core.auth - INFO - Keycloak not ready, attempt 60/60
+ERROR:    Traceback (most recent call last):
+  File "/usr/local/lib/python3.11/site-packages/starlette/routing.py", line 694, in lifespan
+    async with self.lifespan_context(app) as maybe_state:
+  File "/usr/local/lib/python3.11/contextlib.py", line 210, in __aenter__
+    return await anext(self.gen)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.11/site-packages/fastapi/routing.py", line 134, in merged_lifespan
+    async with original_context(app) as maybe_original_state:
+  File "/usr/local/lib/python3.11/contextlib.py", line 210, in __aenter__
+    return await anext(self.gen)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.11/site-packages/fastapi/routing.py", line 134, in merged_lifespan
+    async with original_context(app) as maybe_original_state:
+  File "/usr/local/lib/python3.11/contextlib.py", line 210, in __aenter__
+    return await anext(self.gen)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.11/site-packages/fastapi/routing.py", line 134, in merged_lifespan
+    async with original_context(app) as maybe_original_state:
+  File "/usr/local/lib/python3.11/contextlib.py", line 210, in __aenter__
+    return await anext(self.gen)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "/app/backend/main.py", line 51, in lifespan
+    await init_auth()
+  File "/app/backend/core/auth.py", line 61, in init_auth
+    raise RuntimeError("Keycloak not available after maximum retries")
+RuntimeError: Keycloak not available after maximum retries
 
-The above exception was the direct cause of the following exception:
-
-Traceback (most recent call last):
-  File "/usr/local/lib/python3.11/multiprocessing/process.py", line 314, in _bootstrap
-    self.run()
-  File "/usr/local/lib/python3.11/multiprocessing/process.py", line 108, in run
-    self._target(*self._args, **self._kwargs)
-  File "/usr/local/lib/python3.11/site-packages/uvicorn/_subprocess.py", line 80, in subprocess_started
-    target(sockets=sockets)
-  File "/usr/local/lib/python3.11/site-packages/uvicorn/server.py", line 67, in run
-    return asyncio.run(self.serve(sockets=sockets))
-           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/usr/local/lib/python3.11/asyncio/runners.py", line 190, in run
-    return runner.run(main)
-           ^^^^^^^^^^^^^^^^
-  File "/usr/local/lib/python3.11/asyncio/runners.py", line 118, in run
-    return self._loop.run_until_complete(task)
-           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "uvloop/loop.pyx", line 1518, in uvloop.loop.Loop.run_until_complete
-  File "/usr/local/lib/python3.11/site-packages/uvicorn/server.py", line 71, in serve
-    await self._serve(sockets)
-  File "/usr/local/lib/python3.11/site-packages/uvicorn/server.py", line 78, in _serve
-    config.load()
-  File "/usr/local/lib/python3.11/site-packages/uvicorn/config.py", line 436, in load
-    self.loaded_app = import_from_string(self.app)
-                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/usr/local/lib/python3.11/site-packages/uvicorn/importer.py", line 19, in import_from_string
-    module = importlib.import_module(module_str)
-             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/usr/local/lib/python3.11/importlib/__init__.py", line 126, in import_module
-    return _bootstrap._gcd_import(name[level:], package, level)
-           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "<frozen importlib._bootstrap>", line 1204, in _gcd_import
-  File "<frozen importlib._bootstrap>", line 1176, in _find_and_load
-  File "<frozen importlib._bootstrap>", line 1147, in _find_and_load_unlocked
-  File "<frozen importlib._bootstrap>", line 690, in _load_unlocked
-  File "<frozen importlib._bootstrap_external>", line 940, in exec_module
-  File "<frozen importlib._bootstrap>", line 241, in _call_with_frames_removed
-  File "/app/backend/main.py", line 20, in <module>
-    from core.config import settings
-  File "/app/backend/core/config.py", line 201, in <module>
-    settings = Settings()
-               ^^^^^^^^^^
-  File "/usr/local/lib/python3.11/site-packages/pydantic_settings/main.py", line 189, in __init__
-    **__pydantic_self__._settings_build_values(
-      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/usr/local/lib/python3.11/site-packages/pydantic_settings/main.py", line 424, in _settings_build_values
-    source_state = source()
-                   ^^^^^^^^
-  File "/usr/local/lib/python3.11/site-packages/pydantic_settings/sources/base.py", line 492, in __call__
-    raise SettingsError(
-pydantic_settings.exceptions.SettingsError: error parsing value for field "ALLOWED_ORIGINS" from source "EnvSettingsSource"
-[root@vmi2390455 sam]# docker logs ec6f68d2213f
-Updating the configuration and installing your custom providers, if any. Please wait.
-2025-09-05 13:53:32,014 WARN  [io.quarkus.agroal.runtime.DataSources] (main) Datasource <default> enables XA but transaction recovery is not enabled. Please enable transaction recovery by setting quarkus.transaction-manager.enable-recovery=true, otherwise data may be lost if the application is terminated abruptly
-2025-09-05 13:53:34,981 WARN  [org.infinispan.PERSISTENCE] (keycloak-cache-init) ISPN000554: jboss-marshalling is deprecated and planned for removal
-2025-09-05 13:53:40,862 WARN  [io.quarkus.vertx.http.runtime.VertxHttpRecorder] (main) The X-Forwarded-* and Forwarded headers will be considered when determining the proxy address. This configuration can cause a security issue as clients can forge requests and send a forwarded header that is not overwritten by the proxy. Please consider use one of these headers just to forward the proxy address in requests.
-2025-09-05 13:54:16,583 WARN  [org.keycloak.quarkus.runtime.KeycloakMain] (main) Running the server in development mode. DO NOT use this configuration in production.
+ERROR:    Application startup failed. Exiting.
+2025-09-05 15:53:15,080 - asyncio - ERROR - Unclosed AIOKafkaProducer
+producer: <aiokafka.producer.producer.AIOKafkaProducer object at 0x7f8ce65c1d90>

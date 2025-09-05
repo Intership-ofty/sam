@@ -33,7 +33,7 @@ async def init_auth():
     import time
     
     # Wait for Keycloak to be available
-    max_retries = 60  # 2 minutes au lieu de 1 minute
+    max_retries = 240  # 8 minutes au lieu de 2 minutes
     retry_delay = 2
     
     # Attendre un peu avant de commencer les tests
@@ -49,10 +49,22 @@ async def init_auth():
             sock.close()
             
             if result == 0:
-                logger.info("Keycloak socket is available, initializing...")
-                break
+                # Test HTTP endpoint to ensure Keycloak is fully ready
+                import aiohttp
+                try:
+                    async with aiohttp.ClientSession() as session:
+                        async with session.get('http://keycloak:8080/health/ready', timeout=aiohttp.ClientTimeout(total=5)) as response:
+                            if response.status == 200:
+                                logger.info("Keycloak is fully ready, initializing...")
+                                break
+                            else:
+                                logger.info(f"Keycloak HTTP not ready (status {response.status}), attempt {attempt + 1}/{max_retries}")
+                                time.sleep(retry_delay)
+                except Exception as http_e:
+                    logger.info(f"HTTP test failed, attempt {attempt + 1}/{max_retries}: {http_e}")
+                    time.sleep(retry_delay)
             else:
-                logger.info(f"Keycloak not ready, attempt {attempt + 1}/{max_retries}")
+                logger.info(f"Keycloak socket not ready, attempt {attempt + 1}/{max_retries}")
                 time.sleep(retry_delay)
         except Exception as e:
             logger.info(f"Socket test failed, attempt {attempt + 1}/{max_retries}: {e}")
