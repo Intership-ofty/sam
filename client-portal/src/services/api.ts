@@ -1,4 +1,4 @@
-const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:8000'
+const API_BASE_URL = 'http://localhost:8000'
 
 // API Response types
 interface ApiResponse<T> {
@@ -83,9 +83,9 @@ class ApiClient {
     options: RequestInit = {}
   ): Promise<ApiResponse<T>> {
     const url = `${this.baseUrl}${endpoint}`
-    const headers: HeadersInit = {
+    const headers: Record<string, string> = {
       'Content-Type': 'application/json',
-      ...options.headers,
+      ...(options.headers as Record<string, string>),
     }
 
     if (this.token) {
@@ -112,7 +112,7 @@ class ApiClient {
 
   // Authentication
   async getAuthConfig() {
-    return this.request('/api/v1/auth/config')
+    return this.request('/api/v1/health')
   }
 
   async getCurrentUser() {

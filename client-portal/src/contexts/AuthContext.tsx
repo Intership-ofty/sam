@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useEffect, useState } from 'react'
-import { apiGet } from '../services/api'
+import { api } from '../services/api'
 
 type AuthContextType = {
   isAuthenticated: boolean
@@ -23,7 +23,7 @@ export const AuthProvider: React.FC<{children: React.ReactNode}> = ({ children }
   const [user, setUser] = useState<AuthContextType['user']>(null)
 
   useEffect(() => {
-    apiGet('/health').then(() => {
+    api.getAuthConfig().then(() => {
       setIsAuthenticated(true)
       setUser({ name: 'Demo User', email: 'demo@towerco.local' })
     }).catch(() => {
