@@ -6,6 +6,8 @@
     <title>Towerco AIOps - Real-time KPI Dashboard</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdn.tailwindcss.com"></script>
+    <script src="js/auth.js"></script>
+    <script src="js/api.js"></script>
     <style>
         .metric-card {
             transition: all 0.3s ease;
@@ -288,8 +290,14 @@
 
         async function loadKPIData() {
             try {
-                const response = await fetch('http://localhost:8000/api/v1/kpi/metrics?limit=100');
-                const data = await response.json();
+                // Check authentication
+                if (!window.authService.isAuthenticated()) {
+                    await window.authService.login();
+                    return;
+                }
+
+                const response = await window.apiService.getKPIMetrics({ limit: 100 });
+                const data = response.data;
                 
                 updateKPICards(data);
                 updateKPITable(data);
@@ -297,6 +305,7 @@
                 
             } catch (error) {
                 console.error('Error loading KPI data:', error);
+                showError('Failed to load KPI data. Please check your connection and try again.');
             }
         }
 

@@ -6,6 +6,8 @@
     <title>Sites - Towerco AIOps Platform</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <script src="js/auth.js"></script>
+    <script src="js/api.js"></script>
     <style>
         .card-hover {
             transition: all 0.3s ease;
@@ -201,83 +203,9 @@
     </div>
 
     <script>
-        // Mock data for demonstration
-        const mockSites = [
-            {
-                id: '1',
-                name: 'Downtown Tower A',
-                code: 'DT-A-001',
-                region: 'North',
-                technology: ['5G', '4G'],
-                status: 'active',
-                healthScore: 95,
-                alerts: 0,
-                address: '123 Main St, Downtown',
-                lastUpdate: '2024-01-15T10:30:00Z'
-            },
-            {
-                id: '2',
-                name: 'Suburban Site B',
-                code: 'SUB-B-002',
-                region: 'South',
-                technology: ['4G', '3G'],
-                status: 'active',
-                healthScore: 87,
-                alerts: 1,
-                address: '456 Oak Ave, Suburbia',
-                lastUpdate: '2024-01-15T09:45:00Z'
-            },
-            {
-                id: '3',
-                name: 'Industrial Complex C',
-                code: 'IND-C-003',
-                region: 'East',
-                technology: ['5G'],
-                status: 'maintenance',
-                healthScore: 72,
-                alerts: 3,
-                address: '789 Industrial Blvd, Factory District',
-                lastUpdate: '2024-01-15T08:15:00Z'
-            },
-            {
-                id: '4',
-                name: 'Rural Coverage D',
-                code: 'RUR-D-004',
-                region: 'West',
-                technology: ['3G', '2G'],
-                status: 'active',
-                healthScore: 91,
-                alerts: 0,
-                address: '321 Country Rd, Rural Area',
-                lastUpdate: '2024-01-15T11:00:00Z'
-            },
-            {
-                id: '5',
-                name: 'Airport Terminal E',
-                code: 'APT-E-005',
-                region: 'North',
-                technology: ['5G', '4G', 'WiFi'],
-                status: 'active',
-                healthScore: 98,
-                alerts: 0,
-                address: '555 Airport Blvd, Terminal 1',
-                lastUpdate: '2024-01-15T12:15:00Z'
-            },
-            {
-                id: '6',
-                name: 'Shopping Mall F',
-                code: 'MAL-F-006',
-                region: 'South',
-                technology: ['4G', 'WiFi'],
-                status: 'inactive',
-                healthScore: 45,
-                alerts: 5,
-                address: '999 Mall Dr, Shopping Center',
-                lastUpdate: '2024-01-14T16:30:00Z'
-            }
-        ];
-
-        let filteredSites = [...mockSites];
+        let sites = [];
+        let filteredSites = [];
+        let siteHealth = {};
 
         function getHealthClass(score) {
             if (score >= 90) return 'health-excellent';
@@ -331,72 +259,79 @@
 
             emptyState.classList.add('hidden');
 
-            grid.innerHTML = filteredSites.map(site => `
-                <div class="card-hover bg-white rounded-lg shadow p-6">
-                    <div class="flex items-center justify-between mb-4">
-                        <h3 class="text-lg font-semibold text-gray-900">${site.name}</h3>
-                        <span class="status-indicator ${getStatusClass(site.status)}">
-                            ${site.status}
-                        </span>
-                    </div>
+            grid.innerHTML = filteredSites.map(site => {
+                const health = siteHealth[site.site_id];
+                const healthScore = health ? health.health_score * 100 : 0;
+                const alerts = health ? health.active_alerts : 0;
+                const technologies = site.technology ? Object.keys(site.technology) : [];
 
-                    <div class="space-y-3">
-                        <div class="flex items-center justify-between">
-                            <span class="text-sm text-gray-500">Site Code</span>
-                            <span class="text-sm font-medium text-gray-900">${site.code}</span>
+                return `
+                    <div class="card-hover bg-white rounded-lg shadow p-6">
+                        <div class="flex items-center justify-between mb-4">
+                            <h3 class="text-lg font-semibold text-gray-900">${site.site_name}</h3>
+                            <span class="status-indicator ${getStatusClass(site.status)}">
+                                ${site.status}
+                            </span>
                         </div>
 
-                        <div class="flex items-center justify-between">
-                            <span class="text-sm text-gray-500">Region</span>
-                            <span class="text-sm font-medium text-gray-900">${site.region}</span>
-                        </div>
-
-                        <div class="flex items-center justify-between">
-                            <span class="text-sm text-gray-500">Technology</span>
-                            <div class="flex flex-wrap gap-1">
-                                ${site.technology.map(tech => 
-                                    `<span class="px-2 py-1 bg-blue-100 text-blue-800 text-xs rounded">${tech}</span>`
-                                ).join('')}
-                            </div>
-                        </div>
-
-                        <div class="flex items-center justify-between">
-                            <span class="text-sm text-gray-500">Health Score</span>
-                            <div class="flex items-center space-x-2">
-                                <span class="status-indicator ${getHealthClass(site.healthScore)}">
-                                    ${site.healthScore}%
-                                </span>
-                                <span class="text-xs text-gray-500">
-                                    ${getHealthText(site.healthScore)}
-                                </span>
-                            </div>
-                        </div>
-
-                        ${site.alerts > 0 ? `
+                        <div class="space-y-3">
                             <div class="flex items-center justify-between">
-                                <span class="text-sm text-gray-500">Active Alerts</span>
-                                <span class="text-sm font-medium text-red-600">${site.alerts}</span>
+                                <span class="text-sm text-gray-500">Site Code</span>
+                                <span class="text-sm font-medium text-gray-900">${site.site_code}</span>
                             </div>
-                        ` : ''}
 
-                        <div class="pt-2 border-t border-gray-200">
-                            <p class="text-xs text-gray-500 truncate">${site.address}</p>
-                        </div>
+                            <div class="flex items-center justify-between">
+                                <span class="text-sm text-gray-500">Region</span>
+                                <span class="text-sm font-medium text-gray-900">${site.region}</span>
+                            </div>
 
-                        <div class="pt-2">
-                            <p class="text-xs text-gray-400">
-                                Last updated: ${formatLastUpdate(site.lastUpdate)}
-                            </p>
-                        </div>
+                            <div class="flex items-center justify-between">
+                                <span class="text-sm text-gray-500">Technology</span>
+                                <div class="flex flex-wrap gap-1">
+                                    ${technologies.map(tech => 
+                                        `<span class="px-2 py-1 bg-blue-100 text-blue-800 text-xs rounded">${tech}</span>`
+                                    ).join('')}
+                                </div>
+                            </div>
 
-                        <div class="pt-4">
-                            <button class="w-full bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 transition-colors">
-                                <i class="fas fa-eye mr-2"></i>View Details
-                            </button>
+                            <div class="flex items-center justify-between">
+                                <span class="text-sm text-gray-500">Health Score</span>
+                                <div class="flex items-center space-x-2">
+                                    <span class="status-indicator ${getHealthClass(healthScore)}">
+                                        ${healthScore.toFixed(0)}%
+                                    </span>
+                                    <span class="text-xs text-gray-500">
+                                        ${getHealthText(healthScore)}
+                                    </span>
+                                </div>
+                            </div>
+
+                            ${alerts > 0 ? `
+                                <div class="flex items-center justify-between">
+                                    <span class="text-sm text-gray-500">Active Alerts</span>
+                                    <span class="text-sm font-medium text-red-600">${alerts}</span>
+                                </div>
+                            ` : ''}
+
+                            <div class="pt-2 border-t border-gray-200">
+                                <p class="text-xs text-gray-500 truncate">${site.address}</p>
+                            </div>
+
+                            <div class="pt-2">
+                                <p class="text-xs text-gray-400">
+                                    Last updated: ${formatLastUpdate(site.updated_at || site.created_at)}
+                                </p>
+                            </div>
+
+                            <div class="pt-4">
+                                <button class="w-full bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 transition-colors">
+                                    <i class="fas fa-eye mr-2"></i>View Details
+                                </button>
+                            </div>
                         </div>
                     </div>
-                </div>
-            `).join('');
+                `;
+            }).join('');
         }
 
         function updateStats() {
@@ -411,20 +346,57 @@
             document.getElementById('totalAlerts').textContent = totalAlerts;
         }
 
+        async function loadSites() {
+            try {
+                // Check authentication
+                if (!window.authService.isAuthenticated()) {
+                    await window.authService.login();
+                    return;
+                }
+
+                const response = await window.apiService.getSites({ limit: 100 });
+                sites = response.data;
+                
+                // Load health data for each site
+                const healthPromises = sites.map(async (site) => {
+                    try {
+                        const healthResponse = await window.apiService.getSiteHealth(site.site_id);
+                        return { siteId: site.site_id, health: healthResponse.data };
+                    } catch (err) {
+                        console.warn(`Failed to load health for site ${site.site_id}:`, err);
+                        return null;
+                    }
+                });
+
+                const healthResults = await Promise.all(healthPromises);
+                healthResults.forEach(result => {
+                    if (result) {
+                        siteHealth[result.siteId] = result.health;
+                    }
+                });
+
+                filterSites();
+                
+            } catch (error) {
+                console.error('Failed to load sites:', error);
+                showError('Failed to load sites. Please check your connection and try again.');
+            }
+        }
+
         function filterSites() {
             const search = document.getElementById('searchInput').value.toLowerCase();
             const region = document.getElementById('regionFilter').value;
             const tech = document.getElementById('techFilter').value;
             const status = document.getElementById('statusFilter').value;
 
-            filteredSites = mockSites.filter(site => {
+            filteredSites = sites.filter(site => {
                 const matchesSearch = !search || 
-                    site.name.toLowerCase().includes(search) ||
-                    site.code.toLowerCase().includes(search) ||
+                    site.site_name.toLowerCase().includes(search) ||
+                    site.site_code.toLowerCase().includes(search) ||
                     site.address.toLowerCase().includes(search);
 
                 const matchesRegion = !region || site.region === region;
-                const matchesTech = !tech || site.technology.includes(tech);
+                const matchesTech = !tech || (site.technology && Object.keys(site.technology).includes(tech));
                 const matchesStatus = !status || site.status === status;
 
                 return matchesSearch && matchesRegion && matchesTech && matchesStatus;
@@ -441,10 +413,7 @@
         document.getElementById('statusFilter').addEventListener('change', filterSites);
 
         // Initial load
-        setTimeout(() => {
-            updateStats();
-            renderSites();
-        }, 1000);
+        loadSites();
     </script>
 </body>
 </html>

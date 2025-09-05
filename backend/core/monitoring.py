@@ -48,18 +48,6 @@ class Metrics:
         )
         
         # Database metrics
-        self.db_connections_active = Gauge(
-            'db_connections_active',
-            'Number of active database connections',
-            registry=registry
-        )
-        
-        self.db_connections_idle = Gauge(
-            'db_connections_idle',
-            'Number of idle database connections',
-            registry=registry
-        )
-        
         self.db_health = Gauge(
             'db_health',
             'Database health status (1=healthy, 0=unhealthy)',
