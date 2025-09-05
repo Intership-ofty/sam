@@ -24,8 +24,8 @@ class Settings(BaseSettings):
     ACCESS_TOKEN_EXPIRE_MINUTES: int = 30
     
     # CORS
-    ALLOWED_ORIGINS: List[str] = Field(
-        default=["*"],
+    ALLOWED_ORIGINS: str = Field(
+        default="*",
         env="ALLOWED_ORIGINS",
         description="Comma-separated list of allowed origins for CORS"
     )
@@ -113,14 +113,19 @@ class Settings(BaseSettings):
     @validator("ALLOWED_ORIGINS", pre=True)
     def parse_allowed_origins(cls, v):
         if v is None:
-            return ["*"]
+            return "*"
         if isinstance(v, str):
-            if v.strip() == "":
-                return ["*"]
-            return [origin.strip() for origin in v.split(",") if origin.strip()]
+            return v.strip() if v.strip() else "*"
         if isinstance(v, list):
-            return v
-        return ["*"]
+            return ",".join(v)
+        return "*"
+    
+    @property
+    def allowed_origins_list(self) -> List[str]:
+        """Get ALLOWED_ORIGINS as a list"""
+        if self.ALLOWED_ORIGINS == "*":
+            return ["*"]
+        return [origin.strip() for origin in self.ALLOWED_ORIGINS.split(",") if origin.strip()]
     
     @property
     def kafka_brokers_list(self) -> List[str]:

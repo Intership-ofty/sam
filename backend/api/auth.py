@@ -28,7 +28,7 @@ async def login():
     
     # Generate Keycloak login URL
     login_url = keycloak_openid.auth_url(
-        redirect_uri=f"{settings.ALLOWED_ORIGINS[0]}/auth/callback"
+        redirect_uri=f"{settings.allowed_origins_list[0]}/auth/callback"
     )
     
     return {"login_url": login_url}

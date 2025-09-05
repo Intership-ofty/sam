@@ -68,7 +68,7 @@ services:
       - no-new-privileges:true
     restart: unless-stopped
     healthcheck:
-      test: ["CMD-SHELL", "nc -z localhost 8080 || exit 1"]
+      test: ["CMD-SHELL", "exec 3<>/dev/tcp/localhost/8080 && echo 'Connection successful' || exit 1"]
       interval: 15s
       timeout: 10s
       retries: 25
