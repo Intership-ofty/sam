@@ -1,0 +1,441 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Towerco AIOps - Reports</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="js/auth.js"></script>
+    <script src="js/api.js"></script>
+</head>
+<body class="bg-gray-100">
+    <div class="min-h-screen">
+        <!-- Include Navigation -->
+        <iframe src="navigation.html" class="w-full h-16 border-0" id="navFrame"></iframe>
+
+        <!-- Main Content -->
+        <main class="container mx-auto px-4 py-8">
+            <div class="mb-6">
+                <h1 class="text-3xl font-bold text-gray-900">Reports & Analytics</h1>
+                <p class="text-gray-600 mt-2">Generate and view comprehensive system reports</p>
+            </div>
+
+            <!-- Report Filters -->
+            <div class="bg-white rounded-lg shadow-md p-6 mb-6">
+                <div class="flex flex-wrap gap-4">
+                    <select id="reportTypeFilter" class="bg-gray-50 border border-gray-300 rounded-md px-3 py-2">
+                        <option value="performance">Performance Report</option>
+                        <option value="availability">Availability Report</option>
+                        <option value="capacity">Capacity Report</option>
+                        <option value="security">Security Report</option>
+                        <option value="financial">Financial Report</option>
+                    </select>
+                    <select id="timeRangeFilter" class="bg-gray-50 border border-gray-300 rounded-md px-3 py-2">
+                        <option value="24h">Last 24 Hours</option>
+                        <option value="7d" selected>Last 7 Days</option>
+                        <option value="30d">Last 30 Days</option>
+                        <option value="90d">Last 90 Days</option>
+                    </select>
+                    <select id="siteFilter" class="bg-gray-50 border border-gray-300 rounded-md px-3 py-2">
+                        <option value="">All Sites</option>
+                    </select>
+                    <button id="generateReportBtn" class="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 transition-colors">
+                        Generate Report
+                    </button>
+                    <button id="exportBtn" class="bg-green-600 text-white px-4 py-2 rounded-md hover:bg-green-700 transition-colors">
+                        Export PDF
+                    </button>
+                </div>
+            </div>
+
+            <!-- Report Summary Cards -->
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-6">
+                <div class="bg-white rounded-lg shadow-md p-6">
+                    <div class="flex items-center">
+                        <div class="p-3 bg-blue-100 rounded-full">
+                            <svg class="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
+                            </svg>
+                        </div>
+                        <div class="ml-4">
+                            <p class="text-sm font-medium text-gray-600">Availability</p>
+                            <p id="availabilityValue" class="text-2xl font-bold text-blue-600">99.9%</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-white rounded-lg shadow-md p-6">
+                    <div class="flex items-center">
+                        <div class="p-3 bg-green-100 rounded-full">
+                            <svg class="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
+                            </svg>
+                        </div>
+                        <div class="ml-4">
+                            <p class="text-sm font-medium text-gray-600">Performance</p>
+                            <p id="performanceValue" class="text-2xl font-bold text-green-600">95.2%</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-white rounded-lg shadow-md p-6">
+                    <div class="flex items-center">
+                        <div class="p-3 bg-yellow-100 rounded-full">
+                            <svg class="w-6 h-6 text-yellow-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1"></path>
+                            </svg>
+                        </div>
+                        <div class="ml-4">
+                            <p class="text-sm font-medium text-gray-600">Cost Efficiency</p>
+                            <p id="costEfficiencyValue" class="text-2xl font-bold text-yellow-600">87.5%</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-white rounded-lg shadow-md p-6">
+                    <div class="flex items-center">
+                        <div class="p-3 bg-purple-100 rounded-full">
+                            <svg class="w-6 h-6 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                            </svg>
+                        </div>
+                        <div class="ml-4">
+                            <p class="text-sm font-medium text-gray-600">SLA Compliance</p>
+                            <p id="slaComplianceValue" class="text-2xl font-bold text-purple-600">98.7%</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Report Charts -->
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+                <div class="bg-white rounded-lg shadow-md p-6">
+                    <h3 class="text-lg font-semibold text-gray-900 mb-4">Performance Trends</h3>
+                    <canvas id="performanceChart" width="400" height="200"></canvas>
+                </div>
+                <div class="bg-white rounded-lg shadow-md p-6">
+                    <h3 class="text-lg font-semibold text-gray-900 mb-4">Availability by Site</h3>
+                    <canvas id="availabilityChart" width="400" height="200"></canvas>
+                </div>
+            </div>
+
+            <!-- Report Table -->
+            <div class="bg-white rounded-lg shadow-md p-6">
+                <div class="flex items-center justify-between mb-4">
+                    <h3 class="text-lg font-semibold text-gray-900">Report Details</h3>
+                    <div class="text-sm text-gray-500" id="reportInfo">Generated on: --</div>
+                </div>
+
+                <div class="overflow-x-auto">
+                    <table class="min-w-full divide-y divide-gray-200">
+                        <thead class="bg-gray-50">
+                            <tr>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Metric</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Current Value</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Previous Period</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Change</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Trend</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+                            </tr>
+                        </thead>
+                        <tbody id="reportTableBody" class="bg-white divide-y divide-gray-200">
+                            <!-- Report rows will be populated here -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        let performanceChart = null;
+        let availabilityChart = null;
+
+        document.addEventListener('DOMContentLoaded', function() {
+            initializeCharts();
+            loadReportData();
+            setupEventListeners();
+        });
+
+        function initializeCharts() {
+            // Performance Chart
+            const performanceCtx = document.getElementById('performanceChart').getContext('2d');
+            performanceChart = new Chart(performanceCtx, {
+                type: 'line',
+                data: {
+                    labels: [],
+                    datasets: []
+                },
+                options: {
+                    responsive: true,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            max: 100
+                        }
+                    },
+                    plugins: {
+                        legend: {
+                            position: 'top'
+                        }
+                    }
+                }
+            });
+
+            // Availability Chart
+            const availabilityCtx = document.getElementById('availabilityChart').getContext('2d');
+            availabilityChart = new Chart(availabilityCtx, {
+                type: 'bar',
+                data: {
+                    labels: [],
+                    datasets: [{
+                        label: 'Availability %',
+                        data: [],
+                        backgroundColor: '#3B82F6',
+                        borderColor: '#1D4ED8',
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            max: 100
+                        }
+                    },
+                    plugins: {
+                        legend: {
+                            position: 'top'
+                        }
+                    }
+                }
+            });
+        }
+
+        function setupEventListeners() {
+            document.getElementById('generateReportBtn').addEventListener('click', loadReportData);
+            document.getElementById('exportBtn').addEventListener('click', exportReport);
+            document.getElementById('reportTypeFilter').addEventListener('change', loadReportData);
+            document.getElementById('timeRangeFilter').addEventListener('change', loadReportData);
+            document.getElementById('siteFilter').addEventListener('change', loadReportData);
+        }
+
+        async function loadReportData() {
+            try {
+                if (!window.authService.isAuthenticated()) {
+                    await window.authService.login();
+                    return;
+                }
+
+                const reportType = document.getElementById('reportTypeFilter').value;
+                const timeRange = document.getElementById('timeRangeFilter').value;
+                const site = document.getElementById('siteFilter').value;
+
+                // Simulate report data generation
+                const reportData = generateMockReportData(reportType, timeRange, site);
+                
+                updateReportSummary(reportData);
+                updateReportCharts(reportData);
+                updateReportTable(reportData);
+                updateReportInfo();
+                
+            } catch (error) {
+                console.error('Error loading report data:', error);
+                showError('Failed to load report data. Please check your connection and try again.');
+            }
+        }
+
+        function generateMockReportData(reportType, timeRange, site) {
+            // Mock data generation based on report type
+            const baseData = {
+                availability: 99.9,
+                performance: 95.2,
+                costEfficiency: 87.5,
+                slaCompliance: 98.7
+            };
+
+            // Add some variation based on report type
+            const variations = {
+                performance: { availability: 0.1, performance: 2.0, costEfficiency: 1.5, slaCompliance: 0.5 },
+                availability: { availability: 0.2, performance: 1.0, costEfficiency: 0.5, slaCompliance: 0.3 },
+                capacity: { availability: 0.05, performance: 1.5, costEfficiency: 3.0, slaCompliance: 0.2 },
+                security: { availability: 0.1, performance: 0.5, costEfficiency: 1.0, slaCompliance: 1.0 },
+                financial: { availability: 0.05, performance: 1.0, costEfficiency: 5.0, slaCompliance: 0.1 }
+            };
+
+            const variation = variations[reportType] || variations.performance;
+            
+            return {
+                summary: {
+                    availability: baseData.availability + (Math.random() - 0.5) * variation.availability,
+                    performance: baseData.performance + (Math.random() - 0.5) * variation.performance,
+                    costEfficiency: baseData.costEfficiency + (Math.random() - 0.5) * variation.costEfficiency,
+                    slaCompliance: baseData.slaCompliance + (Math.random() - 0.5) * variation.slaCompliance
+                },
+                trends: generateTrendData(timeRange),
+                sites: generateSiteData(),
+                metrics: generateMetricsData()
+            };
+        }
+
+        function generateTrendData(timeRange) {
+            const hours = timeRange === '24h' ? 24 : timeRange === '7d' ? 168 : timeRange === '30d' ? 720 : 2160;
+            const labels = [];
+            const performanceData = [];
+            const availabilityData = [];
+
+            for (let i = hours; i >= 0; i--) {
+                const date = new Date(Date.now() - i * 60 * 60 * 1000);
+                labels.push(date.toLocaleString());
+                performanceData.push(90 + Math.random() * 10);
+                availabilityData.push(99 + Math.random() * 1);
+            }
+
+            return { labels, performanceData, availabilityData };
+        }
+
+        function generateSiteData() {
+            const sites = ['Site A', 'Site B', 'Site C', 'Site D', 'Site E'];
+            return sites.map(site => ({
+                name: site,
+                availability: 99 + Math.random() * 1
+            }));
+        }
+
+        function generateMetricsData() {
+            const metrics = [
+                { name: 'Network Uptime', current: 99.9, previous: 99.8, trend: 'up' },
+                { name: 'Energy Efficiency', current: 95.2, previous: 94.8, trend: 'up' },
+                { name: 'Operational Cost', current: 87.5, previous: 89.2, trend: 'down' },
+                { name: 'SLA Compliance', current: 98.7, previous: 98.5, trend: 'up' },
+                { name: 'Security Score', current: 92.1, previous: 91.8, trend: 'up' }
+            ];
+
+            return metrics;
+        }
+
+        function updateReportSummary(data) {
+            document.getElementById('availabilityValue').textContent = data.summary.availability.toFixed(1) + '%';
+            document.getElementById('performanceValue').textContent = data.summary.performance.toFixed(1) + '%';
+            document.getElementById('costEfficiencyValue').textContent = data.summary.costEfficiency.toFixed(1) + '%';
+            document.getElementById('slaComplianceValue').textContent = data.summary.slaCompliance.toFixed(1) + '%';
+        }
+
+        function updateReportCharts(data) {
+            // Update Performance Chart
+            performanceChart.data.labels = data.trends.labels;
+            performanceChart.data.datasets = [
+                {
+                    label: 'Performance %',
+                    data: data.trends.performanceData,
+                    borderColor: '#10B981',
+                    backgroundColor: 'rgba(16, 185, 129, 0.1)',
+                    tension: 0.4
+                },
+                {
+                    label: 'Availability %',
+                    data: data.trends.availabilityData,
+                    borderColor: '#3B82F6',
+                    backgroundColor: 'rgba(59, 130, 246, 0.1)',
+                    tension: 0.4
+                }
+            ];
+            performanceChart.update();
+
+            // Update Availability Chart
+            availabilityChart.data.labels = data.sites.map(site => site.name);
+            availabilityChart.data.datasets[0].data = data.sites.map(site => site.availability);
+            availabilityChart.update();
+        }
+
+        function updateReportTable(data) {
+            const tbody = document.getElementById('reportTableBody');
+            tbody.innerHTML = '';
+
+            data.metrics.forEach(metric => {
+                const row = document.createElement('tr');
+                row.className = 'hover:bg-gray-50';
+                
+                const change = metric.current - metric.previous;
+                const changePercent = ((change / metric.previous) * 100).toFixed(1);
+                
+                row.innerHTML = `
+                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                        ${escapeHtml(metric.name)}
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                        ${metric.current.toFixed(1)}%
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                        ${metric.previous.toFixed(1)}%
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm ${change >= 0 ? 'text-green-600' : 'text-red-600'}">
+                        ${change >= 0 ? '+' : ''}${changePercent}%
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm">
+                        <span class="trend-${metric.trend}">${getTrendText(metric.trend)}</span>
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap">
+                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-${getStatusColor(metric.current)}-100 text-${getStatusColor(metric.current)}-800">
+                            ${getStatusText(metric.current)}
+                        </span>
+                    </td>
+                `;
+                
+                tbody.appendChild(row);
+            });
+        }
+
+        function updateReportInfo() {
+            const now = new Date();
+            document.getElementById('reportInfo').textContent = `Generated on: ${now.toLocaleString()}`;
+        }
+
+        function exportReport() {
+            // TODO: Implement PDF export
+            alert('PDF export functionality would be implemented here');
+        }
+
+        function escapeHtml(text) {
+            if (typeof text !== 'string') return '';
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
+        function getTrendText(trend) {
+            const texts = {
+                up: '↗ Improving',
+                down: '↘ Declining', 
+                stable: '→ Stable'
+            };
+            return texts[trend] || '→ Stable';
+        }
+
+        function getStatusColor(value) {
+            if (value >= 95) return 'green';
+            if (value >= 85) return 'yellow';
+            return 'red';
+        }
+
+        function getStatusText(value) {
+            if (value >= 95) return 'Excellent';
+            if (value >= 85) return 'Good';
+            return 'Needs Attention';
+        }
+
+        function showError(message) {
+            const tbody = document.getElementById('reportTableBody');
+            tbody.innerHTML = `
+                <tr>
+                    <td colspan="6" class="px-6 py-4 text-center text-red-600">
+                        ${message}
+                    </td>
+                </tr>
+            `;
+        }
+    </script>
+</body>
+</html>

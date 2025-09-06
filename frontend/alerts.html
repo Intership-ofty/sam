@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Towerco AIOps - Alerts</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="js/auth.js"></script>
+    <script src="js/api.js"></script>
+</head>
+<body class="bg-gray-100">
+    <div class="min-h-screen">
+        <!-- Include Navigation -->
+        <iframe src="navigation.html" class="w-full h-16 border-0" id="navFrame"></iframe>
+
+        <!-- Main Content -->
+        <main class="container mx-auto px-4 py-8">
+            <div class="mb-6">
+                <h1 class="text-3xl font-bold text-gray-900">System Alerts</h1>
+                <p class="text-gray-600 mt-2">Monitor and manage system alerts and notifications</p>
+            </div>
+
+            <!-- Alert Summary Cards -->
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-6">
+                <div class="bg-white rounded-lg shadow-md p-6">
+                    <div class="flex items-center">
+                        <div class="p-3 bg-red-100 rounded-full">
+                            <svg class="w-6 h-6 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z"></path>
+                            </svg>
+                        </div>
+                        <div class="ml-4">
+                            <p class="text-sm font-medium text-gray-600">Critical</p>
+                            <p id="criticalCount" class="text-2xl font-bold text-red-600">0</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-white rounded-lg shadow-md p-6">
+                    <div class="flex items-center">
+                        <div class="p-3 bg-yellow-100 rounded-full">
+                            <svg class="w-6 h-6 text-yellow-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z"></path>
+                            </svg>
+                        </div>
+                        <div class="ml-4">
+                            <p class="text-sm font-medium text-gray-600">Major</p>
+                            <p id="majorCount" class="text-2xl font-bold text-yellow-600">0</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-white rounded-lg shadow-md p-6">
+                    <div class="flex items-center">
+                        <div class="p-3 bg-blue-100 rounded-full">
+                            <svg class="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                            </svg>
+                        </div>
+                        <div class="ml-4">
+                            <p class="text-sm font-medium text-gray-600">Minor</p>
+                            <p id="minorCount" class="text-2xl font-bold text-blue-600">0</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-white rounded-lg shadow-md p-6">
+                    <div class="flex items-center">
+                        <div class="p-3 bg-gray-100 rounded-full">
+                            <svg class="w-6 h-6 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                            </svg>
+                        </div>
+                        <div class="ml-4">
+                            <p class="text-sm font-medium text-gray-600">Resolved</p>
+                            <p id="resolvedCount" class="text-2xl font-bold text-gray-600">0</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Alert Filters -->
+            <div class="bg-white rounded-lg shadow-md p-6 mb-6">
+                <div class="flex flex-wrap gap-4">
+                    <select id="severityFilter" class="bg-gray-50 border border-gray-300 rounded-md px-3 py-2">
+                        <option value="">All Severities</option>
+                        <option value="critical">Critical</option>
+                        <option value="major">Major</option>
+                        <option value="minor">Minor</option>
+                        <option value="warning">Warning</option>
+                    </select>
+                    <select id="statusFilter" class="bg-gray-50 border border-gray-300 rounded-md px-3 py-2">
+                        <option value="">All Statuses</option>
+                        <option value="open">Open</option>
+                        <option value="acknowledged">Acknowledged</option>
+                        <option value="resolved">Resolved</option>
+                    </select>
+                    <select id="siteFilter" class="bg-gray-50 border border-gray-300 rounded-md px-3 py-2">
+                        <option value="">All Sites</option>
+                    </select>
+                    <button id="refreshBtn" class="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 transition-colors">
+                        Refresh
+                    </button>
+                </div>
+            </div>
+
+            <!-- Alerts Table -->
+            <div class="bg-white rounded-lg shadow-md p-6">
+                <div class="flex items-center justify-between mb-4">
+                    <h3 class="text-lg font-semibold text-gray-900">Active Alerts</h3>
+                    <div class="text-sm text-gray-500" id="alertCount">Loading...</div>
+                </div>
+
+                <div class="overflow-x-auto">
+                    <table class="min-w-full divide-y divide-gray-200">
+                        <thead class="bg-gray-50">
+                            <tr>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Severity</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Alert</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Site</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">First Seen</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Last Updated</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="alertTableBody" class="bg-white divide-y divide-gray-200">
+                            <!-- Alert rows will be populated here -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            loadAlertsData();
+            setupEventListeners();
+        });
+
+        function setupEventListeners() {
+            document.getElementById('refreshBtn').addEventListener('click', loadAlertsData);
+            document.getElementById('severityFilter').addEventListener('change', filterAlerts);
+            document.getElementById('statusFilter').addEventListener('change', filterAlerts);
+            document.getElementById('siteFilter').addEventListener('change', filterAlerts);
+        }
+
+        async function loadAlertsData() {
+            try {
+                if (!window.authService.isAuthenticated()) {
+                    await window.authService.login();
+                    return;
+                }
+
+                const response = await window.apiService.getAlerts({ limit: 100 });
+                const data = response.data;
+                
+                updateAlertSummary(data);
+                updateAlertTable(data);
+                updateSiteFilter(data);
+                updateAlertCount(data);
+                
+            } catch (error) {
+                console.error('Error loading alerts data:', error);
+                showError('Failed to load alerts data. Please check your connection and try again.');
+            }
+        }
+
+        function updateAlertSummary(alerts) {
+            const summary = {
+                critical: 0,
+                major: 0,
+                minor: 0,
+                resolved: 0
+            };
+
+            alerts.forEach(alert => {
+                if (alert.status === 'resolved') {
+                    summary.resolved++;
+                } else {
+                    summary[alert.severity] = (summary[alert.severity] || 0) + 1;
+                }
+            });
+
+            document.getElementById('criticalCount').textContent = summary.critical;
+            document.getElementById('majorCount').textContent = summary.major;
+            document.getElementById('minorCount').textContent = summary.minor;
+            document.getElementById('resolvedCount').textContent = summary.resolved;
+        }
+
+        function updateAlertTable(alerts) {
+            const tbody = document.getElementById('alertTableBody');
+            tbody.innerHTML = '';
+
+            alerts.forEach(alert => {
+                const row = document.createElement('tr');
+                row.className = 'hover:bg-gray-50';
+                
+                row.innerHTML = `
+                    <td class="px-6 py-4 whitespace-nowrap">
+                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-${getSeverityColor(alert.severity)}-100 text-${getSeverityColor(alert.severity)}-800">
+                            ${escapeHtml(alert.severity || 'Unknown')}
+                        </span>
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                        ${escapeHtml(alert.alert_name || 'Unknown Alert')}
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                        ${escapeHtml(alert.site_name || 'Unknown Site')}
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap">
+                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-${getStatusColor(alert.status)}-100 text-${getStatusColor(alert.status)}-800">
+                            ${escapeHtml(alert.status || 'Unknown')}
+                        </span>
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                        ${new Date(alert.first_seen).toLocaleString()}
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                        ${new Date(alert.last_updated).toLocaleString()}
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                        <button class="text-blue-600 hover:text-blue-900 mr-3" onclick="acknowledgeAlert('${alert.id}')">
+                            Acknowledge
+                        </button>
+                        <button class="text-green-600 hover:text-green-900" onclick="resolveAlert('${alert.id}')">
+                            Resolve
+                        </button>
+                    </td>
+                `;
+                
+                tbody.appendChild(row);
+            });
+        }
+
+        function updateSiteFilter(alerts) {
+            const siteFilter = document.getElementById('siteFilter');
+            const sites = [...new Set(alerts.map(alert => alert.site_name).filter(Boolean))];
+            
+            // Clear existing options except "All Sites"
+            siteFilter.innerHTML = '<option value="">All Sites</option>';
+            
+            sites.forEach(site => {
+                const option = document.createElement('option');
+                option.value = site;
+                option.textContent = site;
+                siteFilter.appendChild(option);
+            });
+        }
+
+        function updateAlertCount(alerts) {
+            document.getElementById('alertCount').textContent = `${alerts.length} alerts found`;
+        }
+
+        function filterAlerts() {
+            const severityFilter = document.getElementById('severityFilter').value;
+            const statusFilter = document.getElementById('statusFilter').value;
+            const siteFilter = document.getElementById('siteFilter').value;
+            const rows = document.querySelectorAll('#alertTableBody tr');
+            
+            rows.forEach(row => {
+                const severity = row.cells[0].textContent.toLowerCase();
+                const status = row.cells[3].textContent.toLowerCase();
+                const site = row.cells[2].textContent.toLowerCase();
+                
+                const severityMatch = !severityFilter || severity.includes(severityFilter);
+                const statusMatch = !statusFilter || status.includes(statusFilter);
+                const siteMatch = !siteFilter || site.includes(siteFilter.toLowerCase());
+                
+                if (severityMatch && statusMatch && siteMatch) {
+                    row.style.display = '';
+                } else {
+                    row.style.display = 'none';
+                }
+            });
+        }
+
+        function acknowledgeAlert(alertId) {
+            // TODO: Implement acknowledge alert API call
+            console.log('Acknowledging alert:', alertId);
+            alert('Alert acknowledged (demo)');
+        }
+
+        function resolveAlert(alertId) {
+            // TODO: Implement resolve alert API call
+            console.log('Resolving alert:', alertId);
+            alert('Alert resolved (demo)');
+        }
+
+        function escapeHtml(text) {
+            if (typeof text !== 'string') return '';
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
+        function getSeverityColor(severity) {
+            const colors = {
+                critical: 'red',
+                major: 'yellow',
+                minor: 'blue',
+                warning: 'yellow'
+            };
+            return colors[severity] || 'gray';
+        }
+
+        function getStatusColor(status) {
+            const colors = {
+                open: 'red',
+                acknowledged: 'yellow',
+                resolved: 'green'
+            };
+            return colors[status] || 'gray';
+        }
+
+        function showError(message) {
+            const tbody = document.getElementById('alertTableBody');
+            tbody.innerHTML = `
+                <tr>
+                    <td colspan="7" class="px-6 py-4 text-center text-red-600">
+                        ${message}
+                    </td>
+                </tr>
+            `;
+        }
+    </script>
+</body>
+</html>

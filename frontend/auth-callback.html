@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Towerco AIOps - Authentication Callback</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="js/auth.js"></script>
+    <script src="js/api.js"></script>
+</head>
+<body class="bg-gray-100">
+    <div class="min-h-screen flex items-center justify-center">
+        <div class="max-w-md w-full bg-white rounded-lg shadow-md p-6">
+            <div class="text-center">
+                <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
+                <h2 class="text-xl font-semibold text-gray-900 mb-2">Processing Authentication</h2>
+                <p class="text-gray-600">Please wait while we complete your login...</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', async function() {
+            try {
+                // Get URL parameters
+                const urlParams = new URLSearchParams(window.location.search);
+                const code = urlParams.get('code');
+                const state = urlParams.get('state');
+                const error = urlParams.get('error');
+
+                if (error) {
+                    console.error('Authentication error:', error);
+                    showError('Authentication failed: ' + error);
+                    return;
+                }
+
+                if (code) {
+                    // Exchange code for token
+                    const response = await fetch('http://localhost:8000/api/v1/auth/callback', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({
+                            code: code,
+                            state: state
+                        })
+                    });
+
+                    if (response.ok) {
+                        const data = await response.json();
+                        
+                        // Store token
+                        localStorage.setItem('auth_token', data.access_token);
+                        window.authService.token = data.access_token;
+                        
+                        // Get user info
+                        const user = await window.authService.getCurrentUser();
+                        if (user) {
+                            // Redirect to dashboard
+                            window.location.href = 'dashboard.html';
+                        } else {
+                            showError('Failed to get user information');
+                        }
+                    } else {
+                        const errorData = await response.json();
+                        showError('Authentication failed: ' + (errorData.detail || 'Unknown error'));
+                    }
+                } else {
+                    showError('No authorization code received');
+                }
+            } catch (error) {
+                console.error('Callback error:', error);
+                showError('An error occurred during authentication');
+            }
+        });
+
+        function showError(message) {
+            document.querySelector('.text-center').innerHTML = `
+                <div class="text-red-600 mb-4">
+                    <svg class="w-12 h-12 mx-auto mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z"></path>
+                    </svg>
+                    <h2 class="text-xl font-semibold mb-2">Authentication Failed</h2>
+                    <p class="text-gray-600 mb-4">${message}</p>
+                    <a href="login.html" class="inline-block bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 transition-colors">
+                        Try Again
+                    </a>
+                </div>
+            `;
+        }
+    </script>
+</body>
+</html>

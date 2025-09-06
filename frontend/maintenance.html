@@ -1,0 +1,382 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Towerco AIOps - Maintenance</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="js/auth.js"></script>
+    <script src="js/api.js"></script>
+</head>
+<body class="bg-gray-100">
+    <div class="min-h-screen">
+        <!-- Include Navigation -->
+        <iframe src="navigation.html" class="w-full h-16 border-0" id="navFrame"></iframe>
+
+        <!-- Main Content -->
+        <main class="container mx-auto px-4 py-8">
+            <div class="mb-6">
+                <h1 class="text-3xl font-bold text-gray-900">Maintenance Management</h1>
+                <p class="text-gray-600 mt-2">Schedule and track maintenance activities</p>
+            </div>
+
+            <!-- Maintenance Summary Cards -->
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-6">
+                <div class="bg-white rounded-lg shadow-md p-6">
+                    <div class="flex items-center">
+                        <div class="p-3 bg-blue-100 rounded-full">
+                            <svg class="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                            </svg>
+                        </div>
+                        <div class="ml-4">
+                            <p class="text-sm font-medium text-gray-600">Scheduled</p>
+                            <p id="scheduledCount" class="text-2xl font-bold text-blue-600">0</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-white rounded-lg shadow-md p-6">
+                    <div class="flex items-center">
+                        <div class="p-3 bg-yellow-100 rounded-full">
+                            <svg class="w-6 h-6 text-yellow-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z"></path>
+                            </svg>
+                        </div>
+                        <div class="ml-4">
+                            <p class="text-sm font-medium text-gray-600">In Progress</p>
+                            <p id="inProgressCount" class="text-2xl font-bold text-yellow-600">0</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-white rounded-lg shadow-md p-6">
+                    <div class="flex items-center">
+                        <div class="p-3 bg-green-100 rounded-full">
+                            <svg class="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                            </svg>
+                        </div>
+                        <div class="ml-4">
+                            <p class="text-sm font-medium text-gray-600">Completed</p>
+                            <p id="completedCount" class="text-2xl font-bold text-green-600">0</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-white rounded-lg shadow-md p-6">
+                    <div class="flex items-center">
+                        <div class="p-3 bg-red-100 rounded-full">
+                            <svg class="w-6 h-6 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                            </svg>
+                        </div>
+                        <div class="ml-4">
+                            <p class="text-sm font-medium text-gray-600">Overdue</p>
+                            <p id="overdueCount" class="text-2xl font-bold text-red-600">0</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Maintenance Filters -->
+            <div class="bg-white rounded-lg shadow-md p-6 mb-6">
+                <div class="flex flex-wrap gap-4">
+                    <select id="statusFilter" class="bg-gray-50 border border-gray-300 rounded-md px-3 py-2">
+                        <option value="">All Statuses</option>
+                        <option value="scheduled">Scheduled</option>
+                        <option value="in_progress">In Progress</option>
+                        <option value="completed">Completed</option>
+                        <option value="overdue">Overdue</option>
+                    </select>
+                    <select id="priorityFilter" class="bg-gray-50 border border-gray-300 rounded-md px-3 py-2">
+                        <option value="">All Priorities</option>
+                        <option value="high">High</option>
+                        <option value="medium">Medium</option>
+                        <option value="low">Low</option>
+                    </select>
+                    <select id="siteFilter" class="bg-gray-50 border border-gray-300 rounded-md px-3 py-2">
+                        <option value="">All Sites</option>
+                    </select>
+                    <button id="refreshBtn" class="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 transition-colors">
+                        Refresh
+                    </button>
+                    <button id="addMaintenanceBtn" class="bg-green-600 text-white px-4 py-2 rounded-md hover:bg-green-700 transition-colors">
+                        Add Maintenance
+                    </button>
+                </div>
+            </div>
+
+            <!-- Maintenance Table -->
+            <div class="bg-white rounded-lg shadow-md p-6">
+                <div class="flex items-center justify-between mb-4">
+                    <h3 class="text-lg font-semibold text-gray-900">Maintenance Activities</h3>
+                    <div class="text-sm text-gray-500" id="maintenanceCount">Loading...</div>
+                </div>
+
+                <div class="overflow-x-auto">
+                    <table class="min-w-full divide-y divide-gray-200">
+                        <thead class="bg-gray-50">
+                            <tr>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Activity</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Site</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Priority</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Scheduled Date</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Assigned To</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="maintenanceTableBody" class="bg-white divide-y divide-gray-200">
+                            <!-- Maintenance rows will be populated here -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            loadMaintenanceData();
+            setupEventListeners();
+        });
+
+        function setupEventListeners() {
+            document.getElementById('refreshBtn').addEventListener('click', loadMaintenanceData);
+            document.getElementById('addMaintenanceBtn').addEventListener('click', addMaintenance);
+            document.getElementById('statusFilter').addEventListener('change', filterMaintenance);
+            document.getElementById('priorityFilter').addEventListener('change', filterMaintenance);
+            document.getElementById('siteFilter').addEventListener('change', filterMaintenance);
+        }
+
+        async function loadMaintenanceData() {
+            try {
+                if (!window.authService.isAuthenticated()) {
+                    await window.authService.login();
+                    return;
+                }
+
+                // Simulate maintenance data
+                const maintenanceData = generateMockMaintenanceData();
+                
+                updateMaintenanceSummary(maintenanceData);
+                updateMaintenanceTable(maintenanceData);
+                updateSiteFilter(maintenanceData);
+                updateMaintenanceCount(maintenanceData);
+                
+            } catch (error) {
+                console.error('Error loading maintenance data:', error);
+                showError('Failed to load maintenance data. Please check your connection and try again.');
+            }
+        }
+
+        function generateMockMaintenanceData() {
+            const activities = [
+                'Battery Replacement',
+                'Antenna Cleaning',
+                'Power System Check',
+                'Network Equipment Update',
+                'Environmental Monitoring',
+                'Security System Test',
+                'Backup System Verification',
+                'Cooling System Maintenance'
+            ];
+
+            const sites = ['Site A', 'Site B', 'Site C', 'Site D', 'Site E'];
+            const priorities = ['high', 'medium', 'low'];
+            const statuses = ['scheduled', 'in_progress', 'completed', 'overdue'];
+            const technicians = ['John Smith', 'Jane Doe', 'Mike Johnson', 'Sarah Wilson', 'David Brown'];
+
+            const maintenance = [];
+            for (let i = 0; i < 20; i++) {
+                const scheduledDate = new Date();
+                scheduledDate.setDate(scheduledDate.getDate() + Math.floor(Math.random() * 30) - 15);
+                
+                maintenance.push({
+                    id: i + 1,
+                    activity: activities[Math.floor(Math.random() * activities.length)],
+                    site: sites[Math.floor(Math.random() * sites.length)],
+                    priority: priorities[Math.floor(Math.random() * priorities.length)],
+                    status: statuses[Math.floor(Math.random() * statuses.length)],
+                    scheduledDate: scheduledDate,
+                    assignedTo: technicians[Math.floor(Math.random() * technicians.length)],
+                    description: `Maintenance activity for ${activities[Math.floor(Math.random() * activities.length)].toLowerCase()}`
+                });
+            }
+
+            return maintenance;
+        }
+
+        function updateMaintenanceSummary(maintenance) {
+            const summary = {
+                scheduled: 0,
+                in_progress: 0,
+                completed: 0,
+                overdue: 0
+            };
+
+            maintenance.forEach(item => {
+                summary[item.status] = (summary[item.status] || 0) + 1;
+            });
+
+            document.getElementById('scheduledCount').textContent = summary.scheduled;
+            document.getElementById('inProgressCount').textContent = summary.in_progress;
+            document.getElementById('completedCount').textContent = summary.completed;
+            document.getElementById('overdueCount').textContent = summary.overdue;
+        }
+
+        function updateMaintenanceTable(maintenance) {
+            const tbody = document.getElementById('maintenanceTableBody');
+            tbody.innerHTML = '';
+
+            maintenance.forEach(item => {
+                const row = document.createElement('tr');
+                row.className = 'hover:bg-gray-50';
+                
+                row.innerHTML = `
+                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                        ${escapeHtml(item.activity)}
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                        ${escapeHtml(item.site)}
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap">
+                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-${getPriorityColor(item.priority)}-100 text-${getPriorityColor(item.priority)}-800">
+                            ${escapeHtml(item.priority)}
+                        </span>
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap">
+                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-${getStatusColor(item.status)}-100 text-${getStatusColor(item.status)}-800">
+                            ${escapeHtml(item.status)}
+                        </span>
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                        ${item.scheduledDate.toLocaleDateString()}
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                        ${escapeHtml(item.assignedTo)}
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                        <button class="text-blue-600 hover:text-blue-900 mr-3" onclick="editMaintenance(${item.id})">
+                            Edit
+                        </button>
+                        <button class="text-green-600 hover:text-green-900 mr-3" onclick="startMaintenance(${item.id})">
+                            Start
+                        </button>
+                        <button class="text-red-600 hover:text-red-900" onclick="deleteMaintenance(${item.id})">
+                            Delete
+                        </button>
+                    </td>
+                `;
+                
+                tbody.appendChild(row);
+            });
+        }
+
+        function updateSiteFilter(maintenance) {
+            const siteFilter = document.getElementById('siteFilter');
+            const sites = [...new Set(maintenance.map(item => item.site).filter(Boolean))];
+            
+            // Clear existing options except "All Sites"
+            siteFilter.innerHTML = '<option value="">All Sites</option>';
+            
+            sites.forEach(site => {
+                const option = document.createElement('option');
+                option.value = site;
+                option.textContent = site;
+                siteFilter.appendChild(option);
+            });
+        }
+
+        function updateMaintenanceCount(maintenance) {
+            document.getElementById('maintenanceCount').textContent = `${maintenance.length} maintenance activities found`;
+        }
+
+        function filterMaintenance() {
+            const statusFilter = document.getElementById('statusFilter').value;
+            const priorityFilter = document.getElementById('priorityFilter').value;
+            const siteFilter = document.getElementById('siteFilter').value;
+            const rows = document.querySelectorAll('#maintenanceTableBody tr');
+            
+            rows.forEach(row => {
+                const status = row.cells[3].textContent.toLowerCase();
+                const priority = row.cells[2].textContent.toLowerCase();
+                const site = row.cells[1].textContent.toLowerCase();
+                
+                const statusMatch = !statusFilter || status.includes(statusFilter);
+                const priorityMatch = !priorityFilter || priority.includes(priorityFilter);
+                const siteMatch = !siteFilter || site.includes(siteFilter.toLowerCase());
+                
+                if (statusMatch && priorityMatch && siteMatch) {
+                    row.style.display = '';
+                } else {
+                    row.style.display = 'none';
+                }
+            });
+        }
+
+        function addMaintenance() {
+            // TODO: Implement add maintenance modal/form
+            alert('Add maintenance functionality would be implemented here');
+        }
+
+        function editMaintenance(id) {
+            // TODO: Implement edit maintenance functionality
+            console.log('Editing maintenance:', id);
+            alert('Edit maintenance functionality would be implemented here');
+        }
+
+        function startMaintenance(id) {
+            // TODO: Implement start maintenance functionality
+            console.log('Starting maintenance:', id);
+            alert('Start maintenance functionality would be implemented here');
+        }
+
+        function deleteMaintenance(id) {
+            if (confirm('Are you sure you want to delete this maintenance activity?')) {
+                // TODO: Implement delete maintenance functionality
+                console.log('Deleting maintenance:', id);
+                alert('Delete maintenance functionality would be implemented here');
+            }
+        }
+
+        function escapeHtml(text) {
+            if (typeof text !== 'string') return '';
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
+        function getPriorityColor(priority) {
+            const colors = {
+                high: 'red',
+                medium: 'yellow',
+                low: 'green'
+            };
+            return colors[priority] || 'gray';
+        }
+
+        function getStatusColor(status) {
+            const colors = {
+                scheduled: 'blue',
+                in_progress: 'yellow',
+                completed: 'green',
+                overdue: 'red'
+            };
+            return colors[status] || 'gray';
+        }
+
+        function showError(message) {
+            const tbody = document.getElementById('maintenanceTableBody');
+            tbody.innerHTML = `
+                <tr>
+                    <td colspan="7" class="px-6 py-4 text-center text-red-600">
+                        ${message}
+                    </td>
+                </tr>
+            `;
+        }
+    </script>
+</body>
+</html>

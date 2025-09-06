@@ -32,8 +32,27 @@ export const AuthProvider: React.FC<{children: React.ReactNode}> = ({ children }
     }).finally(() => setLoading(false))
   }, [])
 
-  const login = () => { window.location.href = '/oauth2/start?rd=/' }
-  const logout = () => { window.location.href = '/oauth2/sign_out?rd=/login' }
+  const login = async () => {
+    try {
+      const response = await api.login()
+      if (response.login_url) {
+        window.location.href = response.login_url
+      }
+    } catch (error) {
+      console.error('Login failed:', error)
+    }
+  }
+  
+  const logout = async () => {
+    try {
+      await api.logout()
+      setIsAuthenticated(false)
+      setUser(null)
+      window.location.href = '/login'
+    } catch (error) {
+      console.error('Logout failed:', error)
+    }
+  }
 
   return (
     <AuthContext.Provider value={{ isAuthenticated, loading, user, login, logout }}>

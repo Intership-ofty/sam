@@ -33,8 +33,8 @@ async def login():
     
     return {"login_url": login_url}
 
-@router.get("/callback")
-async def auth_callback(code: str, state: Optional[str] = None):
+@router.post("/callback")
+async def auth_callback(request: Dict[str, Any]):
     """Handle OAuth callback from Keycloak"""
     if not keycloak_openid:
         raise HTTPException(
@@ -43,6 +43,15 @@ async def auth_callback(code: str, state: Optional[str] = None):
         )
     
     try:
+        code = request.get('code')
+        state = request.get('state')
+        
+        if not code:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="Authorization code is required"
+            )
+        
         # Exchange code for tokens
         token = keycloak_openid.token(code)
         

@@ -6,6 +6,7 @@ import { ThemeProvider } from './contexts/ThemeContext'
 import Sidebar from './components/Layout/Sidebar'
 import Header from './components/Layout/Header'
 import LoadingSpinner from './components/Common/LoadingSpinner'
+import './styles.css'
 
 import LoginPage from './pages/Auth/LoginPage'
 import DashboardPage from './pages/Dashboard/DashboardPage'

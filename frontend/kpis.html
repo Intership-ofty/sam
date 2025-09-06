@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Towerco AIOps - KPIs</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="js/auth.js"></script>
+    <script src="js/api.js"></script>
+</head>
+<body class="bg-gray-100">
+    <div class="min-h-screen">
+        <!-- Include Navigation -->
+        <iframe src="navigation.html" class="w-full h-16 border-0" id="navFrame"></iframe>
+
+        <!-- Main Content -->
+        <main class="container mx-auto px-4 py-8">
+            <div class="mb-6">
+                <h1 class="text-3xl font-bold text-gray-900">Key Performance Indicators</h1>
+                <p class="text-gray-600 mt-2">Monitor and analyze critical performance metrics</p>
+            </div>
+
+            <!-- KPI Filters -->
+            <div class="bg-white rounded-lg shadow-md p-6 mb-6">
+                <div class="flex flex-wrap gap-4">
+                    <select id="categoryFilter" class="bg-gray-50 border border-gray-300 rounded-md px-3 py-2">
+                        <option value="">All Categories</option>
+                        <option value="network">Network</option>
+                        <option value="energy">Energy</option>
+                        <option value="operational">Operational</option>
+                        <option value="financial">Financial</option>
+                    </select>
+                    <select id="timeRangeFilter" class="bg-gray-50 border border-gray-300 rounded-md px-3 py-2">
+                        <option value="1h">Last Hour</option>
+                        <option value="24h" selected>Last 24 Hours</option>
+                        <option value="7d">Last 7 Days</option>
+                        <option value="30d">Last 30 Days</option>
+                    </select>
+                    <button id="refreshBtn" class="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 transition-colors">
+                        Refresh
+                    </button>
+                </div>
+            </div>
+
+            <!-- KPI Charts -->
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+                <div class="bg-white rounded-lg shadow-md p-6">
+                    <h3 class="text-lg font-semibold text-gray-900 mb-4">KPI Trends</h3>
+                    <canvas id="kpiTrendsChart" width="400" height="200"></canvas>
+                </div>
+                <div class="bg-white rounded-lg shadow-md p-6">
+                    <h3 class="text-lg font-semibold text-gray-900 mb-4">KPI Distribution</h3>
+                    <canvas id="kpiDistributionChart" width="400" height="200"></canvas>
+                </div>
+            </div>
+
+            <!-- KPI Table -->
+            <div class="bg-white rounded-lg shadow-md p-6">
+                <div class="flex items-center justify-between mb-4">
+                    <h3 class="text-lg font-semibold text-gray-900">All KPIs</h3>
+                    <div class="text-sm text-gray-500" id="kpiCount">Loading...</div>
+                </div>
+
+                <div class="overflow-x-auto">
+                    <table class="min-w-full divide-y divide-gray-200">
+                        <thead class="bg-gray-50">
+                            <tr>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">KPI Name</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Current Value</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Target</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Category</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Quality</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Trend</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Last Update</th>
+                            </tr>
+                        </thead>
+                        <tbody id="kpiTableBody" class="bg-white divide-y divide-gray-200">
+                            <!-- KPI rows will be populated here -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        let kpiTrendsChart = null;
+        let kpiDistributionChart = null;
+
+        document.addEventListener('DOMContentLoaded', function() {
+            initializeCharts();
+            loadKPIData();
+            setupEventListeners();
+        });
+
+        function initializeCharts() {
+            // KPI Trends Chart
+            const trendsCtx = document.getElementById('kpiTrendsChart').getContext('2d');
+            kpiTrendsChart = new Chart(trendsCtx, {
+                type: 'line',
+                data: {
+                    labels: [],
+                    datasets: []
+                },
+                options: {
+                    responsive: true,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            max: 100
+                        }
+                    },
+                    plugins: {
+                        legend: {
+                            position: 'top'
+                        }
+                    }
+                }
+            });
+
+            // KPI Distribution Chart
+            const distributionCtx = document.getElementById('kpiDistributionChart').getContext('2d');
+            kpiDistributionChart = new Chart(distributionCtx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Network', 'Energy', 'Operational', 'Financial'],
+                    datasets: [{
+                        data: [0, 0, 0, 0],
+                        backgroundColor: ['#3B82F6', '#10B981', '#F59E0B', '#8B5CF6'],
+                        borderWidth: 2,
+                        borderColor: '#fff'
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: {
+                            position: 'bottom'
+                        }
+                    }
+                }
+            });
+        }
+
+        function setupEventListeners() {
+            document.getElementById('refreshBtn').addEventListener('click', loadKPIData);
+            document.getElementById('categoryFilter').addEventListener('change', filterKPIs);
+            document.getElementById('timeRangeFilter').addEventListener('change', loadKPIData);
+        }
+
+        async function loadKPIData() {
+            try {
+                if (!window.authService.isAuthenticated()) {
+                    await window.authService.login();
+                    return;
+                }
+
+                const response = await window.apiService.getKPIMetrics({ limit: 100 });
+                const data = response.data;
+                
+                updateKPITable(data);
+                updateTrendsChart(data);
+                updateDistributionChart(data);
+                updateKPICount(data);
+                
+            } catch (error) {
+                console.error('Error loading KPI data:', error);
+                showError('Failed to load KPI data. Please check your connection and try again.');
+            }
+        }
+
+        function updateKPITable(kpis) {
+            const tbody = document.getElementById('kpiTableBody');
+            tbody.innerHTML = '';
+
+            kpis.forEach(kpi => {
+                const row = document.createElement('tr');
+                row.className = 'hover:bg-gray-50';
+                
+                row.innerHTML = `
+                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">${escapeHtml(kpi.kpi_name || 'Unknown')}</td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">${kpi.current_value?.toFixed(2) || '--'} ${escapeHtml(kpi.unit || '')}</td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">${kpi.target_value?.toFixed(2) || '--'}</td>
+                    <td class="px-6 py-4 whitespace-nowrap">
+                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-${getCategoryColor(kpi.category)}-100 text-${getCategoryColor(kpi.category)}-800">
+                            ${escapeHtml(kpi.category || 'Unknown')}
+                        </span>
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                        <div class="flex items-center">
+                            <div class="flex-1 bg-gray-200 rounded-full h-2">
+                                <div class="bg-${getQualityColor(kpi.quality_score)}-600 h-2 rounded-full" style="width: ${(kpi.quality_score * 100)}%"></div>
+                            </div>
+                            <span class="ml-2 text-xs">${(kpi.quality_score * 100).toFixed(0)}%</span>
+                        </div>
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm">
+                        <span class="trend-${kpi.trend}">${getTrendText(kpi.trend)}</span>
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                        ${new Date(kpi.last_calculated).toLocaleString()}
+                    </td>
+                `;
+                
+                tbody.appendChild(row);
+            });
+        }
+
+        function updateTrendsChart(kpis) {
+            const categories = ['network', 'energy', 'operational', 'financial'];
+            const datasets = categories.map(category => {
+                const categoryKPIs = kpis.filter(kpi => kpi.category === category);
+                const avgValue = categoryKPIs.length > 0 ? 
+                    categoryKPIs.reduce((sum, kpi) => sum + (kpi.current_value || 0), 0) / categoryKPIs.length : 0;
+                
+                return {
+                    label: category.charAt(0).toUpperCase() + category.slice(1),
+                    data: [avgValue],
+                    borderColor: getCategoryColor(category),
+                    backgroundColor: getCategoryColor(category) + '20',
+                    tension: 0.4
+                };
+            });
+
+            kpiTrendsChart.data.datasets = datasets;
+            kpiTrendsChart.update();
+        }
+
+        function updateDistributionChart(kpis) {
+            const categories = ['network', 'energy', 'operational', 'financial'];
+            const data = categories.map(category => {
+                return kpis.filter(kpi => kpi.category === category).length;
+            });
+
+            kpiDistributionChart.data.datasets[0].data = data;
+            kpiDistributionChart.update();
+        }
+
+        function updateKPICount(kpis) {
+            document.getElementById('kpiCount').textContent = `${kpis.length} KPIs found`;
+        }
+
+        function filterKPIs() {
+            const selectedCategory = document.getElementById('categoryFilter').value;
+            const rows = document.querySelectorAll('#kpiTableBody tr');
+            
+            rows.forEach(row => {
+                const categoryCell = row.cells[3].textContent.toLowerCase();
+                if (!selectedCategory || categoryCell.includes(selectedCategory)) {
+                    row.style.display = '';
+                } else {
+                    row.style.display = 'none';
+                }
+            });
+        }
+
+        function escapeHtml(text) {
+            if (typeof text !== 'string') return '';
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
+        function getCategoryColor(category) {
+            const colors = {
+                network: 'blue',
+                energy: 'green',
+                operational: 'yellow',
+                financial: 'purple'
+            };
+            return colors[category] || 'gray';
+        }
+
+        function getQualityColor(score) {
+            if (score >= 0.9) return 'green';
+            if (score >= 0.7) return 'yellow';
+            return 'red';
+        }
+
+        function getTrendText(trend) {
+            const texts = {
+                up: '↗ Improving',
+                down: '↘ Declining', 
+                stable: '→ Stable'
+            };
+            return texts[trend] || '→ Stable';
+        }
+
+        function showError(message) {
+            const tbody = document.getElementById('kpiTableBody');
+            tbody.innerHTML = `
+                <tr>
+                    <td colspan="7" class="px-6 py-4 text-center text-red-600">
+                        ${message}
+                    </td>
+                </tr>
+            `;
+        }
+    </script>
+</body>
+</html>
