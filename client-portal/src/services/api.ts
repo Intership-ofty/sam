@@ -7,6 +7,17 @@ interface ApiResponse<T> {
   error?: string
 }
 
+interface AuthConfig {
+  auth_mode: string
+  keycloak_url?: string
+  realm?: string
+  client_id?: string
+}
+
+interface LoginResponse {
+  login_url: string
+}
+
 interface KPIMetric {
   kpi_name: string
   current_value: number
@@ -111,12 +122,21 @@ class ApiClient {
   }
 
   // Authentication
-  async getAuthConfig() {
-    return this.request('/api/v1/health')
+  async getAuthConfig(): Promise<ApiResponse<AuthConfig>> {
+    return this.request<AuthConfig>('/api/v1/auth/config')
   }
 
-  async getCurrentUser() {
-    return this.request('/api/v1/auth/me')
+  async login(): Promise<ApiResponse<LoginResponse>> {
+    return this.request<LoginResponse>('/api/v1/auth/login')
+  }
+
+  async logout(): Promise<ApiResponse<{ message: string }>> {
+    this.clearToken()
+    return this.request<{ message: string }>('/api/v1/auth/logout', { method: 'POST' })
+  }
+
+  async getCurrentUser(): Promise<ApiResponse<{ user: { name: string; email: string } }>> {
+    return this.request<{ user: { name: string; email: string } }>('/api/v1/auth/me')
   }
 
   // KPIs
@@ -250,4 +270,4 @@ class ApiClient {
 export const api = new ApiClient(API_BASE_URL)
 
 // Export types
-export type { KPIMetric, Site, SiteHealth, Alert, ApiResponse }
+export type { KPIMetric, Site, SiteHealth, Alert, ApiResponse, AuthConfig, LoginResponse }

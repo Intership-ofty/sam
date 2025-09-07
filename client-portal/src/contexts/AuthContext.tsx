@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useEffect, useState } from 'react'
-import { api } from '../services/api'
+import { api, type LoginResponse } from '../services/api'
 
 type AuthContextType = {
   isAuthenticated: boolean
@@ -35,8 +35,8 @@ export const AuthProvider: React.FC<{children: React.ReactNode}> = ({ children }
   const login = async () => {
     try {
       const response = await api.login()
-      if (response.login_url) {
-        window.location.href = response.login_url
+      if (response.data.login_url) {
+        window.location.href = response.data.login_url
       }
     } catch (error) {
       console.error('Login failed:', error)
