@@ -22,6 +22,7 @@ class Settings(BaseSettings):
     SECRET_KEY: str = Field(env="SECRET_KEY", default="your-super-secret-key-change-in-production")
     ALGORITHM: str = "HS256"
     ACCESS_TOKEN_EXPIRE_MINUTES: int = 30
+    AUTH_MODE: str = Field(default="keycloak", env="AUTH_MODE")
     
     # CORS
     ALLOWED_ORIGINS: str = Field(
