@@ -15,7 +15,7 @@ import asyncpg
 
 from core.database import get_database_manager, DatabaseManager
 from core.auth import get_current_user
-from core.models import KPICalculationRequest, KPIAlert, KPIDashboard
+from core.models import KPICalculationRequest, KPIAlert, KPIDashboard, KPIDefinition
 
 logger = logging.getLogger(__name__)
 
@@ -67,10 +67,22 @@ class KPIDashboardCreate(BaseModel):
     name: str
     description: Optional[str] = None
     kpi_list: List[str]
-    layout_config: Dict[str, Any] = {}
-    filters: Dict[str, Any] = {}
-    refresh_interval: int = Field(default=30, description="Refresh interval in seconds")
-    is_public: bool = False
+
+class KPIDefinitionCreate(BaseModel):
+    """Create KPI definition model"""
+    name: str = Field(..., description="KPI unique identifier")
+    display_name: str = Field(..., description="Human-readable KPI name")
+    description: str = Field(..., description="KPI description")
+    category: str = Field(..., pattern="^(network|energy|operational|financial)$")
+    unit: str = Field(..., description="Unit of measurement")
+    formula: str = Field(..., description="Calculation formula (SQL expression)")
+    target_value: Optional[float] = Field(None, description="Target value")
+    warning_threshold: Optional[float] = Field(None, description="Warning threshold")
+    critical_threshold: Optional[float] = Field(None, description="Critical threshold")
+    calculation_interval: str = Field("5m", description="Calculation interval (e.g., 5m, 1h)")
+    enabled: bool = Field(True, description="Whether KPI is enabled")
+    tenant_specific: bool = Field(False, description="Whether KPI is tenant-specific")
+    metadata: Dict[str, Any] = Field(default_factory=dict, description="Additional metadata")
 
 @router.get("/metrics", response_model=List[KPIMetricResponse])
 async def get_kpi_metrics(
@@ -617,6 +629,138 @@ async def process_kpi_calculation(calculation_id: int, request: KPICalculationRe
             SET status = 'failed', error_message = $2, completed_at = NOW()
             WHERE id = $1
         """, calculation_id, str(e))
+
+@router.post("/definitions", response_model=Dict[str, Any])
+async def create_kpi_definition(
+    kpi_definition: KPIDefinitionCreate,
+    db: DatabaseManager = Depends(get_database_manager)
+):
+    """Create a new KPI definition"""
+    try:
+        # Check if KPI name already exists
+        existing = await db.execute_query_scalar(
+            "SELECT COUNT(*) FROM kpi_definitions WHERE kpi_name = $1",
+            kpi_definition.name
+        )
+        
+        if existing > 0:
+            raise HTTPException(
+                status_code=400, 
+                detail=f"KPI with name '{kpi_definition.name}' already exists"
+            )
+        
+        # Convert calculation interval to PostgreSQL interval
+        interval_map = {
+            "1m": "1 minute",
+            "5m": "5 minutes", 
+            "15m": "15 minutes",
+            "30m": "30 minutes",
+            "1h": "1 hour",
+            "6h": "6 hours",
+            "1d": "1 day"
+        }
+        
+        calculation_interval = interval_map.get(
+            kpi_definition.calculation_interval, 
+            "5 minutes"
+        )
+        
+        # Insert new KPI definition
+        kpi_id = await db.execute_query_scalar(
+            """
+            INSERT INTO kpi_definitions (
+                kpi_name, kpi_category, calculation_formula, unit,
+                target_value, warning_threshold, critical_threshold,
+                calculation_interval, enabled, tenant_specific, metadata,
+                created_at, updated_at
+            ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, NOW(), NOW())
+            RETURNING kpi_id
+            """,
+            kpi_definition.name,
+            kpi_definition.category.upper(),
+            kpi_definition.formula,
+            kpi_definition.unit,
+            kpi_definition.target_value,
+            kpi_definition.warning_threshold,
+            kpi_definition.critical_threshold,
+            calculation_interval,
+            kpi_definition.enabled,
+            kpi_definition.tenant_specific,
+            json.dumps(kpi_definition.metadata)
+        )
+        
+        logger.info(f"Created KPI definition {kpi_id} for '{kpi_definition.name}'")
+        
+        return {
+            "kpi_id": str(kpi_id),
+            "name": kpi_definition.name,
+            "status": "created",
+            "message": f"KPI definition '{kpi_definition.display_name}' created successfully"
+        }
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Error creating KPI definition: {e}")
+        raise HTTPException(status_code=500, detail="Failed to create KPI definition")
+
+@router.get("/definitions", response_model=List[Dict[str, Any]])
+async def get_kpi_definitions(
+    category: Optional[str] = Query(None, description="Filter by category"),
+    enabled_only: bool = Query(True, description="Show only enabled KPIs"),
+    db: DatabaseManager = Depends(get_database_manager)
+):
+    """Get all KPI definitions"""
+    try:
+        query = """
+            SELECT kpi_id, kpi_name, kpi_category, calculation_formula, unit,
+                   target_value, warning_threshold, critical_threshold,
+                   calculation_interval, enabled, tenant_specific, metadata,
+                   created_at, updated_at
+            FROM kpi_definitions
+            WHERE 1=1
+        """
+        params = []
+        param_count = 0
+        
+        if category:
+            param_count += 1
+            query += f" AND kpi_category = ${param_count}"
+            params.append(category.upper())
+            
+        if enabled_only:
+            param_count += 1
+            query += f" AND enabled = ${param_count}"
+            params.append(True)
+            
+        query += " ORDER BY kpi_category, kpi_name"
+        
+        rows = await db.execute_query(query, *params)
+        
+        definitions = []
+        for row in rows:
+            definitions.append({
+                "kpi_id": str(row['kpi_id']),
+                "name": row['kpi_name'],
+                "category": row['kpi_category'],
+                "formula": row['calculation_formula'],
+                "unit": row['unit'],
+                "target_value": row['target_value'],
+                "warning_threshold": row['warning_threshold'],
+                "critical_threshold": row['critical_threshold'],
+                "calculation_interval": row['calculation_interval'],
+                "enabled": row['enabled'],
+                "tenant_specific": row['tenant_specific'],
+                "metadata": json.loads(row['metadata']) if row['metadata'] else {},
+                "created_at": row['created_at'],
+                "updated_at": row['updated_at']
+            })
+        
+        return definitions
+        
+    except Exception as e:
+        logger.error(f"Error retrieving KPI definitions: {e}")
+        raise HTTPException(status_code=500, detail="Failed to retrieve KPI definitions")
 
 @router.get("/categories")
 async def get_kpi_categories(

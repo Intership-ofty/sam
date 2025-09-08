@@ -139,6 +139,31 @@ class ApiClient {
     return this.request<{ user: { name: string; email: string } }>('/api/v1/auth/me')
   }
 
+  // KPI Management
+  async getKPIDefinitions(): Promise<ApiResponse<any[]>> {
+    return this.request<any[]>('/api/v1/kpi/definitions')
+  }
+
+  async createKPIDefinition(kpiData: any): Promise<ApiResponse<any>> {
+    return this.request<any>('/api/v1/kpi/definitions', {
+      method: 'POST',
+      body: JSON.stringify(kpiData)
+    })
+  }
+
+  async updateKPIDefinition(kpiName: string, kpiData: any): Promise<ApiResponse<any>> {
+    return this.request<any>(`/api/v1/kpi/definitions/${kpiName}`, {
+      method: 'PUT',
+      body: JSON.stringify(kpiData)
+    })
+  }
+
+  async deleteKPIDefinition(kpiName: string): Promise<ApiResponse<any>> {
+    return this.request<any>(`/api/v1/kpi/definitions/${kpiName}`, {
+      method: 'DELETE'
+    })
+  }
+
   // KPIs
   async getKPIMetrics(params?: {
     site_id?: string

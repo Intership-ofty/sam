@@ -6,6 +6,7 @@
     <title>Towerco AIOps - KPIs</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <script src="js/auth.js"></script>
     <script src="js/api.js"></script>
 </head>
@@ -17,8 +18,19 @@
         <!-- Main Content -->
         <main class="container mx-auto px-4 py-8">
             <div class="mb-6">
-                <h1 class="text-3xl font-bold text-gray-900">Key Performance Indicators</h1>
-                <p class="text-gray-600 mt-2">Monitor and analyze critical performance metrics</p>
+                <div class="flex justify-between items-center">
+                    <div>
+                        <h1 class="text-3xl font-bold text-gray-900">Key Performance Indicators</h1>
+                        <p class="text-gray-600 mt-2">Monitor and analyze critical performance metrics</p>
+                    </div>
+                    <a
+                        href="kpi-management.html"
+                        class="bg-green-600 text-white px-4 py-2 rounded-md hover:bg-green-700 transition-colors"
+                    >
+                        <i class="fas fa-cog mr-2"></i>
+                        Gérer les KPIs
+                    </a>
+                </div>
             </div>
 
             <!-- KPI Filters -->

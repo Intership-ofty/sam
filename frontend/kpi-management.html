@@ -1,0 +1,440 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestion des KPIs - Towerco AIOps</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <script src="js/auth.js"></script>
+    <script src="js/api.js"></script>
+</head>
+<body class="bg-gray-50">
+    <!-- Include Navigation -->
+    <iframe src="navigation.html" class="w-full h-16 border-0" id="navFrame"></iframe>
+
+    <div class="container mx-auto px-4 py-8">
+        <!-- Header -->
+        <div class="bg-white shadow rounded-lg p-6 mb-6">
+            <div class="flex justify-between items-center">
+                <div>
+                    <h1 class="text-2xl font-bold text-gray-900">Gestion des KPIs</h1>
+                    <p class="mt-1 text-sm text-gray-500">
+                        Créez et gérez vos indicateurs de performance personnalisés
+                    </p>
+                </div>
+                <button
+                    onclick="showAddKPIForm()"
+                    class="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 transition-colors"
+                >
+                    <i class="fas fa-plus mr-2"></i>
+                    Nouveau KPI
+                </button>
+            </div>
+        </div>
+
+        <!-- KPI List -->
+        <div class="bg-white shadow rounded-lg overflow-hidden">
+            <div class="px-6 py-4 border-b border-gray-200">
+                <h2 class="text-lg font-semibold text-gray-900">KPIs existants (<span id="kpiCount">0</span>)</h2>
+            </div>
+            
+            <div id="kpiList" class="overflow-x-auto">
+                <!-- KPIs will be loaded here -->
+            </div>
+        </div>
+
+        <!-- Add/Edit KPI Modal -->
+        <div id="kpiModal" class="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50 hidden">
+            <div class="relative top-20 mx-auto p-5 border w-11/12 md:w-3/4 lg:w-1/2 shadow-lg rounded-md bg-white">
+                <div class="mt-3">
+                    <div class="flex justify-between items-center mb-4">
+                        <h3 class="text-lg font-medium text-gray-900" id="modalTitle">Nouveau KPI</h3>
+                        <button
+                            onclick="hideKPIForm()"
+                            class="text-gray-400 hover:text-gray-600"
+                        >
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </div>
+
+                    <form id="kpiForm" onsubmit="handleKPISubmit(event)" class="space-y-4">
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Nom unique *</label>
+                                <input
+                                    type="text"
+                                    id="kpiName"
+                                    class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                    placeholder="ex: custom_network_quality"
+                                    required
+                                />
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Nom affiché *</label>
+                                <input
+                                    type="text"
+                                    id="kpiDisplayName"
+                                    class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                    placeholder="ex: Qualité réseau personnalisée"
+                                    required
+                                />
+                            </div>
+                        </div>
+
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Description *</label>
+                            <textarea
+                                id="kpiDescription"
+                                class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                rows="3"
+                                placeholder="Description détaillée du KPI"
+                                required
+                            ></textarea>
+                        </div>
+
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Catégorie *</label>
+                                <select
+                                    id="kpiCategory"
+                                    class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                    required
+                                >
+                                    <option value="network">Réseau</option>
+                                    <option value="energy">Énergie</option>
+                                    <option value="operational">Opérationnel</option>
+                                    <option value="financial">Financier</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Unité de mesure *</label>
+                                <input
+                                    type="text"
+                                    id="kpiUnit"
+                                    class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                    placeholder="ex: %, dBm, Mbps"
+                                    required
+                                />
+                            </div>
+                        </div>
+
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Formule de calcul *</label>
+                            <input
+                                type="text"
+                                id="kpiFormula"
+                                class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 font-mono"
+                                placeholder="ex: AVG(signal_quality_pct)"
+                                required
+                            />
+                            <p class="text-xs text-gray-500 mt-1">
+                                Utilisez des expressions SQL (AVG, SUM, COUNT, etc.)
+                            </p>
+                        </div>
+
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Valeur cible</label>
+                                <input
+                                    type="number"
+                                    step="0.01"
+                                    id="kpiTargetValue"
+                                    class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                    placeholder="95.0"
+                                />
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Seuil d'avertissement</label>
+                                <input
+                                    type="number"
+                                    step="0.01"
+                                    id="kpiWarningThreshold"
+                                    class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                    placeholder="90.0"
+                                />
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Seuil critique</label>
+                                <input
+                                    type="number"
+                                    step="0.01"
+                                    id="kpiCriticalThreshold"
+                                    class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                    placeholder="85.0"
+                                />
+                            </div>
+                        </div>
+
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Intervalle de calcul</label>
+                                <select
+                                    id="kpiCalculationInterval"
+                                    class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                >
+                                    <option value="1m">1 minute</option>
+                                    <option value="5m" selected>5 minutes</option>
+                                    <option value="15m">15 minutes</option>
+                                    <option value="30m">30 minutes</option>
+                                    <option value="1h">1 heure</option>
+                                    <option value="6h">6 heures</option>
+                                    <option value="1d">1 jour</option>
+                                </select>
+                            </div>
+                            <div class="flex items-center space-x-4">
+                                <label class="flex items-center">
+                                    <input
+                                        type="checkbox"
+                                        id="kpiEnabled"
+                                        class="mr-2"
+                                        checked
+                                    />
+                                    Actif
+                                </label>
+                                <label class="flex items-center">
+                                    <input
+                                        type="checkbox"
+                                        id="kpiTenantSpecific"
+                                        class="mr-2"
+                                    />
+                                    Spécifique au tenant
+                                </label>
+                            </div>
+                        </div>
+
+                        <div class="flex justify-end space-x-3 pt-4">
+                            <button
+                                type="button"
+                                onclick="hideKPIForm()"
+                                class="bg-gray-500 text-white px-4 py-2 rounded-md hover:bg-gray-600 transition-colors"
+                            >
+                                Annuler
+                            </button>
+                            <button
+                                type="submit"
+                                class="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 transition-colors"
+                            >
+                                <span id="submitButtonText">Créer le KPI</span>
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let kpis = [];
+        let editingKpi = null;
+
+        // Load KPIs on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            loadKPIs();
+        });
+
+        async function loadKPIs() {
+            try {
+                const response = await api.request('/api/v1/kpi/definitions');
+                kpis = response.data || [];
+                renderKPIs();
+            } catch (error) {
+                console.error('Error loading KPIs:', error);
+                showNotification('Erreur lors du chargement des KPIs', 'error');
+            }
+        }
+
+        function renderKPIs() {
+            const kpiList = document.getElementById('kpiList');
+            const kpiCount = document.getElementById('kpiCount');
+            
+            kpiCount.textContent = kpis.length;
+
+            if (kpis.length === 0) {
+                kpiList.innerHTML = `
+                    <div class="text-center py-12">
+                        <div class="text-gray-400 text-6xl mb-4">📊</div>
+                        <h3 class="text-lg font-medium text-gray-900 mb-2">Aucun KPI défini</h3>
+                        <p class="text-gray-500 mb-4">Commencez par créer votre premier KPI personnalisé</p>
+                        <button
+                            onclick="showAddKPIForm()"
+                            class="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 transition-colors"
+                        >
+                            Créer un KPI
+                        </button>
+                    </div>
+                `;
+                return;
+            }
+
+            const categories = {
+                'network': { label: 'Réseau', color: 'bg-blue-100 text-blue-800' },
+                'energy': { label: 'Énergie', color: 'bg-green-100 text-green-800' },
+                'operational': { label: 'Opérationnel', color: 'bg-purple-100 text-purple-800' },
+                'financial': { label: 'Financier', color: 'bg-yellow-100 text-yellow-800' }
+            };
+
+            kpiList.innerHTML = `
+                <table class="min-w-full divide-y divide-gray-200">
+                    <thead class="bg-gray-50">
+                        <tr>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Nom</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Catégorie</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Unité</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Formule</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Intervalle</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Statut</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody class="bg-white divide-y divide-gray-200">
+                        ${kpis.map(kpi => {
+                            const category = categories[kpi.category] || { label: kpi.category, color: 'bg-gray-100 text-gray-800' };
+                            return `
+                                <tr>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <div>
+                                            <div class="text-sm font-medium text-gray-900">${escapeHtml(kpi.display_name || kpi.name)}</div>
+                                            <div class="text-sm text-gray-500">${escapeHtml(kpi.name)}</div>
+                                        </div>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <span class="inline-flex px-2 py-1 text-xs font-semibold rounded-full ${category.color}">
+                                            ${category.label}
+                                        </span>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">${escapeHtml(kpi.unit)}</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 font-mono">${escapeHtml(kpi.formula)}</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">${escapeHtml(kpi.calculation_interval)}</td>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <span class="inline-flex px-2 py-1 text-xs font-semibold rounded-full ${kpi.enabled ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800'}">
+                                            ${kpi.enabled ? 'Actif' : 'Inactif'}
+                                        </span>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                                        <div class="flex space-x-2">
+                                            <button
+                                                onclick="editKPI('${kpi.name}')"
+                                                class="text-blue-600 hover:text-blue-800"
+                                            >
+                                                Modifier
+                                            </button>
+                                            <button
+                                                onclick="deleteKPI('${kpi.name}')"
+                                                class="text-red-600 hover:text-red-800"
+                                            >
+                                                Supprimer
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>
+                            `;
+                        }).join('')}
+                    </tbody>
+                </table>
+            `;
+        }
+
+        function showAddKPIForm() {
+            editingKpi = null;
+            document.getElementById('modalTitle').textContent = 'Nouveau KPI';
+            document.getElementById('submitButtonText').textContent = 'Créer le KPI';
+            document.getElementById('kpiForm').reset();
+            document.getElementById('kpiEnabled').checked = true;
+            document.getElementById('kpiModal').classList.remove('hidden');
+        }
+
+        function editKPI(kpiName) {
+            const kpi = kpis.find(k => k.name === kpiName);
+            if (!kpi) return;
+
+            editingKpi = kpi;
+            document.getElementById('modalTitle').textContent = 'Modifier le KPI';
+            document.getElementById('submitButtonText').textContent = 'Modifier le KPI';
+            
+            // Fill form with KPI data
+            document.getElementById('kpiName').value = kpi.name;
+            document.getElementById('kpiDisplayName').value = kpi.display_name || '';
+            document.getElementById('kpiDescription').value = kpi.description || '';
+            document.getElementById('kpiCategory').value = kpi.category;
+            document.getElementById('kpiUnit').value = kpi.unit;
+            document.getElementById('kpiFormula').value = kpi.formula;
+            document.getElementById('kpiTargetValue').value = kpi.target_value || '';
+            document.getElementById('kpiWarningThreshold').value = kpi.warning_threshold || '';
+            document.getElementById('kpiCriticalThreshold').value = kpi.critical_threshold || '';
+            document.getElementById('kpiCalculationInterval').value = kpi.calculation_interval;
+            document.getElementById('kpiEnabled').checked = kpi.enabled;
+            document.getElementById('kpiTenantSpecific').checked = kpi.tenant_specific || false;
+            
+            document.getElementById('kpiModal').classList.remove('hidden');
+        }
+
+        function hideKPIForm() {
+            document.getElementById('kpiModal').classList.add('hidden');
+            editingKpi = null;
+        }
+
+        async function handleKPISubmit(event) {
+            event.preventDefault();
+            
+            const formData = {
+                name: document.getElementById('kpiName').value,
+                display_name: document.getElementById('kpiDisplayName').value,
+                description: document.getElementById('kpiDescription').value,
+                category: document.getElementById('kpiCategory').value,
+                unit: document.getElementById('kpiUnit').value,
+                formula: document.getElementById('kpiFormula').value,
+                target_value: document.getElementById('kpiTargetValue').value ? parseFloat(document.getElementById('kpiTargetValue').value) : undefined,
+                warning_threshold: document.getElementById('kpiWarningThreshold').value ? parseFloat(document.getElementById('kpiWarningThreshold').value) : undefined,
+                critical_threshold: document.getElementById('kpiCriticalThreshold').value ? parseFloat(document.getElementById('kpiCriticalThreshold').value) : undefined,
+                calculation_interval: document.getElementById('kpiCalculationInterval').value,
+                enabled: document.getElementById('kpiEnabled').checked,
+                tenant_specific: document.getElementById('kpiTenantSpecific').checked,
+                metadata: {}
+            };
+
+            try {
+                if (editingKpi) {
+                    // TODO: Implement update API
+                    showNotification('Fonction de modification à implémenter', 'info');
+                } else {
+                    await api.request('/api/v1/kpi/definitions', {
+                        method: 'POST',
+                        body: JSON.stringify(formData)
+                    });
+                    showNotification('KPI créé avec succès!', 'success');
+                    await loadKPIs();
+                    hideKPIForm();
+                }
+            } catch (error) {
+                console.error('Error saving KPI:', error);
+                showNotification('Erreur lors de la sauvegarde du KPI', 'error');
+            }
+        }
+
+        async function deleteKPI(kpiName) {
+            if (!confirm('Êtes-vous sûr de vouloir supprimer ce KPI ?')) return;
+
+            try {
+                // TODO: Implement delete API
+                showNotification('Fonction de suppression à implémenter', 'info');
+            } catch (error) {
+                console.error('Error deleting KPI:', error);
+                showNotification('Erreur lors de la suppression du KPI', 'error');
+            }
+        }
+
+        function showNotification(message, type) {
+            // Simple notification - you can enhance this
+            alert(message);
+        }
+
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+    </script>
+</body>
+</html>

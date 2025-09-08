@@ -13,6 +13,7 @@ import DashboardPage from './pages/Dashboard/DashboardPage'
 import SitesPage from './pages/Sites/SitesPage'
 import SiteDetailPage from './pages/Sites/SiteDetailPage'
 import KPIsPage from './pages/KPIs/KPIsPage'
+import KPIManagementPage from './pages/KPIs/KPIManagementPage'
 import AlertsPage from './pages/Alerts/AlertsPage'
 import ReportsPage from './pages/Reports/ReportsPage'
 import SLAPage from './pages/SLA/SLAPage'
@@ -42,6 +43,7 @@ export default function Root() {
                   <Route path="/sites" element={<Protected><SitesPage /></Protected>} />
                   <Route path="/sites/:id" element={<Protected><SiteDetailPage /></Protected>} />
                   <Route path="/kpis" element={<Protected><KPIsPage /></Protected>} />
+                  <Route path="/kpis/management" element={<Protected><KPIManagementPage /></Protected>} />
                   <Route path="/alerts" element={<Protected><AlertsPage /></Protected>} />
                   <Route path="/reports" element={<Protected><ReportsPage /></Protected>} />
                   <Route path="/sla" element={<Protected><SLAPage /></Protected>} />

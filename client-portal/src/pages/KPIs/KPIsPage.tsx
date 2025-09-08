@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react'
+import { Link } from 'react-router-dom'
 import { api, KPIMetric } from '../../services/api'
 import LoadingSpinner from '../../components/Common/LoadingSpinner'
 
@@ -135,12 +136,21 @@ const KPIsPage: React.FC = () => {
               Key Performance Indicators for your telecom infrastructure
             </p>
           </div>
-          <button
-            onClick={loadKPIs}
-            className="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 transition-colors"
-          >
-            Refresh
-          </button>
+          <div className="flex space-x-3">
+            <Link
+              to="/kpis/management"
+              className="bg-green-600 text-white px-4 py-2 rounded-md hover:bg-green-700 transition-colors"
+            >
+              <span className="mr-2">⚙️</span>
+              Gérer les KPIs
+            </Link>
+            <button
+              onClick={loadKPIs}
+              className="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 transition-colors"
+            >
+              Refresh
+            </button>
+          </div>
         </div>
       </div>
 

@@ -6,6 +6,7 @@ const Sidebar: React.FC = () => {
     { path: '/', label: 'Dashboard', icon: '📊' },
     { path: '/sites', label: 'Sites', icon: '🏗️' },
     { path: '/kpis', label: 'KPIs', icon: '📈' },
+    { path: '/kpis/management', label: 'Gestion KPIs', icon: '⚙️' },
     { path: '/alerts', label: 'Alerts', icon: '⚠️' },
     { path: '/reports', label: 'Reports', icon: '📋' },
     { path: '/sla', label: 'SLA', icon: '🎯' },
