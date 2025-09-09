@@ -181,23 +181,34 @@
         if (code) {
             showLoading();
             // Handle OAuth callback
-            try {
-                const response = await fetch(`http://localhost:8000/api/v1/auth/callback?code=${code}&state=${state}`);
-                const data = await response.json();
-                
-                if (response.ok) {
-                    window.authService.setToken(data.access_token);
-                    showSuccess();
-                    setTimeout(() => {
-                        window.location.href = 'dashboard.html';
-                    }, 2000);
-                } else {
+            (async () => {
+                try {
+                    const response = await fetch('http://localhost:8000/api/v1/auth/callback', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({
+                            code: code,
+                            state: state
+                        })
+                    });
+                    const data = await response.json();
+                    
+                    if (response.ok) {
+                        window.authService.setToken(data.access_token);
+                        showSuccess();
+                        setTimeout(() => {
+                            window.location.href = 'dashboard.html';
+                        }, 2000);
+                    } else {
+                        showError('Authentication failed. Please try again.');
+                    }
+                } catch (error) {
+                    console.error('OAuth callback error:', error);
                     showError('Authentication failed. Please try again.');
                 }
-            } catch (error) {
-                console.error('OAuth callback error:', error);
-                showError('Authentication failed. Please try again.');
-            }
+            })();
         }
     </script>
 </body>

@@ -44,9 +44,9 @@ services:
       timeout: 5s
       retries: 5
   keycloak:
-    image: quay.io/keycloak/keycloak:22.0.1
+    image: quay.io/keycloak/keycloak:21.1.2
     container_name: keycloak
-    command: start-dev --import-realm
+    command: start-dev --import-realm --spi-theme-static-max-age=-1 --spi-theme-cache-themes=false --spi-theme-cache-templates=false
     environment:
       - KEYCLOAK_ADMIN=admin
       - KEYCLOAK_ADMIN_PASSWORD=admin
@@ -57,7 +57,10 @@ services:
       - KC_HOSTNAME_STRICT_HTTPS=false
       - KC_HTTP_ENABLED=true
       - KC_PROXY=edge
-      - KC_LOG_LEVEL=WARN
+      - KC_IMPORT_REALM=true
+      - KC_HTTP_RELATIVE_PATH=/auth  # Garde les URLs /auth/realms/...
+      # KC_LOG_LEVEL=WARN
+      - KC_LOG_LEVEL=INFO
     ports:
       - "8081:8080"
     networks:
