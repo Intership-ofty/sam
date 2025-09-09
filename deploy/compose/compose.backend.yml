@@ -17,6 +17,8 @@ services:
         condition: service_healthy
       keycloak:
         condition: service_started
+      kafka:
+        condition: service_healthy
     networks:
       - sam
   postgres:
@@ -79,6 +81,7 @@ services:
 
 networks:
   sam:
+    external: true
 
 volumes:
   pgdata:

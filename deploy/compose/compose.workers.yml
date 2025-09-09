@@ -31,5 +31,12 @@ services:
       - KAFKA_CFG_AUTO_CREATE_TOPICS_ENABLE=true
     networks:
       - sam
+    healthcheck:
+      test: ["CMD-SHELL", "kafka-topics.sh --bootstrap-server localhost:9092 --list || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 60s
 networks:
   sam:
+    external: true
