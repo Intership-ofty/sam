@@ -1,3 +1,4 @@
 /.venv
 /.claude
-/.sam-1.zip
+sam-1.zip
+error.log
