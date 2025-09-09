@@ -61,7 +61,6 @@ services:
       - KC_PROXY=edge
       - KC_LOG_LEVEL=WARN
       - KC_IMPORT_REALM=true
-      - KC_SPI_TRUSTSTORE_FILE_HOSTNAME_VERIFICATION_POLICY=ANY
 
     ports:
       - "8081:8080"
