@@ -39,4 +39,3 @@ services:
       start_period: 60s
 networks:
   sam:
-    external: true

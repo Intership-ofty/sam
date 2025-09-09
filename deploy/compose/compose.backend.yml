@@ -46,7 +46,7 @@ services:
       timeout: 5s
       retries: 5
   keycloak:
-    image: quay.io/keycloak/keycloak:21.1.2
+    image: quay.io/keycloak/keycloak:22.0.1
     container_name: keycloak
     command: start-dev --import-realm
     environment:
@@ -57,32 +57,21 @@ services:
       - KC_METRICS_ENABLED=true
       - KC_HOSTNAME_STRICT=false
       - KC_HOSTNAME_STRICT_HTTPS=false
-      - KC_HTTP_ENABLED=true
-      - KC_PROXY=edge
-      - KC_IMPORT_REALM=true
-      - KC_HTTP_RELATIVE_PATH=/auth
-      - KC_DB=h2
-      - KC_FEATURES=preview
-      - KC_LOG_LEVEL=INFO
     ports:
       - "8081:8080"
     networks:
       - sam
     volumes:
       - ./towerco-realm.json:/opt/keycloak/data/import/realm.json
-    security_opt:
-      - no-new-privileges:true
-    restart: unless-stopped
     healthcheck:
-      test: ["CMD-SHELL", "exec 3<>/dev/tcp/localhost/8080 && echo 'Connection successful' || exit 1"]
-      interval: 15s
-      timeout: 10s
-      retries: 25
-      start_period: 180s
+      test: ["CMD-SHELL", "nc -z localhost 8080 || exit 1"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+      start_period: 120s
 
 networks:
   sam:
-    external: true
 
 volumes:
   pgdata:
