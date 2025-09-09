@@ -52,15 +52,11 @@ services:
     environment:
       - KEYCLOAK_ADMIN=admin
       - KEYCLOAK_ADMIN_PASSWORD=admin
-      # - KC_HOSTNAME=localhost
+      - KC_HOSTNAME=${KEYCLOAK_HOSTNAME:-37.60.242.104}
       - KC_HEALTH_ENABLED=true
       - KC_METRICS_ENABLED=true
       - KC_HOSTNAME_STRICT=false
       - KC_HOSTNAME_STRICT_HTTPS=false
-      - KC_HTTP_RELATIVE_PATH=/auth
-      - KC_PROXY=edge
-      - KC_LOG_LEVEL=WARN
-      - KC_IMPORT_REALM=true
 
     ports:
       - "8081:8080"
