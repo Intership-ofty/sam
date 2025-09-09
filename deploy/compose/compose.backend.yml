@@ -50,21 +50,46 @@ services:
     container_name: keycloak
     command: start-dev --import-realm
     environment:
+      #- KEYCLOAK_ADMIN=admin
+      #- KEYCLOAK_ADMIN_PASSWORD=admin
+      #- KC_HOSTNAME=${KEYCLOAK_HOSTNAME:-37.60.242.104:8081}
+      #- KC_HEALTH_ENABLED=true
+      #- KC_METRICS_ENABLED=true
+      #- KC_HOSTNAME_STRICT=false
+      #- KC_HOSTNAME_STRICT_HTTPS=false
+      #- KC_HTTP_ENABLED=true
+      #- KC_PROXY=edge
+      #- KC_LOG_LEVEL=WARN
+      #- KC_IMPORT_REALM=true
+      #- KC_SPI_LOGIN_PROTOCOL_OPENID_CONNECT_SUPPRESS_LOGOUT_CONFIRMATION_SCREEN=true
+      #- KC_FEATURES=token-exchange,admin-fine-grained-authz
+      #- KC_CACHE=local
+      #- KC_FEATURES_DISABLED=step-up-authentication
       - KEYCLOAK_ADMIN=admin
       - KEYCLOAK_ADMIN_PASSWORD=admin
-      - KC_HOSTNAME=${KEYCLOAK_HOSTNAME:-37.60.242.104}
-      - KC_HEALTH_ENABLED=true
-      - KC_METRICS_ENABLED=true
+
+      # HTTP direct (pas de proxy devant)
+      - KC_HTTP_ENABLED=true
+
+      # Activer Hostname v2 pour pouvoir mettre l’URL complète dans KC_HOSTNAME
+      - KC_FEATURES=hostname:v2,token-exchange,admin-fine-grained-authz
+      - KC_HOSTNAME=http://37.60.242.104:8081
+      - KC_HOSTNAME_ADMIN=http://37.60.242.104:8081
       - KC_HOSTNAME_STRICT=false
       - KC_HOSTNAME_STRICT_HTTPS=false
-      - KC_HTTP_ENABLED=true
-      - KC_PROXY=edge
+      # Débogage optionnel si besoin :
+      # - KC_HOSTNAME_DEBUG=true
+
+      # Observabilité & logs
+      - KC_HEALTH_ENABLED=true
+      - KC_METRICS_ENABLED=true
       - KC_LOG_LEVEL=WARN
-      - KC_IMPORT_REALM=true
-      - KC_SPI_LOGIN_PROTOCOL_OPENID_CONNECT_SUPPRESS_LOGOUT_CONFIRMATION_SCREEN=true
-      - KC_FEATURES=token-exchange,admin-fine-grained-authz
       - KC_CACHE=local
+
+      # Divers
+      - KC_SPI_LOGIN_PROTOCOL_OPENID_CONNECT_SUPPRESS_LOGOUT_CONFIRMATION_SCREEN=true
       - KC_FEATURES_DISABLED=step-up-authentication
+
 
     ports:
       - "8081:8080"
