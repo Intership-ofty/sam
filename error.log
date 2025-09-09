@@ -1,89 +1,161 @@
+[root@vmi2390455 sam]# docker logs 697ed1561edd
+Updating the configuration and installing your custom providers, if any. Please wait.
+2025-09-09 11:43:17,055 INFO  [io.quarkus.deployment.QuarkusAugmentor] (main) Quarkus augmentation completed in 17106ms
+2025-09-09 11:43:20,655 INFO  [org.keycloak.quarkus.runtime.hostname.DefaultHostnameProvider] (main) Hostname settings: Base URL: <unset>, Hostname: localhost, Strict HTTPS: false, Path: <request>, Strict BackChannel: false, Admin URL: <unset>, Admin: <request>, Port: -1, Proxied: true
+2025-09-09 11:43:23,257 WARN  [io.quarkus.agroal.runtime.DataSources] (main) Datasource <default> enables XA but transaction recovery is not enabled. Please enable transaction recovery by setting quarkus.transaction-manager.enable-recovery=true, otherwise data may be lost if the application is terminated abruptly
+2025-09-09 11:43:24,877 INFO  [org.infinispan.SERVER] (keycloak-cache-init) ISPN005054: Native IOUring transport not available, using NIO instead: io.netty.incubator.channel.uring.IOUring
+2025-09-09 11:43:25,261 WARN  [org.infinispan.PERSISTENCE] (keycloak-cache-init) ISPN000554: jboss-marshalling is deprecated and planned for removal
+2025-09-09 11:43:25,288 WARN  [org.infinispan.CONFIG] (keycloak-cache-init) ISPN000569: Unable to persist Infinispan internal caches as no global state enabled
+2025-09-09 11:43:25,336 INFO  [org.infinispan.CONTAINER] (keycloak-cache-init) ISPN000556: Starting user marshaller 'org.infinispan.jboss.marshalling.core.JBossUserMarshaller'
+2025-09-09 11:43:26,148 WARN  [io.quarkus.vertx.http.runtime.VertxHttpRecorder] (main) The X-Forwarded-* and Forwarded headers will be considered when determining the proxy address. This configuration can cause a security issue as clients can forge requests and send a forwarded header that is not overwritten by the proxy. Please consider use one of these headers just to forward the proxy address in requests.
+2025-09-09 11:43:26,787 INFO  [org.keycloak.connections.infinispan.DefaultInfinispanConnectionProviderFactory] (main) Node name: node_922276, Site name: null
+2025-09-09 11:43:26,795 INFO  [org.keycloak.broker.provider.AbstractIdentityProviderMapper] (main) Registering class org.keycloak.broker.provider.mappersync.ConfigSyncEventListener
+2025-09-09 11:43:28,913 INFO  [org.keycloak.quarkus.runtime.storage.legacy.liquibase.QuarkusJpaUpdaterProvider] (main) Initializing database schema. Using changelog META-INF/jpa-changelog-master.xml
+2025-09-09 11:43:32,022 INFO  [org.keycloak.services] (main) KC-SERVICES0050: Initializing master realm
+2025-09-09 11:43:34,411 INFO  [org.keycloak.exportimport.singlefile.SingleFileImportProvider] (main) Full importing from file /opt/keycloak/bin/../data/import/realm.json
+2025-09-09 11:43:36,901 INFO  [org.keycloak.exportimport.util.ImportUtils] (main) Realm 'towerco' imported
+2025-09-09 11:43:36,981 INFO  [org.keycloak.exportimport.dir.DirImportProvider] (main) Importing from directory /opt/keycloak/bin/../data/import
+2025-09-09 11:43:36,981 INFO  [org.keycloak.services] (main) KC-SERVICES0030: Full model import requested. Strategy: IGNORE_EXISTING
+2025-09-09 11:43:36,982 INFO  [org.keycloak.services] (main) KC-SERVICES0032: Import finished successfully
+2025-09-09 11:43:37,229 INFO  [io.quarkus] (main) Keycloak 21.1.2 on JVM (powered by Quarkus 2.13.8.Final) started in 19.772s. Listening on: http://0.0.0.0:8080
+2025-09-09 11:43:37,230 INFO  [io.quarkus] (main) Profile dev activated.
+2025-09-09 11:43:37,230 INFO  [io.quarkus] (main) Installed features: [agroal, cdi, hibernate-orm, jdbc-h2, jdbc-mariadb, jdbc-mssql, jdbc-mysql, jdbc-oracle, jdbc-postgresql, keycloak, logging-gelf, micrometer, narayana-jta, reactive-routes, resteasy, resteasy-jackson, smallrye-context-propagation, smallrye-health, vertx]
+2025-09-09 11:43:37,292 INFO  [org.keycloak.services] (main) KC-SERVICES0009: Added user 'admin' to realm 'master'
+2025-09-09 11:43:37,295 WARN  [org.keycloak.quarkus.runtime.KeycloakMain] (main) Running the server in development mode. DO NOT use this configuration in production.
 [root@vmi2390455 sam]# docker ps
-CONTAINER ID   IMAGE                                      COMMAND                  CREATED              STATUS                          PORTS                                            NAMES
-d9e6009aca6c   local/sam-client-portal:dev                "docker-entrypoint.s…"   About a minute ago   Up About a minute               0.0.0.0:5173->3000/tcp                           compose-client-portal-1
-f763b0681363   local/sam-backend:dev                      "uvicorn backend.mai…"   About a minute ago   Up About a minute (unhealthy)   0.0.0.0:8000->8000/tcp                           compose-backend-1
-1df5fdd39fab   grafana/grafana:11.1.0                     "/run.sh"                About a minute ago   Up About a minute               0.0.0.0:3001->3000/tcp                           compose-grafana-1
-8d2beeb82c7a   local/sam-frontend:dev                     "python -m http.serv…"   About a minute ago   Up About a minute               0.0.0.0:8090->8000/tcp                           compose-frontend-1
-6ffc9b0a6d0f   postgres:16-alpine                         "docker-entrypoint.s…"   About a minute ago   Up About a minute (healthy)     5432/tcp                                         compose-postgres-1
-be77194aa57c   bitnami/zookeeper:3.9                      "/opt/bitnami/script…"   About a minute ago   Up About a minute               2181/tcp, 2888/tcp, 3888/tcp, 8080/tcp           compose-zookeeper-1
-7ff7e7f811d3   redis:7-alpine                             "docker-entrypoint.s…"   About a minute ago   Up About a minute (healthy)     6379/tcp                                         compose-redis-1
-b03746e93c4e   quay.io/keycloak/keycloak:21.1.2           "/opt/keycloak/bin/k…"   About a minute ago   Up About a minute (healthy)     8443/tcp, 0.0.0.0:8081->8080/tcp                 keycloak
-6f7cd2a9f372   prom/prometheus:v2.55.0                    "/bin/prometheus --c…"   About a minute ago   Up About a minute               0.0.0.0:9090->9090/tcp                           compose-prometheus-1
-3b6ff3cc88e9   bitnami/kafka:3.7                          "/opt/bitnami/script…"   About a minute ago   Up About a minute               9092/tcp                                         compose-kafka-1
-fd46be4b611d   mawen-prod_mawen-web                       "sh start-app.sh"        31 hours ago         Up 31 hours                     0.0.0.0:8089->8080/tcp                           mawen-prod_mawen-web_1
-1f925c189b48   redis:7-alpine                             "docker-entrypoint.s…"   31 hours ago         Up 31 hours                     0.0.0.0:6379->6379/tcp                           mawen-prod_mawen-redis_1
-c1ee532f46a1   minio/minio:RELEASE.2024-01-16T16-07-38Z   "/usr/bin/docker-ent…"   31 hours ago         Up 31 hours                     0.0.0.0:9002->9000/tcp, 0.0.0.0:9003->9001/tcp   mawen-prod_mawen-minio_1
-101308e7791c   minio/mc:latest                            "/bin/sh -c ' echo '…"   3 weeks ago          Up 3 weeks                                                                       minio-client
-9864a7b37372   minio/minio:latest                         "/usr/bin/docker-ent…"   3 weeks ago          Up 3 weeks (healthy)            0.0.0.0:9000-9001->9000-9001/tcp                 minio-server
-f219b96258b5   txe-web_app                                "docker-entrypoint.s…"   7 weeks ago          Up 7 weeks                      0.0.0.0:3002->3002/tcp                           txe-web_app_1
-b76b69afa727   website_app                                "docker-entrypoint.s…"   4 months ago         Up 4 months                     0.0.0.0:3000->3000/tcp                           website_app_1
-[root@vmi2390455 sam]# docker logs f763b0681363
+CONTAINER ID   IMAGE                                      COMMAND                  CREATED          STATUS                     PORTS                                            NAMES
+37985bc08122   local/sam-backend:dev                      "uvicorn backend.mai…"   3 minutes ago    Up 2 minutes (unhealthy)   0.0.0.0:8000->8000/tcp                           compose-backend-1
+697ed1561edd   quay.io/keycloak/keycloak:21.1.2           "/opt/keycloak/bin/k…"   3 minutes ago    Up 2 minutes (healthy)     8443/tcp, 0.0.0.0:8081->8080/tcp                 keycloak
+85871374a44e   bitnami/kafka:3.7                          "/opt/bitnami/script…"   3 minutes ago    Up 2 minutes (healthy)     9092/tcp                                         compose-kafka-1
+68e96554ab2b   postgres:16-alpine                         "docker-entrypoint.s…"   3 minutes ago    Up 2 minutes (healthy)     5432/tcp                                         compose-postgres-1
+0f804c74deab   redis:7-alpine                             "docker-entrypoint.s…"   3 minutes ago    Up 2 minutes (healthy)     6379/tcp                                         compose-redis-1
+6b73983d95cb   prom/prometheus:v2.55.0                    "/bin/prometheus --c…"   3 minutes ago    Up 2 minutes               0.0.0.0:9090->9090/tcp                           compose-prometheus-1
+03c6f9d0ca70   grafana/grafana:11.1.0                     "/run.sh"                3 minutes ago    Up 2 minutes               0.0.0.0:3001->3000/tcp                           compose-grafana-1
+04d9b1878839   local/sam-frontend:dev                     "python -m http.serv…"   3 minutes ago    Up 2 minutes               0.0.0.0:8090->8000/tcp                           compose-frontend-1
+c216912a1ee7   bitnami/zookeeper:3.9                      "/opt/bitnami/script…"   3 minutes ago    Up 2 minutes               2181/tcp, 2888/tcp, 3888/tcp, 8080/tcp           compose-zookeeper-1
+d9e6009aca6c   local/sam-client-portal:dev                "docker-entrypoint.s…"   15 minutes ago   Up 2 minutes               0.0.0.0:5173->3000/tcp                           compose-client-portal-1
+fd46be4b611d   mawen-prod_mawen-web                       "sh start-app.sh"        31 hours ago     Up 31 hours                0.0.0.0:8089->8080/tcp                           mawen-prod_mawen-web_1
+1f925c189b48   redis:7-alpine                             "docker-entrypoint.s…"   31 hours ago     Up 31 hours                0.0.0.0:6379->6379/tcp                           mawen-prod_mawen-redis_1
+c1ee532f46a1   minio/minio:RELEASE.2024-01-16T16-07-38Z   "/usr/bin/docker-ent…"   31 hours ago     Up 31 hours                0.0.0.0:9002->9000/tcp, 0.0.0.0:9003->9001/tcp   mawen-prod_mawen-minio_1
+101308e7791c   minio/mc:latest                            "/bin/sh -c ' echo '…"   3 weeks ago      Up 3 weeks                                                                  minio-client
+9864a7b37372   minio/minio:latest                         "/usr/bin/docker-ent…"   3 weeks ago      Up 3 weeks (healthy)       0.0.0.0:9000-9001->9000-9001/tcp                 minio-server
+f219b96258b5   txe-web_app                                "docker-entrypoint.s…"   7 weeks ago      Up 7 weeks                 0.0.0.0:3002->3002/tcp                           txe-web_app_1
+b76b69afa727   website_app                                "docker-entrypoint.s…"   4 months ago     Up 4 months                0.0.0.0:3000->3000/tcp                           website_app_1
+[root@vmi2390455 sam]# docker logs 37985bc08122
 INFO:     Will watch for changes in these directories: ['/app']
 WARNING:  "workers" flag is ignored when reloading is enabled.
 INFO:     Uvicorn running on http://0.0.0.0:8000 (Press CTRL+C to quit)
 INFO:     Started reloader process [1] using WatchFiles
 INFO:     Started server process [8]
 INFO:     Waiting for application startup.
-2025-09-09 11:30:27,509 - backend.main - INFO - Starting Towerco AIOps Platform...
-2025-09-09 11:30:27,509 - core.monitoring - INFO - OpenTelemetry endpoint not configured, using Prometheus only
-2025-09-09 11:30:27,510 - core.monitoring - INFO - Custom metrics initialized
-2025-09-09 11:30:27,510 - core.monitoring - INFO - Monitoring initialized successfully
-2025-09-09 11:30:28,126 INFO sqlalchemy.engine.Engine select pg_catalog.version()
-2025-09-09 11:30:28,127 INFO sqlalchemy.engine.Engine [raw sql] ()
-2025-09-09 11:30:28,126 - sqlalchemy.engine.Engine - INFO - select pg_catalog.version()
-2025-09-09 11:30:28,127 - sqlalchemy.engine.Engine - INFO - [raw sql] ()
-2025-09-09 11:30:28,143 - sqlalchemy.engine.Engine - INFO - select current_schema()
-2025-09-09 11:30:28,144 - sqlalchemy.engine.Engine - INFO - [raw sql] ()
-2025-09-09 11:30:28,143 INFO sqlalchemy.engine.Engine select current_schema()
-2025-09-09 11:30:28,144 INFO sqlalchemy.engine.Engine [raw sql] ()
-2025-09-09 11:30:28,151 INFO sqlalchemy.engine.Engine show standard_conforming_strings
-2025-09-09 11:30:28,152 INFO sqlalchemy.engine.Engine [raw sql] ()
-2025-09-09 11:30:28,151 - sqlalchemy.engine.Engine - INFO - show standard_conforming_strings
-2025-09-09 11:30:28,152 - sqlalchemy.engine.Engine - INFO - [raw sql] ()
-2025-09-09 11:30:28,153 INFO sqlalchemy.engine.Engine BEGIN (implicit)
-2025-09-09 11:30:28,153 - sqlalchemy.engine.Engine - INFO - BEGIN (implicit)
-2025-09-09 11:30:28,154 INFO sqlalchemy.engine.Engine SELECT 1
-2025-09-09 11:30:28,154 - sqlalchemy.engine.Engine - INFO - SELECT 1
-2025-09-09 11:30:28,154 INFO sqlalchemy.engine.Engine [generated in 0.00021s] ()
-2025-09-09 11:30:28,154 - sqlalchemy.engine.Engine - INFO - [generated in 0.00021s] ()
-2025-09-09 11:30:28,155 - sqlalchemy.engine.Engine - INFO - COMMIT
-2025-09-09 11:30:28,155 INFO sqlalchemy.engine.Engine COMMIT
-2025-09-09 11:30:28,176 - core.database - INFO - Database connection test successful
-2025-09-09 11:30:28,177 - core.database - INFO - Database connections initialized successfully
-2025-09-09 11:30:28,180 - core.cache - INFO - Redis connection initialized successfully
-2025-09-09 11:30:28,182 - aiokafka - ERROR - Unable connect to "kafka:9092": [Errno 111] Connection refused
-2025-09-09 11:30:28,183 - core.messaging - ERROR - Failed to initialize Kafka: KafkaConnectionError: Unable to bootstrap from [('kafka', 9092, <AddressFamily.AF_UNSPEC: 0>)]
-ERROR:    Traceback (most recent call last):
-  File "/usr/local/lib/python3.11/site-packages/starlette/routing.py", line 694, in lifespan
-    async with self.lifespan_context(app) as maybe_state:
-  File "/usr/local/lib/python3.11/contextlib.py", line 210, in __aenter__
-    return await anext(self.gen)
-           ^^^^^^^^^^^^^^^^^^^^^
-  File "/usr/local/lib/python3.11/site-packages/fastapi/routing.py", line 134, in merged_lifespan
-    async with original_context(app) as maybe_original_state:
-  File "/usr/local/lib/python3.11/contextlib.py", line 210, in __aenter__
-    return await anext(self.gen)
-           ^^^^^^^^^^^^^^^^^^^^^
-  File "/usr/local/lib/python3.11/site-packages/fastapi/routing.py", line 134, in merged_lifespan
-    async with original_context(app) as maybe_original_state:
-  File "/usr/local/lib/python3.11/contextlib.py", line 210, in __aenter__
-    return await anext(self.gen)
-           ^^^^^^^^^^^^^^^^^^^^^
-  File "/usr/local/lib/python3.11/site-packages/fastapi/routing.py", line 134, in merged_lifespan
-    async with original_context(app) as maybe_original_state:
-  File "/usr/local/lib/python3.11/contextlib.py", line 210, in __aenter__
-    return await anext(self.gen)
-           ^^^^^^^^^^^^^^^^^^^^^
-  File "/app/backend/main.py", line 50, in lifespan
-    await init_kafka()
-  File "/app/backend/core/messaging.py", line 43, in init_kafka
-    await producer.start()
-  File "/usr/local/lib/python3.11/site-packages/aiokafka/producer/producer.py", line 352, in start
-    await self.client.bootstrap()
-  File "/usr/local/lib/python3.11/site-packages/aiokafka/client.py", line 266, in bootstrap
-    raise KafkaConnectionError(f"Unable to bootstrap from {self.hosts}")
-aiokafka.errors.KafkaConnectionError: KafkaConnectionError: Unable to bootstrap from [('kafka', 9092, <AddressFamily.AF_UNSPEC: 0>)]
-
-ERROR:    Application startup failed. Exiting.
-2025-09-09 11:30:28,522 - asyncio - ERROR - Unclosed AIOKafkaProducer
-producer: <aiokafka.producer.producer.AIOKafkaProducer object at 0x7f4ecd0a8090>
+2025-09-09 11:43:20,330 - backend.main - INFO - Starting Towerco AIOps Platform...
+2025-09-09 11:43:20,330 - core.monitoring - INFO - OpenTelemetry endpoint not configured, using Prometheus only
+2025-09-09 11:43:20,331 - core.monitoring - INFO - Custom metrics initialized
+2025-09-09 11:43:20,331 - core.monitoring - INFO - Monitoring initialized successfully
+2025-09-09 11:43:20,720 INFO sqlalchemy.engine.Engine select pg_catalog.version()
+2025-09-09 11:43:20,720 - sqlalchemy.engine.Engine - INFO - select pg_catalog.version()
+2025-09-09 11:43:20,720 INFO sqlalchemy.engine.Engine [raw sql] ()
+2025-09-09 11:43:20,720 - sqlalchemy.engine.Engine - INFO - [raw sql] ()
+2025-09-09 11:43:20,725 INFO sqlalchemy.engine.Engine select current_schema()
+2025-09-09 11:43:20,725 - sqlalchemy.engine.Engine - INFO - select current_schema()
+2025-09-09 11:43:20,725 INFO sqlalchemy.engine.Engine [raw sql] ()
+2025-09-09 11:43:20,725 - sqlalchemy.engine.Engine - INFO - [raw sql] ()
+2025-09-09 11:43:20,727 INFO sqlalchemy.engine.Engine show standard_conforming_strings
+2025-09-09 11:43:20,727 - sqlalchemy.engine.Engine - INFO - show standard_conforming_strings
+2025-09-09 11:43:20,728 INFO sqlalchemy.engine.Engine [raw sql] ()
+2025-09-09 11:43:20,728 - sqlalchemy.engine.Engine - INFO - [raw sql] ()
+2025-09-09 11:43:20,729 INFO sqlalchemy.engine.Engine BEGIN (implicit)
+2025-09-09 11:43:20,729 - sqlalchemy.engine.Engine - INFO - BEGIN (implicit)
+2025-09-09 11:43:20,730 - sqlalchemy.engine.Engine - INFO - SELECT 1
+2025-09-09 11:43:20,730 - sqlalchemy.engine.Engine - INFO - [generated in 0.00024s] ()
+2025-09-09 11:43:20,730 INFO sqlalchemy.engine.Engine SELECT 1
+2025-09-09 11:43:20,730 INFO sqlalchemy.engine.Engine [generated in 0.00024s] ()
+2025-09-09 11:43:20,734 - sqlalchemy.engine.Engine - INFO - COMMIT
+2025-09-09 11:43:20,734 INFO sqlalchemy.engine.Engine COMMIT
+2025-09-09 11:43:20,747 - core.database - INFO - Database connection test successful
+2025-09-09 11:43:20,747 - core.database - INFO - Database connections initialized successfully
+2025-09-09 11:43:20,752 - core.cache - INFO - Redis connection initialized successfully
+2025-09-09 11:43:21,463 - kafka.conn - INFO - <BrokerConnection client_id=towerco_admin, node_id=bootstrap-0 host=kafka:9092 <connecting> [IPv4 ('172.26.0.4', 9092)]>: connecting to kafka:9092 [('172.26.0.4', 9092) IPv4]
+2025-09-09 11:43:21,476 - kafka.conn - INFO - <BrokerConnection client_id=towerco_admin, node_id=bootstrap-0 host=kafka:9092 <checking_api_versions_recv> [IPv4 ('172.26.0.4', 9092)]>: Broker version identified as 2.6
+2025-09-09 11:43:21,476 - kafka.conn - INFO - <BrokerConnection client_id=towerco_admin, node_id=bootstrap-0 host=kafka:9092 <connected> [IPv4 ('172.26.0.4', 9092)]>: Connection complete.
+2025-09-09 11:43:21,485 - kafka.conn - INFO - <BrokerConnection client_id=towerco_admin, node_id=1 host=kafka:9092 <connecting> [IPv4 ('172.26.0.4', 9092)]>: connecting to kafka:9092 [('172.26.0.4', 9092) IPv4]
+2025-09-09 11:43:21,486 - kafka.conn - INFO - <BrokerConnection client_id=towerco_admin, node_id=1 host=kafka:9092 <connected> [IPv4 ('172.26.0.4', 9092)]>: Connection complete.
+2025-09-09 11:43:21,486 - kafka.conn - INFO - <BrokerConnection client_id=towerco_admin, node_id=bootstrap-0 host=kafka:9092 <connected> [IPv4 ('172.26.0.4', 9092)]>: Closing connection.
+2025-09-09 11:43:21,616 - core.messaging - INFO - Kafka topics created successfully
+2025-09-09 11:43:21,616 - kafka.conn - INFO - <BrokerConnection client_id=towerco_admin, node_id=1 host=kafka:9092 <connected> [IPv4 ('172.26.0.4', 9092)]>: Closing connection.
+2025-09-09 11:43:21,616 - core.messaging - INFO - Kafka producer initialized successfully
+2025-09-09 11:43:21,617 - core.auth - INFO - Waiting for Keycloak to start...
+2025-09-09 11:43:31,618 - core.auth - INFO - Keycloak socket not ready, attempt 1/240
+2025-09-09 11:43:33,621 - core.auth - INFO - Keycloak socket not ready, attempt 2/240
+2025-09-09 11:43:35,622 - core.auth - INFO - Keycloak socket not ready, attempt 3/240
+2025-09-09 11:43:38,030 - core.auth - INFO - Keycloak HTTP not ready (status 404), attempt 4/240
+2025-09-09 11:43:40,040 - core.auth - INFO - Keycloak HTTP not ready (status 404), attempt 5/240
+2025-09-09 11:43:42,051 - core.auth - INFO - Keycloak HTTP not ready (status 404), attempt 6/240
+2025-09-09 11:43:44,063 - core.auth - INFO - Keycloak HTTP not ready (status 404), attempt 7/240
+2025-09-09 11:43:46,074 - core.auth - INFO - Keycloak HTTP not ready (status 404), attempt 8/240
+2025-09-09 11:43:48,097 - core.auth - INFO - Keycloak HTTP not ready (status 404), attempt 9/240
+2025-09-09 11:43:50,109 - core.auth - INFO - Keycloak HTTP not ready (status 404), attempt 10/240
+2025-09-09 11:43:52,136 - core.auth - INFO - Keycloak HTTP not ready (status 404), attempt 11/240
+2025-09-09 11:43:54,145 - core.auth - INFO - Keycloak HTTP not ready (status 404), attempt 12/240
+2025-09-09 11:43:56,152 - core.auth - INFO - Keycloak HTTP not ready (status 404), attempt 13/240
+2025-09-09 11:43:58,180 - core.auth - INFO - Keycloak HTTP not ready (status 404), attempt 14/240
+2025-09-09 11:44:00,189 - core.auth - INFO - Keycloak HTTP not ready (status 404), attempt 15/240
+2025-09-09 11:44:02,210 - core.auth - INFO - Keycloak HTTP not ready (status 404), attempt 16/240
+2025-09-09 11:44:04,216 - core.auth - INFO - Keycloak HTTP not ready (status 404), attempt 17/240
+2025-09-09 11:44:06,224 - core.auth - INFO - Keycloak HTTP not ready (status 404), attempt 18/240
+2025-09-09 11:44:08,231 - core.auth - INFO - Keycloak HTTP not ready (status 404), attempt 19/240
+2025-09-09 11:44:10,239 - core.auth - INFO - Keycloak HTTP not ready (status 404), attempt 20/240
+2025-09-09 11:44:12,260 - core.auth - INFO - Keycloak HTTP not ready (status 404), attempt 21/240
+2025-09-09 11:44:14,269 - core.auth - INFO - Keycloak HTTP not ready (status 404), attempt 22/240
+2025-09-09 11:44:16,284 - core.auth - INFO - Keycloak HTTP not ready (status 404), attempt 23/240
+2025-09-09 11:44:18,293 - core.auth - INFO - Keycloak HTTP not ready (status 404), attempt 24/240
+2025-09-09 11:44:20,304 - core.auth - INFO - Keycloak HTTP not ready (status 404), attempt 25/240
+2025-09-09 11:44:22,314 - core.auth - INFO - Keycloak HTTP not ready (status 404), attempt 26/240
+2025-09-09 11:44:24,324 - core.auth - INFO - Keycloak HTTP not ready (status 404), attempt 27/240
+2025-09-09 11:44:26,340 - core.auth - INFO - Keycloak HTTP not ready (status 404), attempt 28/240
+2025-09-09 11:44:28,356 - core.auth - INFO - Keycloak HTTP not ready (status 404), attempt 29/240
+2025-09-09 11:44:30,364 - core.auth - INFO - Keycloak HTTP not ready (status 404), attempt 30/240
+2025-09-09 11:44:32,371 - core.auth - INFO - Keycloak HTTP not ready (status 404), attempt 31/240
+2025-09-09 11:44:34,379 - core.auth - INFO - Keycloak HTTP not ready (status 404), attempt 32/240
+2025-09-09 11:44:36,388 - core.auth - INFO - Keycloak HTTP not ready (status 404), attempt 33/240
+2025-09-09 11:44:38,414 - core.auth - INFO - Keycloak HTTP not ready (status 404), attempt 34/240
+2025-09-09 11:44:40,437 - core.auth - INFO - Keycloak HTTP not ready (status 404), attempt 35/240
+2025-09-09 11:44:42,456 - core.auth - INFO - Keycloak HTTP not ready (status 404), attempt 36/240
+2025-09-09 11:44:44,471 - core.auth - INFO - Keycloak HTTP not ready (status 404), attempt 37/240
+2025-09-09 11:44:46,482 - core.auth - INFO - Keycloak HTTP not ready (status 404), attempt 38/240
+2025-09-09 11:44:48,493 - core.auth - INFO - Keycloak HTTP not ready (status 404), attempt 39/240
+2025-09-09 11:44:50,499 - core.auth - INFO - Keycloak HTTP not ready (status 404), attempt 40/240
+2025-09-09 11:44:52,507 - core.auth - INFO - Keycloak HTTP not ready (status 404), attempt 41/240
+2025-09-09 11:44:54,516 - core.auth - INFO - Keycloak HTTP not ready (status 404), attempt 42/240
+2025-09-09 11:44:56,526 - core.auth - INFO - Keycloak HTTP not ready (status 404), attempt 43/240
+2025-09-09 11:44:58,538 - core.auth - INFO - Keycloak HTTP not ready (status 404), attempt 44/240
+2025-09-09 11:45:00,572 - core.auth - INFO - Keycloak HTTP not ready (status 404), attempt 45/240
+2025-09-09 11:45:02,595 - core.auth - INFO - Keycloak HTTP not ready (status 404), attempt 46/240
+2025-09-09 11:45:04,605 - core.auth - INFO - Keycloak HTTP not ready (status 404), attempt 47/240
+2025-09-09 11:45:06,644 - core.auth - INFO - Keycloak HTTP not ready (status 404), attempt 48/240
+2025-09-09 11:45:08,651 - core.auth - INFO - Keycloak HTTP not ready (status 404), attempt 49/240
+2025-09-09 11:45:10,667 - core.auth - INFO - Keycloak HTTP not ready (status 404), attempt 50/240
+2025-09-09 11:45:12,682 - core.auth - INFO - Keycloak HTTP not ready (status 404), attempt 51/240
+2025-09-09 11:45:14,694 - core.auth - INFO - Keycloak HTTP not ready (status 404), attempt 52/240
+2025-09-09 11:45:16,706 - core.auth - INFO - Keycloak HTTP not ready (status 404), attempt 53/240
+2025-09-09 11:45:18,712 - core.auth - INFO - Keycloak HTTP not ready (status 404), attempt 54/240
+2025-09-09 11:45:20,718 - core.auth - INFO - Keycloak HTTP not ready (status 404), attempt 55/240
+2025-09-09 11:45:22,726 - core.auth - INFO - Keycloak HTTP not ready (status 404), attempt 56/240
+2025-09-09 11:45:24,736 - core.auth - INFO - Keycloak HTTP not ready (status 404), attempt 57/240
+2025-09-09 11:45:26,748 - core.auth - INFO - Keycloak HTTP not ready (status 404), attempt 58/240
+2025-09-09 11:45:28,759 - core.auth - INFO - Keycloak HTTP not ready (status 404), attempt 59/240
+2025-09-09 11:45:30,766 - core.auth - INFO - Keycloak HTTP not ready (status 404), attempt 60/240
+2025-09-09 11:45:32,772 - core.auth - INFO - Keycloak HTTP not ready (status 404), attempt 61/240
+2025-09-09 11:45:34,778 - core.auth - INFO - Keycloak HTTP not ready (status 404), attempt 62/240
+2025-09-09 11:45:36,789 - core.auth - INFO - Keycloak HTTP not ready (status 404), attempt 63/240
+2025-09-09 11:45:38,801 - core.auth - INFO - Keycloak HTTP not ready (status 404), attempt 64/240
+2025-09-09 11:45:40,812 - core.auth - INFO - Keycloak HTTP not ready (status 404), attempt 65/240
+2025-09-09 11:45:42,820 - core.auth - INFO - Keycloak HTTP not ready (status 404), attempt 66/240
+2025-09-09 11:45:44,835 - core.auth - INFO - Keycloak HTTP not ready (status 404), attempt 67/240
+2025-09-09 11:45:46,853 - core.auth - INFO - Keycloak HTTP not ready (status 404), attempt 68/240
+2025-09-09 11:45:48,859 - core.auth - INFO - Keycloak HTTP not ready (status 404), attempt 69/240
+2025-09-09 11:45:50,868 - core.auth - INFO - Keycloak HTTP not ready (status 404), attempt 70/240
+2025-09-09 11:45:52,881 - core.auth - INFO - Keycloak HTTP not ready (status 404), attempt 71/240
+2025-09-09 11:45:54,887 - core.auth - INFO - Keycloak HTTP not ready (status 404), attempt 72/240
+2025-09-09 11:45:56,894 - core.auth - INFO - Keycloak HTTP not ready (status 404), attempt 73/240
+2025-09-09 11:45:58,899 - core.auth - INFO - Keycloak HTTP not ready (status 404), attempt 74/240

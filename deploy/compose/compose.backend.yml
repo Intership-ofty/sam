@@ -60,8 +60,9 @@ services:
       - KC_HTTP_ENABLED=true
       - KC_PROXY=edge
       - KC_IMPORT_REALM=true
-      - KC_HTTP_RELATIVE_PATH=/auth  # Garde les URLs /auth/realms/...
-      # KC_LOG_LEVEL=WARN
+      - KC_HTTP_RELATIVE_PATH=/auth
+      - KC_DB=h2
+      - KC_FEATURES=preview
       - KC_LOG_LEVEL=INFO
     ports:
       - "8081:8080"
