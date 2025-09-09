@@ -9,7 +9,6 @@ services:
     environment:
       - WORKER=${WORKER:-ingestor}
     depends_on:
-      - backend
       - kafka
     networks:
       - sam
