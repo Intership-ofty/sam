@@ -12,8 +12,10 @@ COPY workers/requirements.txt workers/requirements.txt
 RUN pip install --no-cache-dir -r workers/requirements.txt
 
 COPY workers/ ./workers/
-# COPY backend ./backend
+COPY backend/ ./backend/
 
-# Choose the worker at runtime with: WORKER=ingestor|kpi|anomaly|noc|predictive|optimizer|correlator|bi
-ENV WORKER=ingestor
-CMD ["bash","-lc","python -m workers.$WORKER" ]
+# Add current directory to Python path
+ENV PYTHONPATH=/app
+
+# Default command (can be overridden in docker-compose)
+CMD ["python", "workers/data_ingestor.py"]

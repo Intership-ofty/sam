@@ -16,7 +16,8 @@ from pydantic import BaseModel, Field
 
 from core.database import get_database_manager, DatabaseManager
 from core.auth import get_current_user, require_permission
-from core.models import APIResponse, User
+from core.models import APIResponse
+from core.messaging import MessageProducer
 
 logger = logging.getLogger(__name__)
 
@@ -379,7 +380,38 @@ async def create_optimization(
         json.dumps(optimization.affected_sites), 'pending', 0.0,
         current_user.id, datetime.utcnow())
 
-        # Start optimization in background
+        # Send optimization request to BI Engine via Kafka
+        success = await MessageProducer.send_aiops_prediction_request(
+            model_name="optimization_engine",
+            site_id=optimization.affected_sites[0] if optimization.affected_sites else "all",
+            prediction_type="optimization",
+            target_time=datetime.utcnow().isoformat(),
+            input_data={
+                "task_id": task_id,
+                "optimization_type": optimization.optimization_type,
+                "parameters": optimization.parameters,
+                "constraints": optimization.constraints,
+                "objectives": optimization.objectives,
+                "affected_sites": optimization.affected_sites
+            }
+        )
+        
+        if not success:
+            logger.warning(f"Failed to send optimization request to Kafka for task {task_id}")
+        
+        # Also create event for tracking
+        await MessageProducer.send_event(
+            site_id=optimization.affected_sites[0] if optimization.affected_sites else "system",
+            tenant_id=current_user.tenant_id,
+            event_type="optimization_requested",
+            severity="info",
+            source_system="bi-api",
+            title=f"Optimization task created: {optimization.name}",
+            description=f"Type: {optimization.optimization_type}",
+            metadata={"task_id": task_id, "optimization_type": optimization.optimization_type}
+        )
+        
+        # Start optimization in background as fallback
         background_tasks.add_task(
             process_optimization_task,
             task_id,
@@ -623,7 +655,26 @@ async def implement_insight(
             ) VALUES ($1, $2, $3, NOW(), $4, NOW(), 'tracking')
         """, insight_id, current_user.tenant_id, current_user.id, result['potential_savings'])
 
-        # Schedule value measurement
+        # Send insight implementation to BI Engine via Kafka
+        success = await MessageProducer.send_event(
+            site_id="system",
+            tenant_id=current_user.tenant_id,
+            event_type="insight_implemented",
+            severity="info",
+            source_system="bi-api",
+            title=f"Insight implemented: {result['title']}",
+            description=f"Potential savings: ${result['potential_savings']}",
+            metadata={
+                "insight_id": insight_id,
+                "potential_savings": float(result['potential_savings']),
+                "implemented_by": current_user.id
+            }
+        )
+        
+        if not success:
+            logger.warning(f"Failed to send insight implementation to Kafka: {insight_id}")
+        
+        # Schedule value measurement as fallback
         background_tasks.add_task(
             schedule_value_measurement,
             insight_id,

@@ -12,6 +12,7 @@ from datetime import datetime, timedelta
 from core.database import get_database_manager, DatabaseManager
 from core.auth import get_current_user
 from core.models import Site, Equipment, APIResponse
+from core.messaging import MessageProducer
 
 logger = logging.getLogger(__name__)
 
@@ -541,3 +542,73 @@ async def get_technologies(
     except Exception as e:
         logger.error(f"Error retrieving technologies: {e}")
         raise HTTPException(status_code=500, detail="Failed to retrieve technologies")
+
+@router.post("/{site_id}/metrics")
+async def send_site_metrics(
+    site_id: str,
+    metrics_data: Dict[str, Any],
+    db: DatabaseManager = Depends(get_database_manager)
+):
+    """Send site metrics and trigger workers via Kafka"""
+    try:
+        # Validate site exists
+        site = await db.execute_query(
+            "SELECT site_id, site_name FROM sites WHERE site_id = $1", 
+            site_id
+        )
+        
+        if not site:
+            raise HTTPException(status_code=404, detail="Site not found")
+        
+        # Send network metrics to Kafka for workers to process
+        if 'network' in metrics_data:
+            for metric_name, metric_value in metrics_data['network'].items():
+                success = await MessageProducer.send_network_metric(
+                    site_id=site_id,
+                    tenant_id="default",  # TODO: get from current_user
+                    technology="4G/5G",
+                    metric_name=metric_name,
+                    metric_value=float(metric_value),
+                    unit=metrics_data.get('unit', 'percent')
+                )
+                
+                if not success:
+                    logger.warning(f"Failed to send network metric {metric_name} to Kafka")
+        
+        # Send energy metrics to Kafka
+        if 'energy' in metrics_data:
+            for metric_name, metric_value in metrics_data['energy'].items():
+                success = await MessageProducer.send_energy_metric(
+                    site_id=site_id,
+                    tenant_id="default",
+                    energy_type="consumption",
+                    metric_name=metric_name,
+                    metric_value=float(metric_value),
+                    unit=metrics_data.get('unit', 'kWh')
+                )
+                
+                if not success:
+                    logger.warning(f"Failed to send energy metric {metric_name} to Kafka")
+        
+        # Send event for metric update
+        await MessageProducer.send_event(
+            site_id=site_id,
+            tenant_id="default",
+            event_type="metrics_update",
+            severity="info",
+            source_system="sam-api",
+            title=f"Metrics updated for site {site_id}",
+            description=f"New metrics received: {list(metrics_data.keys())}"
+        )
+        
+        logger.info(f"Metrics sent to Kafka for site {site_id}")
+        return {
+            "status": "success",
+            "message": f"Metrics sent for processing",
+            "site_id": site_id,
+            "metrics_count": len(metrics_data)
+        }
+        
+    except Exception as e:
+        logger.error(f"Error sending metrics for site {site_id}: {e}")
+        raise HTTPException(status_code=500, detail="Failed to send metrics")

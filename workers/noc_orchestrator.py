@@ -17,6 +17,20 @@ from sklearn.preprocessing import StandardScaler
 import numpy as np
 import pandas as pd
 
+import signal
+from aiohttp import web
+
+# Import core modules from backend
+import sys
+import os
+sys.path.append(os.path.join(os.path.dirname(__file__), '..', 'backend'))
+
+from core.database import init_db
+from core.cache import init_redis
+from core.messaging import init_kafka, start_consumer
+from core.config import settings, KAFKA_TOPICS
+from core.monitoring import init_monitoring
+
 # Configure logging
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -706,10 +720,138 @@ class NOCOrchestrator:
             if self.redis_client:
                 await self.redis_client.close()
 
+# Global state
+shutdown_event = asyncio.Event()
+noc_orchestrator = None
+
+async def message_handler(topic, key, value, headers, timestamp, partition, offset):
+    """Handle incoming Kafka messages"""
+    global noc_orchestrator
+    
+    logger.info(f"Received message from {topic}: {key}")
+    
+    try:
+        if topic == KAFKA_TOPICS['alerts']:
+            # Process alerts for orchestration
+            alert_type = value.get('alert_type')
+            site_id = value.get('site_id')
+            severity = value.get('severity')
+            
+            if alert_type and site_id and noc_orchestrator:
+                # Trigger orchestration for this alert
+                asyncio.create_task(
+                    noc_orchestrator.orchestrate_alert_response(value)
+                )
+                
+        elif topic == KAFKA_TOPICS['events']:
+            # Process events for orchestration
+            event_type = value.get('event_type')
+            
+            if event_type in ['incident_created', 'optimization_requested'] and noc_orchestrator:
+                # Orchestrate response to events
+                asyncio.create_task(
+                    noc_orchestrator.orchestrate_event_response(value)
+                )
+                
+        elif topic == KAFKA_TOPICS['kpi_calculations']:
+            # Process KPI results for operational decisions
+            site_id = value.get('site_id')
+            kpi_name = value.get('kpi_name')
+            kpi_value = value.get('value')
+            
+            if site_id and kpi_name and kpi_value is not None and noc_orchestrator:
+                # Check if KPI triggers operational actions
+                asyncio.create_task(
+                    noc_orchestrator.evaluate_kpi_for_actions(site_id, kpi_name, kpi_value)
+                )
+                
+    except Exception as e:
+        logger.error(f"Error handling message: {e}")
+
+async def create_health_server():
+    """Create health check server"""
+    from aiohttp import web
+    
+    async def health_handler(request):
+        return web.json_response({
+            "status": "healthy",
+            "worker": "noc_orchestrator",
+            "timestamp": datetime.utcnow().isoformat()
+        })
+    
+    app = web.Application()
+    app.router.add_get('/health', health_handler)
+    
+    return app
+
+def setup_signal_handlers():
+    """Setup signal handlers for graceful shutdown"""
+    def signal_handler(sig, frame):
+        logger.info("Received shutdown signal")
+        shutdown_event.set()
+
+    signal.signal(signal.SIGTERM, signal_handler)
+
 async def main():
     """Main entry point"""
-    orchestrator = NOCOrchestrator()
-    await orchestrator.run()
+    global noc_orchestrator, health_server
+    
+    # Configure logging
+    logging.basicConfig(
+        level=getattr(logging, settings.LOG_LEVEL.upper()),
+        format="%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+    )
+    
+    logger.info("Starting Towerco NOC Orchestrator...")
+    
+    try:
+        # Initialize core services
+        await init_monitoring()
+        await init_db()
+        await init_redis()
+        await init_kafka()
+        
+        # Setup signal handlers
+        setup_signal_handlers()
+        
+        # Start health server
+        health_app = await create_health_server()
+        health_runner = web.AppRunner(health_app)
+        await health_runner.setup()
+        site = web.TCPSite(health_runner, '0.0.0.0', 8007)
+        await site.start()
+        logger.info("Health server started on port 8007")
+        
+        # Initialize NOC Orchestrator
+        noc_orchestrator = NOCOrchestrator()
+        await noc_orchestrator.initialize()
+        
+        # Start Kafka consumers
+        await start_consumer(
+            'noc_orchestrator',
+            [KAFKA_TOPICS['alerts'], KAFKA_TOPICS['events'], KAFKA_TOPICS['kpi_calculations']],
+            'noc_orchestrator_group',
+            message_handler
+        )
+        
+        logger.info("NOC Orchestrator started successfully")
+        
+        # Main loop
+        while not shutdown_event.is_set():
+            await asyncio.sleep(1)
+                
+    except KeyboardInterrupt:
+        logger.info("NOC Orchestrator stopping...")
+    except Exception as e:
+        logger.error(f"Fatal error in NOC Orchestrator: {e}")
+        raise
+    
+    finally:
+        logger.info("Shutting down NOC Orchestrator...")
+        
+        # Cleanup health server
+        if health_server:
+            await health_runner.cleanup()
 
 if __name__ == "__main__":
     asyncio.run(main())

@@ -20,7 +20,7 @@ from starlette.exceptions import HTTPException as StarletteHTTPException
 from core.config import settings
 from core.database import init_db
 from core.cache import init_redis
-from core.messaging import init_kafka
+from core.messaging import init_kafka, start_consumer
 from core.monitoring import init_monitoring, metrics
 from core.auth import init_auth
 from api.v1 import api_router
@@ -52,6 +52,14 @@ async def lifespan(app: FastAPI):
     
     # Start background tasks
     asyncio.create_task(background_tasks())
+    
+    # Start backend Kafka consumers to receive worker results
+    await start_consumer(
+        'backend_results',
+        ['towerco.kpi.calculations', 'towerco.aiops.predictions', 'towerco.alerts'],
+        'backend_group',
+        backend_message_handler
+    )
     
     logger.info("Towerco AIOps Platform started successfully")
     
@@ -259,6 +267,41 @@ async def metrics_endpoint():
     
     return Response(generate_latest(), media_type=CONTENT_TYPE_LATEST)
 
+
+async def backend_message_handler(topic, key, value, headers, timestamp, partition, offset):
+    """Handle messages from workers"""
+    logger.info(f"Backend received message from {topic}: {key}")
+    
+    try:
+        if topic == 'towerco.kpi.calculations':
+            # KPI Worker sent results
+            await handle_kpi_result(value)
+            
+        elif topic == 'towerco.aiops.predictions':
+            # AIOps Workers sent predictions/analysis
+            await handle_aiops_result(value)
+            
+        elif topic == 'towerco.alerts':
+            # Workers detected alerts
+            await handle_alert_result(value)
+            
+    except Exception as e:
+        logger.error(f"Error handling worker message: {e}")
+
+async def handle_kpi_result(data):
+    """Handle KPI calculation results from workers"""
+    # Store results in database, trigger notifications, etc.
+    logger.info(f"Processing KPI result: {data.get('kpi_name', 'unknown')}")
+
+async def handle_aiops_result(data):
+    """Handle AIOps prediction results from workers"""
+    # Store predictions, trigger alerts if needed
+    logger.info(f"Processing AIOps result: {data.get('prediction_type', 'unknown')}")
+
+async def handle_alert_result(data):
+    """Handle alert results from workers"""
+    # Process alerts, send notifications
+    logger.info(f"Processing alert: {data.get('alert_type', 'unknown')}")
 
 async def background_tasks():
     """Background tasks for system maintenance"""

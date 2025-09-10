@@ -22,10 +22,19 @@ from sklearn.preprocessing import LabelEncoder
 from sklearn.metrics import classification_report
 import xgboost as xgb
 
-from core.database import DatabaseManager
-from core.cache import CacheManager
-from core.messaging import MessageProducer
-from core.config import settings
+import signal
+from aiohttp import web
+
+# Import core modules from backend
+import sys
+import os
+sys.path.append(os.path.join(os.path.dirname(__file__), '..', 'backend'))
+
+from core.database import DatabaseManager, init_db
+from core.cache import CacheManager, init_redis
+from core.messaging import MessageProducer, init_kafka, start_consumer
+from core.config import settings, KAFKA_TOPICS
+from core.monitoring import init_monitoring
 
 logger = logging.getLogger(__name__)
 
@@ -1336,29 +1345,137 @@ class RootCauseAnalysisEngine:
 
 
 # Main worker function
-async def main():
-    """Main RCA worker"""
-    rca_engine = RootCauseAnalysisEngine()
+# Global state
+shutdown_event = asyncio.Event()
+rca_engine = None
+
+async def message_handler(topic, key, value, headers, timestamp, partition, offset):
+    """Handle incoming Kafka messages"""
+    global rca_engine
+    
+    logger.info(f"Received message from {topic}: {key}")
     
     try:
+        if topic == KAFKA_TOPICS['alerts']:
+            # Process alerts for root cause analysis
+            alert_type = value.get('alert_type')
+            site_id = value.get('site_id')
+            severity = value.get('severity')
+            
+            if alert_type and site_id and rca_engine:
+                # Trigger RCA for this alert
+                asyncio.create_task(
+                    rca_engine.analyze_alert_root_cause(value)
+                )
+                
+        elif topic == KAFKA_TOPICS['events']:
+            # Process events for RCA
+            event_type = value.get('event_type')
+            
+            if event_type in ['incident_created', 'rca_requested'] and rca_engine:
+                # Trigger RCA analysis
+                asyncio.create_task(
+                    rca_engine.analyze_event_root_cause(value)
+                )
+                
+        elif topic == KAFKA_TOPICS['aiops_predictions']:
+            # Process RCA requests from AIOps endpoints
+            prediction_type = value.get('prediction_type')
+            
+            if prediction_type == 'root_cause_analysis' and rca_engine:
+                # Handle direct RCA requests
+                input_data = value.get('input_data', {})
+                asyncio.create_task(
+                    rca_engine.process_rca_request(input_data)
+                )
+                
+    except Exception as e:
+        logger.error(f"Error handling message: {e}")
+
+async def create_health_server():
+    """Create health check server"""
+    from aiohttp import web
+    
+    async def health_handler(request):
+        return web.json_response({
+            "status": "healthy",
+            "worker": "root_cause_analyzer",
+            "timestamp": datetime.utcnow().isoformat()
+        })
+    
+    app = web.Application()
+    app.router.add_get('/health', health_handler)
+    
+    return app
+
+def setup_signal_handlers():
+    """Setup signal handlers for graceful shutdown"""
+    def signal_handler(sig, frame):
+        logger.info("Received shutdown signal")
+        shutdown_event.set()
+
+    signal.signal(signal.SIGTERM, signal_handler)
+
+async def main():
+    """Main RCA worker"""
+    global rca_engine, health_server
+    
+    # Configure logging
+    logging.basicConfig(
+        level=getattr(logging, settings.LOG_LEVEL.upper()),
+        format="%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+    )
+    
+    logger.info("Starting Towerco Root Cause Analysis Engine...")
+    
+    try:
+        # Initialize core services
+        await init_monitoring()
+        await init_db()
+        await init_redis()
+        await init_kafka()
+        
+        # Setup signal handlers
+        setup_signal_handlers()
+        
+        # Start health server
+        health_app = await create_health_server()
+        health_runner = web.AppRunner(health_app)
+        await health_runner.setup()
+        site = web.TCPSite(health_runner, '0.0.0.0', 8006)
+        await site.start()
+        logger.info("Health server started on port 8006")
+        
+        # Initialize Root Cause Analysis Engine
+        rca_engine = RootCauseAnalysisEngine()
         await rca_engine.initialize()
         
-        # Main processing loop
-        while True:
-            try:
-                logger.info("RCA Engine running...")
-                await asyncio.sleep(60)
-                
-            except Exception as e:
-                logger.error(f"Error in RCA main loop: {e}")
-                await asyncio.sleep(30)
+        # Start Kafka consumers
+        await start_consumer(
+            'rca_analyzer',
+            [KAFKA_TOPICS['alerts'], KAFKA_TOPICS['events'], KAFKA_TOPICS['aiops_predictions']],
+            'rca_analyzer_group',
+            message_handler
+        )
+        
+        logger.info("Root Cause Analysis Engine started successfully")
+        
+        # Main loop
+        while not shutdown_event.is_set():
+            await asyncio.sleep(1)
                 
     except KeyboardInterrupt:
         logger.info("RCA worker stopping...")
     except Exception as e:
         logger.error(f"Fatal error in RCA worker: {e}")
         raise
-
+    
+    finally:
+        logger.info("Shutting down Root Cause Analysis Engine...")
+        
+        # Cleanup health server
+        if health_server:
+            await health_runner.cleanup()
 
 if __name__ == "__main__":
     asyncio.run(main())

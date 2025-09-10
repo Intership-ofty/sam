@@ -16,6 +16,7 @@ import asyncpg
 from core.database import get_database_manager, DatabaseManager
 from core.auth import get_current_user
 from core.models import KPICalculationRequest, KPIAlert, KPIDashboard, KPIDefinition
+from core.messaging import MessageProducer
 
 logger = logging.getLogger(__name__)
 
@@ -348,10 +349,23 @@ async def trigger_kpi_calculation(
         request.requested_by
         )
         
-        # Add background task to process calculation
+        # Send calculation request to KPI Worker via Kafka
+        for site_id in (request.site_ids or ["all"]):
+            for kpi_name in (request.kpi_names or ["all"]):
+                success = await MessageProducer.send_kpi_calculation_request(
+                    kpi_name=kpi_name,
+                    site_id=site_id if site_id != "all" else None,
+                    tenant_id="default",  # TODO: get from current_user
+                    time_range=request.time_range
+                )
+                
+                if not success:
+                    logger.warning(f"Failed to send KPI calculation request to Kafka: {kpi_name}, {site_id}")
+        
+        # Also trigger via background task as fallback
         background_tasks.add_task(process_kpi_calculation, calculation_id, request)
         
-        logger.info(f"KPI calculation request {calculation_id} queued")
+        logger.info(f"KPI calculation request {calculation_id} sent to workers via Kafka")
         
         return {
             "calculation_id": calculation_id,

@@ -22,6 +22,19 @@ from scipy.optimize import differential_evolution
 import pulp  # Linear programming
 import warnings
 warnings.filterwarnings('ignore')
+import signal
+from aiohttp import web
+
+# Import core modules from backend
+import sys
+import os
+sys.path.append(os.path.join(os.path.dirname(__file__), '..', 'backend'))
+
+from core.database import init_db
+from core.cache import init_redis
+from core.messaging import init_kafka, start_consumer
+from core.config import settings, KAFKA_TOPICS
+from core.monitoring import init_monitoring
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)
@@ -730,10 +743,127 @@ class OptimizationEngine:
         except Exception as e:
             logger.error(f"Error updating task status: {e}")
 
+# Global state
+shutdown_event = asyncio.Event()
+optimization_engine = None
+
+async def message_handler(topic, key, value, headers, timestamp, partition, offset):
+    """Handle incoming Kafka messages"""
+    global optimization_engine
+    
+    logger.info(f"Received message from {topic}: {key}")
+    
+    try:
+        if topic == KAFKA_TOPICS['aiops_predictions']:
+            # Process optimization requests
+            prediction_type = value.get('prediction_type')
+            
+            if prediction_type == 'optimization' and optimization_engine:
+                # Handle optimization requests from BI
+                input_data = value.get('input_data', {})
+                asyncio.create_task(
+                    optimization_engine.process_optimization_request(input_data)
+                )
+                
+        elif topic == KAFKA_TOPICS['kpi_calculations']:
+            # Process KPI results for optimization opportunities
+            site_id = value.get('site_id')
+            kpi_name = value.get('kpi_name')
+            kpi_value = value.get('value')
+            
+            if site_id and kpi_name and kpi_value is not None and optimization_engine:
+                # Check for optimization opportunities
+                asyncio.create_task(
+                    optimization_engine.evaluate_optimization_opportunity(site_id, kpi_name, kpi_value)
+                )
+                
+    except Exception as e:
+        logger.error(f"Error handling message: {e}")
+
+async def create_health_server():
+    """Create health check server"""
+    from aiohttp import web
+    
+    async def health_handler(request):
+        return web.json_response({
+            "status": "healthy",
+            "worker": "optimization_engine",
+            "timestamp": datetime.utcnow().isoformat()
+        })
+    
+    app = web.Application()
+    app.router.add_get('/health', health_handler)
+    
+    return app
+
+def setup_signal_handlers():
+    """Setup signal handlers for graceful shutdown"""
+    def signal_handler(sig, frame):
+        logger.info("Received shutdown signal")
+        shutdown_event.set()
+
+    signal.signal(signal.SIGTERM, signal_handler)
+
 async def main():
     """Main entry point"""
-    engine = OptimizationEngine()
-    await engine.run()
+    global optimization_engine, health_server
+    
+    # Configure logging
+    logging.basicConfig(
+        level=getattr(logging, settings.LOG_LEVEL.upper()),
+        format="%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+    )
+    
+    logger.info("Starting Towerco Optimization Engine...")
+    
+    try:
+        # Initialize core services
+        await init_monitoring()
+        await init_db()
+        await init_redis()
+        await init_kafka()
+        
+        # Setup signal handlers
+        setup_signal_handlers()
+        
+        # Start health server
+        health_app = await create_health_server()
+        health_runner = web.AppRunner(health_app)
+        await health_runner.setup()
+        site = web.TCPSite(health_runner, '0.0.0.0', 8008)
+        await site.start()
+        logger.info("Health server started on port 8008")
+        
+        # Initialize Optimization Engine
+        optimization_engine = OptimizationEngine()
+        await optimization_engine.initialize()
+        
+        # Start Kafka consumers
+        await start_consumer(
+            'optimization_engine',
+            [KAFKA_TOPICS['aiops_predictions'], KAFKA_TOPICS['kpi_calculations']],
+            'optimization_engine_group',
+            message_handler
+        )
+        
+        logger.info("Optimization Engine started successfully")
+        
+        # Main loop
+        while not shutdown_event.is_set():
+            await asyncio.sleep(1)
+                
+    except KeyboardInterrupt:
+        logger.info("Optimization Engine stopping...")
+    except Exception as e:
+        logger.error(f"Fatal error in Optimization Engine: {e}")
+        raise
+    
+    finally:
+        logger.info("Shutting down Optimization Engine...")
+        
+        # Cleanup health server
+        if health_server:
+            await health_runner.cleanup()
 
 if __name__ == "__main__":
     asyncio.run(main())

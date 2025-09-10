@@ -13,6 +13,7 @@ import json
 from core.database import get_database_manager, DatabaseManager
 from core.auth import get_current_user
 from core.models import APIResponse
+from core.messaging import MessageProducer
 
 logger = logging.getLogger(__name__)
 
@@ -178,7 +179,35 @@ async def trigger_rca_analysis(
             RETURNING id
         """, incident_id, primary_symptom, site_id, analysis_timestamp)
         
-        # Add background task to process RCA
+        # Send RCA request to AIOps workers via Kafka
+        success = await MessageProducer.send_aiops_prediction_request(
+            model_name="rca_analyzer",
+            site_id=site_id,
+            prediction_type="root_cause_analysis",
+            target_time=analysis_timestamp.isoformat(),
+            input_data={
+                "incident_id": incident_id,
+                "primary_symptom": primary_symptom,
+                "request_id": request_id
+            }
+        )
+        
+        if not success:
+            logger.warning(f"Failed to send RCA request to Kafka for incident {incident_id}")
+        
+        # Also create event for event correlator
+        await MessageProducer.send_event(
+            site_id=site_id,
+            tenant_id="default",
+            event_type="rca_requested",
+            severity="high",
+            source_system="aiops-api",
+            title=f"RCA analysis requested for incident {incident_id}",
+            description=f"Primary symptom: {primary_symptom}",
+            metadata={"incident_id": incident_id, "request_id": request_id}
+        )
+        
+        # Add background task as fallback
         background_tasks.add_task(process_rca_request, request_id, {
             'incident_id': incident_id,
             'primary_symptom': primary_symptom,
@@ -186,7 +215,7 @@ async def trigger_rca_analysis(
             'timestamp': analysis_timestamp.isoformat()
         })
         
-        logger.info(f"RCA analysis queued for incident {incident_id}")
+        logger.info(f"RCA analysis sent to workers via Kafka for incident {incident_id}")
         
         return {
             "request_id": request_id,

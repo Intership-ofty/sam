@@ -21,10 +21,19 @@ from sklearn.metrics import silhouette_score
 from scipy import stats
 import joblib
 
-from core.database import DatabaseManager
-from core.cache import CacheManager
-from core.messaging import MessageProducer
-from core.config import settings
+import signal
+from aiohttp import web
+
+# Import core modules from backend
+import sys
+import os
+sys.path.append(os.path.join(os.path.dirname(__file__), '..', 'backend'))
+
+from core.database import DatabaseManager, init_db
+from core.cache import CacheManager, init_redis
+from core.messaging import MessageProducer, init_kafka, start_consumer
+from core.config import settings, KAFKA_TOPICS
+from core.monitoring import init_monitoring
 
 logger = logging.getLogger(__name__)
 
@@ -897,30 +906,129 @@ class AnomalyDetectionEngine:
         # Basic statistical thresholds as fallback
 
 
+# Global state
+shutdown_event = asyncio.Event()
+anomaly_engine = None
+
+async def message_handler(topic, key, value, headers, timestamp, partition, offset):
+    """Handle incoming Kafka messages"""
+    global anomaly_engine
+    
+    logger.info(f"Received message from {topic}: {key}")
+    
+    try:
+        if topic == KAFKA_TOPICS['network_metrics'] or topic == KAFKA_TOPICS['energy_metrics']:
+            # Process metrics for anomaly detection
+            site_id = value.get('site_id')
+            metric_name = value.get('metric_name')
+            metric_value = value.get('metric_value')
+            
+            if site_id and metric_name and metric_value is not None and anomaly_engine:
+                # Trigger anomaly detection for this metric
+                asyncio.create_task(
+                    anomaly_engine.detect_anomalies_for_metric(site_id, metric_name, metric_value)
+                )
+                
+        elif topic == KAFKA_TOPICS['kpi_calculations']:
+            # Process KPI results for anomaly detection
+            site_id = value.get('site_id')
+            kpi_name = value.get('kpi_name') 
+            kpi_value = value.get('value')
+            
+            if site_id and kpi_name and kpi_value is not None and anomaly_engine:
+                # Trigger KPI anomaly detection
+                asyncio.create_task(
+                    anomaly_engine.detect_kpi_anomalies(site_id, kpi_name, kpi_value)
+                )
+                
+    except Exception as e:
+        logger.error(f"Error handling message: {e}")
+
+async def create_health_server():
+    """Create health check server"""
+    from aiohttp import web
+    
+    async def health_handler(request):
+        return web.json_response({
+            "status": "healthy",
+            "worker": "anomaly_detector",
+            "timestamp": datetime.utcnow().isoformat()
+        })
+    
+    app = web.Application()
+    app.router.add_get('/health', health_handler)
+    
+    return app
+
+def setup_signal_handlers():
+    """Setup signal handlers for graceful shutdown"""
+    def signal_handler(sig, frame):
+        logger.info("Received shutdown signal")
+        shutdown_event.set()
+
+    signal.signal(signal.SIGTERM, signal_handler)
+
 # Main worker function
 async def main():
     """Main anomaly detection worker"""
-    detector = AnomalyDetectionEngine()
+    global anomaly_engine, health_server
+    
+    # Configure logging
+    logging.basicConfig(
+        level=getattr(logging, settings.LOG_LEVEL.upper()),
+        format="%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+    )
+    
+    logger.info("Starting Towerco Anomaly Detection Worker...")
     
     try:
-        await detector.initialize()
+        # Initialize core services
+        await init_monitoring()
+        await init_db()
+        await init_redis()
+        await init_kafka()
         
-        # Main processing loop
-        while True:
-            try:
-                # This would normally process metrics from message queue
-                logger.info("Anomaly detection engine running...")
-                await asyncio.sleep(60)  # Run every minute
-                
-            except Exception as e:
-                logger.error(f"Error in main processing loop: {e}")
-                await asyncio.sleep(30)
+        # Setup signal handlers
+        setup_signal_handlers()
+        
+        # Start health server
+        health_app = await create_health_server()
+        health_runner = web.AppRunner(health_app)
+        await health_runner.setup()
+        site = web.TCPSite(health_runner, '0.0.0.0', 8003)
+        await site.start()
+        logger.info("Health server started on port 8003")
+        
+        # Initialize Anomaly Detection Engine
+        anomaly_engine = AnomalyDetectionEngine()
+        await anomaly_engine.initialize()
+        
+        # Start Kafka consumers
+        await start_consumer(
+            'anomaly_triggers',
+            [KAFKA_TOPICS['network_metrics'], KAFKA_TOPICS['energy_metrics'], KAFKA_TOPICS['kpi_calculations']],
+            'anomaly_detector_group',
+            message_handler
+        )
+        
+        logger.info("Anomaly Detection Worker started successfully")
+        
+        # Main loop
+        while not shutdown_event.is_set():
+            await asyncio.sleep(1)
                 
     except KeyboardInterrupt:
         logger.info("Anomaly detection worker stopping...")
     except Exception as e:
         logger.error(f"Fatal error in anomaly detection worker: {e}")
         raise
+    
+    finally:
+        logger.info("Shutting down Anomaly Detection Worker...")
+        
+        # Cleanup health server
+        if health_server:
+            await health_runner.cleanup()
 
 
 if __name__ == "__main__":

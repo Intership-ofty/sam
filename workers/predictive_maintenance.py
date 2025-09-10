@@ -23,6 +23,19 @@ import xgboost as xgb
 from scipy import stats
 from prophet import Prophet
 import joblib
+import signal
+from aiohttp import web
+
+# Import core modules from backend
+import sys
+import os
+sys.path.append(os.path.join(os.path.dirname(__file__), '..', 'backend'))
+
+from core.database import init_db
+from core.cache import init_redis
+from core.messaging import init_kafka, start_consumer
+from core.config import settings, KAFKA_TOPICS
+from core.monitoring import init_monitoring
 
 from core.database import DatabaseManager
 from core.cache import CacheManager
@@ -1369,29 +1382,139 @@ class PredictiveMaintenanceEngine:
 
 
 # Main worker function
-async def main():
-    """Main predictive maintenance worker"""
-    pm_engine = PredictiveMaintenanceEngine()
+# Global state
+shutdown_event = asyncio.Event()
+pm_engine = None
+
+async def message_handler(topic, key, value, headers, timestamp, partition, offset):
+    """Handle incoming Kafka messages"""
+    global pm_engine
+    
+    logger.info(f"Received message from {topic}: {key}")
     
     try:
+        if topic == KAFKA_TOPICS['network_metrics']:
+            # Process network metrics for equipment health
+            site_id = value.get('site_id')
+            metric_name = value.get('metric_name')
+            metric_value = value.get('metric_value')
+            
+            if site_id and metric_name and metric_value is not None and pm_engine:
+                # Analyze equipment health
+                asyncio.create_task(
+                    pm_engine.analyze_equipment_health(site_id, metric_name, metric_value)
+                )
+                
+        elif topic == KAFKA_TOPICS['energy_metrics']:
+            # Process energy metrics for maintenance predictions
+            site_id = value.get('site_id')
+            energy_type = value.get('energy_type')
+            metric_value = value.get('metric_value')
+            
+            if site_id and energy_type and metric_value is not None and pm_engine:
+                # Analyze energy patterns for maintenance
+                asyncio.create_task(
+                    pm_engine.analyze_energy_patterns(site_id, energy_type, metric_value)
+                )
+                
+        elif topic == KAFKA_TOPICS['alerts']:
+            # Process alerts for maintenance triggers
+            alert_type = value.get('alert_type')
+            site_id = value.get('site_id')
+            
+            if alert_type and site_id and pm_engine:
+                # Check if alert triggers maintenance
+                asyncio.create_task(
+                    pm_engine.evaluate_maintenance_trigger(value)
+                )
+                
+    except Exception as e:
+        logger.error(f"Error handling message: {e}")
+
+async def create_health_server():
+    """Create health check server"""
+    from aiohttp import web
+    
+    async def health_handler(request):
+        return web.json_response({
+            "status": "healthy",
+            "worker": "predictive_maintenance",
+            "timestamp": datetime.utcnow().isoformat()
+        })
+    
+    app = web.Application()
+    app.router.add_get('/health', health_handler)
+    
+    return app
+
+def setup_signal_handlers():
+    """Setup signal handlers for graceful shutdown"""
+    def signal_handler(sig, frame):
+        logger.info("Received shutdown signal")
+        shutdown_event.set()
+
+    signal.signal(signal.SIGTERM, signal_handler)
+
+async def main():
+    """Main predictive maintenance worker"""
+    global pm_engine, health_server
+    
+    # Configure logging
+    logging.basicConfig(
+        level=getattr(logging, settings.LOG_LEVEL.upper()),
+        format="%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+    )
+    
+    logger.info("Starting Towerco Predictive Maintenance Engine...")
+    
+    try:
+        # Initialize core services
+        await init_monitoring()
+        await init_db()
+        await init_redis()
+        await init_kafka()
+        
+        # Setup signal handlers
+        setup_signal_handlers()
+        
+        # Start health server
+        health_app = await create_health_server()
+        health_runner = web.AppRunner(health_app)
+        await health_runner.setup()
+        site = web.TCPSite(health_runner, '0.0.0.0', 8009)
+        await site.start()
+        logger.info("Health server started on port 8009")
+        
+        # Initialize Predictive Maintenance Engine
+        pm_engine = PredictiveMaintenanceEngine()
         await pm_engine.initialize()
         
-        # Main processing loop
-        while True:
-            try:
-                logger.info("Predictive Maintenance Engine running...")
-                await asyncio.sleep(60)
-                
-            except Exception as e:
-                logger.error(f"Error in PM main loop: {e}")
-                await asyncio.sleep(30)
+        # Start Kafka consumers
+        await start_consumer(
+            'predictive_maintenance',
+            [KAFKA_TOPICS['network_metrics'], KAFKA_TOPICS['energy_metrics'], KAFKA_TOPICS['alerts']],
+            'predictive_maintenance_group',
+            message_handler
+        )
+        
+        logger.info("Predictive Maintenance Engine started successfully")
+        
+        # Main loop
+        while not shutdown_event.is_set():
+            await asyncio.sleep(1)
                 
     except KeyboardInterrupt:
         logger.info("Predictive maintenance worker stopping...")
     except Exception as e:
         logger.error(f"Fatal error in predictive maintenance worker: {e}")
         raise
-
+    
+    finally:
+        logger.info("Shutting down Predictive Maintenance Engine...")
+        
+        # Cleanup health server
+        if health_server:
+            await health_runner.cleanup()
 
 if __name__ == "__main__":
     asyncio.run(main())

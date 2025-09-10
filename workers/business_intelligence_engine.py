@@ -21,6 +21,19 @@ from sklearn.decomposition import PCA
 from sklearn.metrics import silhouette_score
 import warnings
 warnings.filterwarnings('ignore')
+import signal
+from aiohttp import web
+
+# Import core modules from backend
+import sys
+import os
+sys.path.append(os.path.join(os.path.dirname(__file__), '..', 'backend'))
+
+from core.database import init_db
+from core.cache import init_redis
+from core.messaging import init_kafka, start_consumer
+from core.config import settings, KAFKA_TOPICS
+from core.monitoring import init_monitoring
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)
@@ -735,10 +748,137 @@ class BusinessIntelligenceEngine:
             if self.redis_client:
                 await self.redis_client.close()
 
+# Global state
+shutdown_event = asyncio.Event()
+bi_engine = None
+
+async def message_handler(topic, key, value, headers, timestamp, partition, offset):
+    """Handle incoming Kafka messages"""
+    global bi_engine
+    
+    logger.info(f"Received message from {topic}: {key}")
+    
+    try:
+        if topic == KAFKA_TOPICS['kpi_calculations']:
+            # Process KPI results for business intelligence
+            site_id = value.get('site_id')
+            kpi_name = value.get('kpi_name')
+            kpi_value = value.get('value')
+            
+            if site_id and kpi_name and kpi_value is not None and bi_engine:
+                # Trigger business analysis for this KPI
+                asyncio.create_task(
+                    bi_engine.analyze_kpi_impact(site_id, kpi_name, kpi_value)
+                )
+                
+        elif topic == KAFKA_TOPICS['events']:
+            # Process events for business impact analysis
+            event_type = value.get('event_type')
+            site_id = value.get('site_id')
+            
+            if event_type in ['optimization_requested', 'insight_implemented'] and bi_engine:
+                # Process business events
+                asyncio.create_task(
+                    bi_engine.process_business_event(value)
+                )
+                
+        elif topic == KAFKA_TOPICS['aiops_predictions']:
+            # Process AIOps predictions for BI insights
+            prediction_type = value.get('prediction_type')
+            
+            if prediction_type == 'optimization' and bi_engine:
+                # Handle optimization requests
+                asyncio.create_task(
+                    bi_engine.process_optimization_request(value)
+                )
+                
+    except Exception as e:
+        logger.error(f"Error handling message: {e}")
+
+async def create_health_server():
+    """Create health check server"""
+    from aiohttp import web
+    
+    async def health_handler(request):
+        return web.json_response({
+            "status": "healthy",
+            "worker": "business_intelligence_engine",
+            "timestamp": datetime.utcnow().isoformat()
+        })
+    
+    app = web.Application()
+    app.router.add_get('/health', health_handler)
+    
+    return app
+
+def setup_signal_handlers():
+    """Setup signal handlers for graceful shutdown"""
+    def signal_handler(sig, frame):
+        logger.info("Received shutdown signal")
+        shutdown_event.set()
+
+    signal.signal(signal.SIGTERM, signal_handler)
+
 async def main():
     """Main entry point"""
-    engine = BusinessIntelligenceEngine()
-    await engine.run()
+    global bi_engine, health_server
+    
+    # Configure logging
+    logging.basicConfig(
+        level=getattr(logging, settings.LOG_LEVEL.upper()),
+        format="%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+    )
+    
+    logger.info("Starting Towerco Business Intelligence Engine...")
+    
+    try:
+        # Initialize core services
+        await init_monitoring()
+        await init_db()
+        await init_redis()
+        await init_kafka()
+        
+        # Setup signal handlers
+        setup_signal_handlers()
+        
+        # Start health server
+        health_app = await create_health_server()
+        health_runner = web.AppRunner(health_app)
+        await health_runner.setup()
+        site = web.TCPSite(health_runner, '0.0.0.0', 8004)
+        await site.start()
+        logger.info("Health server started on port 8004")
+        
+        # Initialize Business Intelligence Engine
+        bi_engine = BusinessIntelligenceEngine()
+        await bi_engine.initialize()
+        
+        # Start Kafka consumers
+        await start_consumer(
+            'bi_triggers',
+            [KAFKA_TOPICS['kpi_calculations'], KAFKA_TOPICS['events'], KAFKA_TOPICS['aiops_predictions']],
+            'bi_engine_group',
+            message_handler
+        )
+        
+        logger.info("Business Intelligence Engine started successfully")
+        
+        # Main loop
+        while not shutdown_event.is_set():
+            await asyncio.sleep(1)
+                
+    except KeyboardInterrupt:
+        logger.info("Business Intelligence Engine stopping...")
+    except Exception as e:
+        logger.error(f"Fatal error in Business Intelligence Engine: {e}")
+        raise
+    
+    finally:
+        logger.info("Shutting down Business Intelligence Engine...")
+        
+        # Cleanup health server
+        if health_server:
+            await health_runner.cleanup()
 
 if __name__ == "__main__":
     asyncio.run(main())

@@ -1,23 +1,237 @@
 services:
-  workers:
+  # Data Ingestor Worker
+  data-ingestor:
     build:
       context: ../..
-      dockerfile: workers/Dockerfile
-    image: ${REGISTRY:-local}/sam-workers:${TAG:-dev}
+      dockerfile: workers/Dockerfile.unified
+    image: ${REGISTRY:-local}/sam-workers-unified:${TAG:-dev}
+    container_name: sam-data-ingestor
     env_file:
       - ./common.env
     environment:
-      - WORKER=${WORKER:-ingestor}
+      - WORKER_TYPE=data_ingestor
+      - WORKER_PORT=8001
+    command: ["python", "workers/data_ingestor.py"]
     depends_on:
-      - kafka
+      kafka:
+        condition: service_healthy
     networks:
       - sam
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8001/health')"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 60s
+
+  # KPI Worker
+  kpi-worker:
+    build:
+      context: ../..
+      dockerfile: workers/Dockerfile.unified
+    image: ${REGISTRY:-local}/sam-workers-unified:${TAG:-dev}
+    container_name: sam-kpi-worker
+    env_file:
+      - ./common.env
+    environment:
+      - WORKER_TYPE=kpi_worker
+      - WORKER_PORT=8002
+    command: ["python", "workers/kpi_worker.py"]
+    depends_on:
+      kafka:
+        condition: service_healthy
+    networks:
+      - sam
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8002/health')"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 60s
+
+  # Anomaly Detector Worker
+  anomaly-detector:
+    build:
+      context: ../..
+      dockerfile: workers/Dockerfile.unified
+    image: ${REGISTRY:-local}/sam-workers-unified:${TAG:-dev}
+    container_name: sam-anomaly-detector
+    env_file:
+      - ./common.env
+    environment:
+      - WORKER_TYPE=anomaly_detector
+      - WORKER_PORT=8003
+    command: ["python", "workers/anomaly_detector.py"]
+    depends_on:
+      kafka:
+        condition: service_healthy
+    networks:
+      - sam
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8003/health')"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 60s
+
+  # Business Intelligence Engine
+  bi-engine:
+    build:
+      context: ../..
+      dockerfile: workers/Dockerfile.unified
+    image: ${REGISTRY:-local}/sam-workers-unified:${TAG:-dev}
+    container_name: sam-bi-engine
+    env_file:
+      - ./common.env
+    environment:
+      - WORKER_TYPE=business_intelligence_engine
+      - WORKER_PORT=8004
+    command: ["python", "workers/business_intelligence_engine.py"]
+    depends_on:
+      kafka:
+        condition: service_healthy
+    networks:
+      - sam
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8004/health')"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 60s
+
+  # Root Cause Analyzer
+  rca-analyzer:
+    build:
+      context: ../..
+      dockerfile: workers/Dockerfile.unified
+    image: ${REGISTRY:-local}/sam-workers-unified:${TAG:-dev}
+    container_name: sam-rca-analyzer
+    env_file:
+      - ./common.env
+    environment:
+      - WORKER_TYPE=root_cause_analyzer
+      - WORKER_PORT=8005
+    command: ["python", "workers/root_cause_analyzer.py"]
+    depends_on:
+      kafka:
+        condition: service_healthy
+    networks:
+      - sam
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8005/health')"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 60s
+
+  # Event Correlator
+  event-correlator:
+    build:
+      context: ../..
+      dockerfile: workers/Dockerfile.unified
+    image: ${REGISTRY:-local}/sam-workers-unified:${TAG:-dev}
+    container_name: sam-event-correlator
+    env_file:
+      - ./common.env
+    environment:
+      - WORKER_TYPE=event_correlator
+      - WORKER_PORT=8005
+    command: ["python", "workers/event_correlator.py"]
+    depends_on:
+      kafka:
+        condition: service_healthy
+    networks:
+      - sam
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8005/health')"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 60s
+
+  # NOC Orchestrator
+  noc-orchestrator:
+    build:
+      context: ../..
+      dockerfile: workers/Dockerfile.unified
+    image: ${REGISTRY:-local}/sam-workers-unified:${TAG:-dev}
+    container_name: sam-noc-orchestrator
+    env_file:
+      - ./common.env
+    environment:
+      - WORKER_TYPE=noc_orchestrator
+      - WORKER_PORT=8007
+    command: ["python", "workers/noc_orchestrator.py"]
+    depends_on:
+      kafka:
+        condition: service_healthy
+    networks:
+      - sam
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8007/health')"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 60s
+
+  # Optimization Engine
+  optimization-engine:
+    build:
+      context: ../..
+      dockerfile: workers/Dockerfile.unified
+    image: ${REGISTRY:-local}/sam-workers-unified:${TAG:-dev}
+    container_name: sam-optimization-engine
+    env_file:
+      - ./common.env
+    environment:
+      - WORKER_TYPE=optimization_engine
+      - WORKER_PORT=8008
+    command: ["python", "workers/optimization_engine.py"]
+    depends_on:
+      kafka:
+        condition: service_healthy
+    networks:
+      - sam
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8008/health')"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 60s
+
+  # Predictive Maintenance
+  predictive-maintenance:
+    build:
+      context: ../..
+      dockerfile: workers/Dockerfile.unified
+    image: ${REGISTRY:-local}/sam-workers-unified:${TAG:-dev}
+    container_name: sam-predictive-maintenance
+    env_file:
+      - ./common.env
+    environment:
+      - WORKER_TYPE=predictive_maintenance
+      - WORKER_PORT=8009
+    command: ["python", "workers/predictive_maintenance.py"]
+    depends_on:
+      kafka:
+        condition: service_healthy
+    networks:
+      - sam
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8009/health')"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 60s
+
+  # Kafka (moved from infrastructure)
   zookeeper:
     image: bitnami/zookeeper:3.9
     environment:
       - ALLOW_ANONYMOUS_LOGIN=yes
     networks:
       - sam
+
   kafka:
     image: bitnami/kafka:3.7
     environment:
@@ -37,5 +251,6 @@ services:
       timeout: 10s
       retries: 5
       start_period: 60s
+
 networks:
   sam:

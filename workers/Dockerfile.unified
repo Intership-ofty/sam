@@ -1,0 +1,42 @@
+FROM python:3.11-slim
+
+ENV PYTHONDONTWRITEBYTECODE=1 \
+    PYTHONUNBUFFERED=1 \
+    PYTHONPATH=/app
+
+WORKDIR /app
+
+# Install system dependencies (optimized for all workers)
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    gcc \
+    g++ \
+    libpq-dev \
+    curl \
+    build-essential \
+    libffi-dev \
+    rustc \
+    && rm -rf /var/lib/apt/lists/*
+
+# Upgrade pip and install build tools
+RUN python -m pip --timeout=120 install --upgrade pip setuptools wheel
+
+# Install Airflow first (heavy dependency, shared across workers)
+ARG AIRFLOW_CONSTRAINTS="https://raw.githubusercontent.com/apache/airflow/constraints-3.0.4/constraints-3.11.txt"
+RUN pip install --timeout=120 "apache-airflow==3.0.4" -c ${AIRFLOW_CONSTRAINTS}
+
+# Copy and install requirements (shared)
+COPY workers/requirements.txt .
+RUN pip install --timeout=120 --no-cache-dir -r requirements.txt
+
+# Copy ALL workers and backend core
+COPY workers/ ./workers/
+COPY backend/ ./backend/
+
+# Create non-root user for security
+RUN useradd -m -u 1000 towerco && chown -R towerco:towerco /app
+USER towerco
+
+# Verify dependencies
+RUN pip check
+
+# No default CMD - specified in docker-compose.yml per worker

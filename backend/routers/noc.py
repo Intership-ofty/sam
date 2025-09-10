@@ -16,7 +16,8 @@ from pydantic import BaseModel, Field
 
 from core.database import get_database_manager, DatabaseManager
 from core.auth import get_current_user, require_permission
-from core.models import APIResponse, User
+from core.models import APIResponse
+from core.messaging import MessageProducer
 
 logger = logging.getLogger(__name__)
 
@@ -264,14 +265,41 @@ async def create_incident(
         current_user.id, datetime.utcnow(), datetime.utcnow(),
         json.dumps(incident.tags), json.dumps(incident.metadata))
 
-        # Start background processing
+        # Send incident event to workers via Kafka
+        await MessageProducer.send_event(
+            site_id=incident.site_id,
+            tenant_id=current_user.tenant_id,
+            event_type="incident_created",
+            severity=incident.severity.value,
+            source_system="noc",
+            title=incident.title,
+            description=incident.description,
+            metadata={
+                "incident_id": incident_id,
+                "category": incident.category,
+                "tags": incident.tags
+            }
+        )
+
+        # Also send alert for immediate processing
+        await MessageProducer.send_alert(
+            alert_type="incident",
+            severity=incident.severity.value,
+            title=f"New incident: {incident.title}",
+            description=f"Site: {incident.site_id}, Category: {incident.category}",
+            site_id=incident.site_id,
+            tenant_id=current_user.tenant_id,
+            metadata={"incident_id": incident_id}
+        )
+
+        # Start background processing as fallback
         background_tasks.add_task(
             process_new_incident,
             incident_id,
             current_user.tenant_id
         )
 
-        logger.info(f"Created incident {incident_id}")
+        logger.info(f"Created incident {incident_id} and sent to workers via Kafka")
 
         return {
             "incident_id": incident_id,

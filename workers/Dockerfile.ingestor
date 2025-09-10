@@ -32,8 +32,11 @@ RUN echo "--- pip check output ---" && pip check
 # --- End Dependency Analysis ---
 
 # Copy shared backend code
-# COPY backend/core ./core
-COPY workers/. .
+COPY backend/ ./backend/
+COPY workers/ ./workers/
+
+# Set Python path to find backend modules
+ENV PYTHONPATH=/app
 
 # Create non-root user
 RUN useradd -m -u 1000 towerco && chown -R towerco:towerco /app
@@ -49,4 +52,4 @@ HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \
 EXPOSE 8001
 
 # Run the data ingestor
-CMD ["python", "data_ingestor.py"]
+CMD ["python", "workers/data_ingestor.py"]
