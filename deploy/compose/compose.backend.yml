@@ -73,11 +73,13 @@ services:
 
       # Activer Hostname v2 pour pouvoir mettre l’URL complète dans KC_HOSTNAME
       - KC_FEATURES=hostname:v2,token-exchange,admin-fine-grained-authz
-      - KC_HOSTNAME=http://37.60.242.104
-      - KC_HOSTNAME_ADMIN=http://37.60.242.104
-      - KC_FRONTEND_URL=http://37.60.242.104:8081
+      - KC_HOSTNAME=37.60.242.104
+      - KC_HOSTNAME_ADMIN=37.60.242.104
+      - KC_FRONTEND_URL=37.60.242.104:8081
       - KC_HOSTNAME_STRICT=false
       - KC_HOSTNAME_STRICT_HTTPS=false
+      - KC_HOSTNAME_ADMIN_STRICT=false
+      - KC_HOSTNAME_ADMIN_STRICT_HTTPS=false
       # Débogage optionnel si besoin :
       - KC_HOSTNAME_DEBUG=true
 
